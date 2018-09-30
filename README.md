@@ -1,4 +1,8 @@
 # liveblogs.space
+Local web client for VIZ blockchain.
+
+Создан на основе https://github.com/homeRobot/Golos.Local
+
 Представляю локальный Клиент для VIZ liveblogs.space. Онлайн версия расположена тут: https://liveblogs.space
 
 ## Особенности:
