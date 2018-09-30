@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru-ru" lang="ru-ru" >
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="keywords" content="VIZ, блог, блокчейн, блоггеры, социальная сеть, апвот, поощрение, лайки, контент, децентрализация" />
+		<meta name="rights" content="(с) Joopiter.ru и denis-skripnik.name" />
+		<meta name="description" content="Live blogs space - web-клиент для блокчейна VIZ, платформы для блоггеров. Его главным преимуществом является то, что он локальный, а также имеет свою экономику распределения вознаграждений (СМ. about.html)" />
+		
+		<title>Live blogs space</title>
+		
+		<link href="favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+		<link href="css/view.css" rel="stylesheet" type="text/css" />
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+		<link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<link href="css/bootstrap/bootstrap-social.css" rel="stylesheet" type="text/css" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/3.0.0/css/fileinput.css" rel="stylesheet" type="text/css" />
+		<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700|Play&subset=latin,cyrillic" rel="stylesheet" type="text/css" />
+		<link href="css/1vtemplate.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="css/editormd.min.css" />
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.7/sjcl.min.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/3.0.0/js/fileinput.min.js" type="text/javascript"></script>
+		<script src="js/1vtemplate.js" type="text/javascript"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/viz-world-js@0.9.9/dist/viz.min.js" type="text/javascript"></script>
+		<script src="js/marked.js" type="text/javascript"></script>
+		<script src="js/moment.js" type="text/javascript"></script>
+		<script src="js/vizhelper.js" type="text/javascript"></script>
+		
+		<script src="js/view.js" type="text/javascript"></script>
+		<script src="js/editormd.min.js" type="text/javascript"></script>
+		<script language="javascript" type="text/javascript"></script>
+	</head>
+	
+	<style type="text/css" media="screen">
+		#editor { 
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+		}
+	</style>	
+	<body class="body">
+	<header id="header_wrapper" class="mp_header_wrapper">
+			<nav id="header" class="navbar navbar-default radiusless">
+				<div class="main_wrapper">
+					<div class="navbar-header">
+						<button type="button" id="main-menu_btn" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
+							<span class="sr-only">Главное меню</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+					<div class="collapse navbar-collapse" id="main-menu">
+					</div>
+				</div>
+			</nav>
+        </header>
+		<div id="principal_wrapper">
+			<div class="main_wrapper">
+				<aside id="sidebar_left">
+					<div id="main_logo_wrapper">
+						<a href="index.html" id="logo_link"><img src="images/logo.png" class="img-responsive" alt="Live blogs space" title="Live blogs space"/></a>
+					</div>
+					<div id="login_div" class="row" style="margin-top: 5px; margin-bottom: 10px; display: none;">
+						<form action="" method="post" name="adminForm" id="adminForm" class="form-validate col-sm-10 col-sm-offset-1">
+								<div class="form-group1">
+									<label for="login" style="color: white;">Логин VIZ<span style="color: red;">*</span> </label>
+									<div class="input-group">
+										<div class="input-group-addon">@</div>
+										<input type="text" class="form-control required" id="login" name="login" onblur="checkLogin(this.value);" required="required"> 
+									</div>
+								</div>
+								<div class="form-group1">
+									<label for="key" style="color: white;">Постинг ключ</label> <span style="color: red;">*</span> 
+									<input type="password" class="form-control required" id="key" name="key" placeholder="Начинается с 5" required="required">
+								</div>
+								<br>
+								<div class="center" style="text-align: center;">
+									<input type="hidden" name="ok" id="ok" value="false">
+									<input type="button" class="btn btn-primary" value="Войти" onclick="storeKeyLocally();">
+								</div>
+						</form>
+					</div>
+
+					<div id="avatar">
+						<div id="hello"></div>
+						<div id="battery"></div>
+					</div>
+				</aside>
+				<div id="main_content_wrapper">
+					<section id="main_content">
+						
+						<div id="main_column_wrapper">
+							<div id="main_column">																	
+								<ol itemscope itemtype="https://schema.org/BreadcrumbList" class="breadcrumb">
+									<li>
+										Вы здесь: &#160;
+									</li>	
+									<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="active">
+										<span itemprop="name">
+											Новый пост				
+										</span>
+										<meta itemprop="position" content="1">
+									</li>
+								</ol>
+																																																							<div id="j_component">									
+									<form action="index.html" method="post" name="postForm" id="postForm" class="form-validate col-sm-10 col-sm-offset-1">
+										<div class="form-group1">
+											<label for="title">Название<span style="color: red;">*</span> </label>
+											<input type="text" class="form-control required" id="title" name="title" required="required"> 
+										</div>
+										<div class="form-group1">
+											<label for="title">Картинка к посту (укажите URL)</label> (не дублируется в посте, показывается только в ленте)
+											<input type="text" class="form-control required" id="image" name="image"> 
+										</div>
+										<div class="form-group1">
+											<label for="title">Текст статьи<span style="color: red;">*</span> </label>
+										</div>
+																																																									<div class="form-group1">
+											<div id="editormd">												
+												<textarea style="display:none;" id="contentbody">Пора что-то написать...</textarea>
+											</div>
+										</div>
+										
+										<div class="form-group1">
+											<label for="tags">Тэги, через пробел<span style="color: red;">*</span> </label>
+											<input type="text" class="form-control required" id="tags" name="tags" required="required"> 
+										</div>	
+										<div class="form-group1">
+											<a href="https://postimages.org/" target="_blank">Загрузка картинок...</a> 
+										</div>											
+										<div class="form-group1">
+											<br>
+											<input type="button" class="btn btn-primary" value="Отправить" 
+												onclick="postBlog(document.getElementById('title').value,
+													document.getElementById('tags').value);">
+										</div>										
+								</div>
+							</div>										
+						</div>
+					</section>
+				</div>
+
+				<div id="footer_buffer"></div>
+					<footer id="footer_wrapper">
+						<div id="footer" class="padding_tb20 row">
+							<div class="col-sm-12">
+								<div class="footer2">Разработка и дизайн клиента - <a href="user.html?author=captain">@captain</a></div>
+							</div>
+						</div>
+					</footer>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+		<script type="text/javascript">
+			
+			//jQuery(function() {
+				var editor = editormd("editormd", {
+					path : "js/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
+					height: "400px",
+					pluginPath: "js/plugins/",
+					autoLoadModules      : true,  
+					placeholder          : "Что же, пора что-то написать...",
+					emoji                : true,
+					flowChart            : true,
+					lang : {
+						name        : "ru-ru",
+						description : "Open source online Markdown editor.",
+						tocTitle    : "Документ",
+						toolbar     : {
+							undo             : "Отмена （Ctrl+Z）",
+							redo             : "Повтор（Ctrl+Y）",
+							bold             : "Жирно",
+							del              : "Зачеркнуто",
+							italic           : "Курсив",
+							quote            : "Цитата",
+							ucwords          : "Капитализировать",
+							uppercase        : "Верхний регистр",
+							lowercase        : "Нижний регистр",
+							h1               : "Заголовок 1",
+							h2               : "Заголовок 2",
+							h3               : "Заголовок 3",
+							h4               : "Заголовок 4",
+							h5               : "Заголовок 5",
+							h6               : "Заголовок 6",
+							"list-ul"        : "Список",
+							"list-ol"        : "Нумерованный список",
+							hr               : "Разделитель",
+							link             : "Ссылка",
+							"reference-link" : "Якорь",
+							image            : "Картинка",
+							code             : "Код",
+							"preformatted-text" : "Форматированный текст",
+							"code-block"     : "Блок кода",
+							table            : "Таблица",
+							datetime         : "Дата и время",
+							emoji            : "Emoji",
+							"html-entities"  : "HTML",
+							pagebreak        : "Перенос строки",
+							"goto-line"      : "Переход",
+							watch            : "Скрыть предпросмотр",
+							unwatch          : "Показать предпросмотра",
+							preview          : "Предпросмотр",
+							fullscreen       : "Полный экран",
+							clear            : "Очистить",
+							search           : "Поиск",
+							help             : "Помощь",
+							info             : "Инфо" + editormd.title
+							},
+						buttons : {
+							enter  : "Да",
+							cancel : "Нет",
+							close  : "Закрыть"
+						},
+						dialog : {
+							link : {
+								title    : "Заголовок",
+								url      : "URL",
+								urlTitle : "title",
+								urlEmpty : "Пустой"
+							},
+							referenceLink : {
+								title    : "Ссылка",
+								name     : "Название",
+								url      : "Линк",
+								urlId    : "ID",
+								urlTitle : "Заголовок",
+								nameEmpty: "Error: Ссылка не может быть пустой.",
+								idEmpty  : "Error: Заполните ID.",
+								urlEmpty : "Error: Заполните URL."
+							},
+							image : {
+								title    : "Изображение",
+								url      : "Адрес",
+								link     : "Ссылка",
+								alt      : "Название",
+								uploadButton     : "Загрузить",
+								imageURLEmpty    : "Error: Заполните URL.",
+								uploadFileEmpty  : "Error: upload pictures cannot be empty!",
+								formatNotAllowed : "Error: only allows to upload pictures file, upload allowed image file format:"
+							},
+							preformattedText : {
+								title             : "Код", 
+								emptyAlert        : "Error: Please fill in the Preformatted text or content of the codes."
+							},
+							codeBlock : {
+								title             : "Блок кода",         
+								selectLabel       : "Языки: ",
+								selectDefaultText : "выберите язык...",
+								otherLanguage     : "Другой язык",
+								unselectedLanguageAlert : "Error: Please select the code language.",
+								codeEmptyAlert    : "Error: Please fill in the code content."
+							},
+							htmlEntities : {
+								title : "HTML Вставки"
+							},
+							help : {
+								title : "Помощь"
+							}
+						}
+					}
+				});
+			//});
+			Init();
+			mainMenu();
+		</script>
+	</body>
+</html>

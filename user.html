@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru-ru" lang="ru-ru" >
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="keywords" content="VIZ, блог, блокчейн, блоггеры, социальная сеть, апвот, поощрение, лайки, контент, децентрализация" />
+		<meta name="rights" content="(с) Joopiter.ru и denis-skripnik.name" />
+		<meta name="description" content="Live blogs space - web-клиент для блокчейна VIZ, платформы для блоггеров. Его главным преимуществом является то, что он локальный, а также имеет свою экономику распределения вознаграждений (СМ. about.html)" />
+		
+		<title>Live blogs space</title>
+		
+		<link href="favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+		<link href="css/view.css" rel="stylesheet" type="text/css" />
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
+		<link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+		<link href="css/bootstrap/bootstrap-social.css" rel="stylesheet" type="text/css" />
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/3.0.0/css/fileinput.css" rel="stylesheet" type="text/css" />
+		<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700|Play&subset=latin,cyrillic" rel="stylesheet" type="text/css" />
+		<link href="css/1vtemplate.css" rel="stylesheet" type="text/css" />
+		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.7/sjcl.min.js" type="text/javascript"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/3.0.0/js/fileinput.min.js" type="text/javascript"></script>
+		<script src="js/1vtemplate.js" type="text/javascript"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/viz-world-js@0.9.9/dist/viz.min.js" type="text/javascript"></script>
+		<script src="js/marked.js" type="text/javascript"></script>
+		<script src="js/moment.js" type="text/javascript"></script>
+		<script src="js/vizhelper.js" type="text/javascript"></script>
+		
+		<script src="js/view.js" type="text/javascript"></script>
+		<script language="javascript" type="text/javascript"></script>
+	</head>
+	<body class="body">
+<header id="header_wrapper" class="mp_header_wrapper">
+			<nav id="header" class="navbar navbar-default radiusless">
+				<div class="main_wrapper">
+					<div class="navbar-header">
+						<button type="button" id="main-menu_btn" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu" aria-expanded="false">
+							<span class="sr-only">Главное меню</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+					</div>
+					<div class="collapse navbar-collapse" id="main-menu">
+					</div>
+				</div>
+			</nav>
+        </header>
+		<div id="principal_wrapper">
+			<div class="main_wrapper">
+				<aside id="sidebar_left">
+					<div id="main_logo_wrapper">
+						<a href="index.html" id="logo_link"><img src="images/logo.png" class="img-responsive" alt="Live blogs space" title="Live blogs space"/></a>
+					</div>
+					<div id="login_div" class="row" style="margin-top: 5px; margin-bottom: 10px;">
+						<form action="index.html" method="post" name="adminForm" id="adminForm" class="form-validate col-sm-10 col-sm-offset-1">
+								<div class="form-group1">
+									<label for="login" style="color: white;">Логин VIZ<span style="color: red;">*</span> </label>
+									<div class="input-group">
+										<div class="input-group-addon">@</div>
+										<input type="text" class="form-control required" id="login" name="login" onblur="checkLogin(this.value);" required="required"> 
+									</div>
+								</div>
+								<div class="form-group1">
+									<label for="key" style="color: white;">Постинг ключ</label> <span style="color: red;">*</span> 
+									<input type="password" class="form-control required" id="key" name="key" placeholder="Начинается с 5" required="required">
+								</div>
+								<br>
+								<div class="center" style="text-align: center;">
+									<input type="hidden" name="ok" id="ok" value="false">
+									<input type="button" class="btn btn-primary" value="Войти" onclick="if(!storeKeyLocally()){return false;};this.form.submit();">
+								</div>
+						</form>
+					</div>
+
+					<div id="avatar">
+						<div id="hello"></div>
+						<div id="battery"></div>
+					</div>
+				</aside>
+				<div id="main_content_wrapper">
+					<section id="main_content">
+						
+						<div id="main_column_wrapper">
+							<div id="main_column">																	
+								<ol itemscope itemtype="https://schema.org/BreadcrumbList" class="breadcrumb">
+									<li>
+										Вы здесь: &#160;
+									</li>	
+									<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="active">
+										<span itemprop="name">
+											Пользователь <span id="username"></span>				
+										</span>
+										<meta itemprop="position" content="1">
+									</li>
+								</ol>
+																																																							<div id="j_component">
+									<div style="margin: auto; text-align: -webkit-center;">
+									<img style="margin: auto;" id="loader" src="images/11.gif">
+									</div>
+									<script language="javascript" type="text/javascript">
+										var author = getUrlVars()['author'];
+										getDiscussionsByBlog(author);
+										jQuery('#username').html(author);
+viz.api.getAccounts([author], function(err, result) {
+//  console.log(err, result);
+  if (!err) {
+    result.forEach(function(item) {
+		var follow = '';
+		if(isLoggedIn() && document.getElementById('vote_form'))
+		{
+			follow = '<span class="tt" onclick="spoiler(\'follow\'); return false">Действия...</span>';
+			follow += '<span id="follow" class="terms" style="display: none;">';
+			if(user.followers.includes(author))
+			{
+				follow += "<div style='float: left; margin-top: -7px; margin-right: 5px;'> <img src='images/hs.png' title='Подписан на вас'> </div>";
+			}
+			if(user.following.includes(author))
+			{
+				follow += "<button class='btn btn-warning' onClick='follow(\""+author+"\"); style.display=\"none\"'>Отписаться</button> ";
+			}
+			else
+			{
+			follow += "<button class='btn btn-success' onClick='follow(\""+author+"\"); style.display=\"none\"'>Подписаться</button> ";
+			}			
+			follow += "<button class='btn btn-danger' onClick='ignore(\""+author+"\"); style.display=\"none\"'>Игнорировать</button> ";
+			follow += '</span>';
+		}
+	jQuery("#account_name").html(author+follow);
+  jQuery("#account_content_count").html(item.subcontent_count);
+jQuery("#account_vote_count").html(item.vote_count);
+jQuery("#account_post_count").html(item.content_count);
+jQuery("#account_balance").html(item.balance);
+jQuery("#account_vesting_shares").html(item.vesting_shares);
+jQuery("#account_delegated_vesting_shares").html('<a href="#modal_delegated_vesting_shares" class="btn btn-primary" data-toggle="modal">' + item.delegated_vesting_shares + '</a>');
+jQuery("#account_received_vesting_shares").html('<a href="#modal_received_vesting_shares" class="btn btn-primary" data-toggle="modal">' + item.received_vesting_shares + '</a>');
+var full_vesting = parseFloat(item.vesting_shares) - parseFloat(item.delegated_vesting_shares) + parseFloat(item.received_vesting_shares);
+jQuery("#account_full_vesting").html(full_vesting);
+
+var vesting_withdraw_rate = parseFloat(item.vesting_withdraw_rate);
+var full_vesting_withdraw = vesting_withdraw_rate*28 + ' SHARES';
+if (full_vesting_withdraw !== '0 SHARES') {
+jQuery("#active_vesting_withdraw").html(' Выводится по <span id="account_vesting_withdraw_rate"></span> 28 дней;');
+}
+jQuery("#account_full_vesting_withdraw").html(full_vesting_withdraw);
+jQuery("#account_vesting_withdraw_rate").html(item.vesting_withdraw_rate);
+    });
+  }
+  else console.error(err);
+ });
+
+var type = 'delegated';
+viz.api.getVestingDelegations(author, '', 100, type, function(err, res) {
+  //console.log(err, res);
+  if ( ! err) {
+var vesting_shares_amount = '';
+  var body_delegated_vesting_shares = '';
+  res.forEach(function(item) {
+      console.log('getVestingDelegations', item);
+vesting_shares_amount = item.vesting_shares;
+	  body_delegated_vesting_shares = '<tr><td><a href="user.html?author=' + item.delegatee + '" target="_blank">@' + item.delegatee + '</a></td><td>' + vesting_shares_amount + '</td></tr>';
+ });
+jQuery("#body_delegated_vesting_shares").append(body_delegated_vesting_shares);
+ }
+  else console.error(err);
+});
+
+var type = 'received';
+viz.api.getVestingDelegations(author, '', 100, type, function(err, res) {
+  //console.log(err, res);
+  if ( ! err) {
+var vs_amount = '';
+  var body_received_vesting_shares = '';
+  res.forEach(function(item) {
+      console.log('getVestingDelegations', item);
+vs_amount = item.vesting_shares;
+	  body_received_vesting_shares = '<tr><td><a href="user.html?author=' + item.delegator + '" target="_blank">@' + item.delegator + '</a></td><td>' + vs_amount + '</td></tr>';
+ });
+jQuery("#body_received_vesting_shares").append(body_received_vesting_shares);
+ }
+  else console.error(err);
+});
+
+viz.api.getFollowCount(author, function(err, result) {
+  if (!err) {
+  jQuery("#followers").html('<a href="#followers-link" class="btn btn-primary" data-toggle="modal">' + result.follower_count + '</a>');
+jQuery("#following").html('<a href="#following-link" class="btn btn-primary" data-toggle="modal">' + result.following_count + '</a>');
+	}
+  else console.error(err);
+});
+
+viz.api.getFollowing(author, '', 'blog', 100, function(err, result) {
+  //console.log(err, result);
+  if ( ! err) {
+result.sort(function(a, b) {
+  if(a.following < b.following) return -1;
+  if(a.following > b.following) return 1;
+  return 0;
+})
+  var following_element = '';
+  result.forEach(function(item) {
+      console.log('getFollowing', item);
+following_element += '<a href="user.html?author=' + item.following + '" target="_blank">@' + item.following + '</a>, ';
+    });
+jQuery("#following_body").html(following_element);
+	}
+  else console.error(err);
+});
+
+viz.api.getFollowers(author, '', 'blog', 100, function(err, result) {
+  //console.log(err, result);
+  if ( ! err) {
+result.sort(function(a, b) {
+  if(a.follower < b.follower) return -1;
+  if(a.follower > b.follower) return 1;
+  return 0;
+})
+  var follower_element = '';
+  result.forEach(function(item) {
+      console.log('getFollowers', item);
+follower_element += '<a href="user.html?author=' + item.follower + '" target="_blank">@' + item.follower + '</a>, ';
+    });
+jQuery("#followers_body").html(follower_element);
+	}
+  else console.error(err);
+});
+ </script>
+
+									<div class="row">
+										<div class="col-lg-5" id="x5">
+											<nav class="">
+												<div class="collapse navbar-collapse" id="items_collapsable_wrapper">
+													<div id="items_list_wrapper" class="row">
+													</div>
+												</div>
+											</nav>
+										</div>
+										<div class="col-lg-7" id="x7">
+											<div id="item_content_wrapper">
+												<div style="margin: auto; text-align: -webkit-center;">
+													<img style="display: none;" id="content_loader" src="images/11.gif">
+												</div>
+												
+<h1 id="account_name"></h1>
+<h2>Баланс: <span id="account_balance"></span> и <span id="account_vesting_shares"></span></h2>
+<ul>
+<li>Делегировано другим аккаунтам: <span id="account_delegated_vesting_shares"></span>;
+<div id="modal_delegated_vesting_shares" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Список аккаунтов, которым делегирована shares</h4>
+      </div>
+      <div class="modal-body">
+<table id="body_delegated_vesting_shares"><tr><th>Логин</th><th>Сумма</th></tr></table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div></li>
+<li>Получено от других аккаунтов: <span id="account_received_vesting_shares"></span>
+<div id="modal_received_vesting_shares" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Список аккаунтов, которые делегировали SHARES этому пользователю</h4>
+      </div>
+      <div class="modal-body">
+<table id="body_received_vesting_shares"><tr><th>Логин</th><th>Сумма</th></tr></table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div></li>
+<li>Общий баланс SHARES (С учётом делегированного другим аккаунтам и полученного): <span id="account_full_vesting"></span>;</li>
+<li>Вывод из Shares в VIZ: <span id="account_full_vesting_withdraw"></span>;<span id="active_vesting_withdraw"></span></li>
+<li>Количество опубликованных постов: <span id="account_post_count"></span>, а комментариев: <span id="account_content_count"></span>;</li>
+<li>Число апвотов (лайков): <span id="account_vote_count"></span></li>
+<li>Подписчиков: <span id="followers"></span>, подписок: <span id="following"></span>
+<div id="followers-link" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Список подписчиков</h4>
+      </div>
+      <div class="modal-body">
+<span id="followers_body"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="following-link" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Список подписок</h4>
+      </div>
+      <div class="modal-body">
+<span id="following_body"></span>
+      </div>
+      <!-- Футер модального окна -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+</li>
+</ul>
+
+												
+												<div id="query_header">
+												</div>
+												
+												<div id="qq">
+												</div>
+
+												<form action="" id="vote_form" style="display: none;">
+													<div style="float:left;">
+														<input type="range" name="power" min="1" max="100" step="1" value="100" style="width: 240px; margin-top: 10px; margin-right: 10px;" onchange="document.getElementById('vpower').innerHTML = this.value"> 
+													</div>			
+													<div style="float:left;">
+														<button type="button" onClick="votePost(this.form.power.value, this.form.permlink.value, this.form.author.value); ReblogUpvote(this.form.power.value, this.form.permlink.value, this.form.author.value); return false;">Оценить и поделиться<span id="vpower">100</span>%</button>
+													</div>
+													<input type="hidden" name="permlink" value="">
+													<input type="hidden" name="author" value="">
+													<div style="float:right;">
+														<button type="button" class="btn btn-link" title="Это действие влияет на видимость поста. Вплоть до его скрытия." onClick="votePost(-this.form.power.value, this.form.permlink.value, this.form.author.value); return false;"><img src="images/flag.png"></button>
+													</div>			
+												</form>
+												<br>
+												
+												<div id="my_vote">
+												</div>																								
+														
+												<div id="voters">
+												</div>
+												<br>
+												<br>
+												<div style="margin: auto; text-align: -webkit-center; display: none;">
+														Ожидаем загрузки комментариев...
+														<img id="answers_loader" src="images/11.gif">
+													</div>
+												<div id="answers_list">			
+												</div>		
+												<div id="answer" style="display: none;">
+													<div class="well">
+														<div class="form-group">
+															<label for="editor">Комментарий</label>
+															<textarea id="editor" style="width: 100%;" rows="5"></textarea>						
+														</div>
+														<div class="form-group text-center">
+															<button type="button" class="btn btn-info" onclick="sendMainComment(document.getElementById('editor').value, this);">Отправить</button>
+														</div>
+													</div>
+												</div>		
+											</div>
+										</div>
+									</div>
+								</div>																																
+							</div>
+						</div>
+					</section>
+				</div>
+
+				<div id="footer_buffer"></div>
+					<footer id="footer_wrapper">
+						<div id="footer" class="padding_tb20 row">
+							<div class="col-sm-12">
+								<div class="footer2">Разработка и дизайн клиента - <a href="user.html?author=captain">@captain</a></div>
+							</div>
+						</div>
+					</footer>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+		<script>
+			Init();
+			mainMenu();
+		</script>
+	</body>
+</html>

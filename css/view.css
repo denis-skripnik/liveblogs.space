@@ -1,0 +1,244 @@
+.q_header_wrapper h3{
+	font-size: 18px;
+}
+#items_list_wrapper{margin-right:0;margin-left:0}
+#items_list_wrapper .a_div{float:right;margin-top:34px;text-align:center;width:60px}
+@media(max-width:767px){
+#items_list_wrapper .a_div{float:none;margin-top:10px;margin-bottom:10px;text-align:center;width:100%}
+}
+@media(min-width:992px){
+#items_list_wrapper .q_header_wrapper{height:66px;overflow:hidden}
+}
+#items_list_wrapper .q_header_wrapper>*:first-child{margin-top:10px}
+#items_list_wrapper .q_wrapper{background-color:#f5f5f5;border-bottom:dotted 1px #333}
+#items_list_wrapper .q_div{float:left;margin-left:10px;width:70%}
+@media(max-width:767px){
+#items_list_wrapper .q_div{float:none;width:100%}
+}
+@media(min-width:992px) and (max-width:1299px){
+#items_list_wrapper .q_div{max-width:65%;min-width:65%}
+}
+@media(min-width:768px) and (max-width:991px){
+#items_list_wrapper .q_div{max-width:50%;min-width:45%}
+}
+#items_list_wrapper .img_div{background-clip:border-box;background-origin:content-box;background-position:50% 50%;background-repeat:no-repeat;background-size:cover;border:solid 2px #85A0C9;border-radius:30px;-moz-border-radius:30px;-webkit-border-radius:30px;display:block;float:left;height:120px;margin-top:8px;margin-right:8px;margin-bottom:8px;overflow:hidden;width:120px}
+@media(max-width:767px){
+#items_list_wrapper .img_div{float:none;margin-right:auto;margin-left:auto}
+}
+
+#items_list_wrapper .img_div {
+    background-clip: border-box;
+    background-origin: content-box;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: solid 2px #85A0C9;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    display: block;
+    float: left;
+    height: 100px;
+    margin-top: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    width: 100px;
+}
+#items_list_wrapper .q_div {
+    float: left;
+    margin-left: 10px;
+    width: 60%;
+}
+.h3, h3 {
+    font-size: 18px;
+}
+.navbar-collapse {
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.panel{
+	margin-bottom: 8px  !important;
+}
+
+.panel-heading {
+	padding: 1px 15px;
+}
+
+.panel-heading .h3{
+	margin-top: 2px;
+    margin-bottom: 5px;
+}
+
+.panel-body {
+	padding-bottom: 2px;
+}
+
+.help-text {
+	margin-bottom: 4px;
+}
+
+.depth2 {
+	margin-left: 10px;
+	margin-top: 1px;
+}
+.depth3 {
+	margin-left: 10px;
+	margin-top: 1px;
+}
+.depth4 {
+	margin-left: 10px;
+	margin-top: 1px;
+}
+
+.reply {
+	margin: 5px;
+}
+/*************************************************/
+
+input[type=range]{
+    -webkit-appearance: none;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 300px;
+    height: 5px;
+    background: #ddd;
+    border: none;
+    border-radius: 3px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+    margin-top: -4px;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #ccc;
+}
+input[type=range]{
+    /* fix for FF unable to apply focus style bug  */
+    border: 1px solid white; 
+
+    /*required for proper track sizing in FF*/
+    width: 300px;
+}
+
+input[type=range]::-moz-range-track {
+    width: 300px;
+    height: 5px;
+    background: #ddd;
+    border: none;
+    border-radius: 3px;
+}
+
+input[type=range]::-moz-range-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+}
+
+/*hide the outline behind the border*/
+input[type=range]:-moz-focusring{
+    outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+input[type=range]:focus::-moz-range-track {
+    background: #ccc;
+}
+
+input[type=range]::-ms-track {
+    width: 300px;
+    height: 5px;
+    
+    /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
+    background: transparent;
+    
+    /*leave room for the larger thumb to overflow with a transparent border */
+    border-color: transparent;
+    border-width: 6px 0;
+
+    /*remove default tick marks*/
+    color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+    background: #777;
+    border-radius: 10px;
+}
+input[type=range]::-ms-fill-upper {
+    background: #ddd;
+    border-radius: 10px;
+}
+input[type=range]::-ms-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+}
+input[type=range]:focus::-ms-fill-lower {
+    background: #888;
+}
+input[type=range]:focus::-ms-fill-upper {
+    background: #ccc;
+}
+
+.terms {
+    display:none;
+    margin:5px 0px;
+    padding:10px;
+    width:98%;
+    border:1px solid #ffbc80;
+    background:#ffffdf;
+    
+}
+/* кликабельный текст */
+.tt {
+    color:#f70;
+    cursor: help
+}
+.tt:hover{
+    border-bottom:1px dashed green;
+    color:green;
+}
+
+#avatar{
+	color: white; 
+	text-align: center; 
+	height: 48px;
+}
+
+.ava_div {
+    background-clip: border-box;
+    background-origin: content-box;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: solid 2px #85A0C9;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    display: block;
+    float: left;
+    height: 70px;
+    margin: 5px;
+    overflow: hidden;
+    width: 70px;
+}
+
+.form-group1 {
+	padding-bottom: 8px;
+}
