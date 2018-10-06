@@ -108,13 +108,12 @@
 									</li>	
 									<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="active">
 										<span itemprop="name">
-											Новый пост				
+											Редактирование поста				
 										</span>
 										<meta itemprop="position" content="1">
 									</li>
 								</ol>
-																																																							<div id="j_component">									
-<p><strong>70% авторских выплат пойдёт в SHARES, 30% - в VIZ. 1% прибыли отдаётся denis-skripnik.</strong></p>
+								<div id="j_component">									
 									<form action="index.html" method="post" name="postForm" id="postForm" class="form-validate col-sm-10 col-sm-offset-1">
 										<div class="form-group1">
 											<label for="title">Название<span style="color: red;">*</span> </label>
@@ -125,11 +124,11 @@
 											<input type="text" class="form-control required" id="image" name="image"> 
 										</div>
 										<div class="form-group1">
-											<label for="title">Текст статьи<span style="color: red;">*</span> </label>
+											<label for="main_text">Текст статьи<span style="color: red;">*</span> </label>
 										</div>
 																																																									<div class="form-group1">
 											<div id="editormd">												
-												<textarea style="display:none;" id="contentbody"></textarea>
+												<textarea style="display:none;" name="main_text" id="contentbody"></textarea>
 											</div>
 										</div>
 										
@@ -143,7 +142,7 @@
 										<div class="form-group1">
 											<br>
 											<input type="button" class="btn btn-primary" value="Отправить" 
-												onclick="postBlog(document.getElementById('title').value,
+												onclick="editPostBlog(permlink, document.getElementById('title').value,
 													document.getElementById('tags').value);">
 										</div>										
 								</div>
@@ -165,11 +164,22 @@
 		</div>
 		<div class="clearfix"></div>
 		<script type="text/javascript">
-			
-			//jQuery(function() {
-				var editor = editormd("editormd", {
+			var author = getUrlVars()['author'];
+var permlink = getUrlVars()['permlink'];
+var body = '';
+			Init();
+viz.api.getContent(author, permlink, -1, function(err, result) {
+  //console.log(err, result);
+  if (!err) {
+	var jmeta = JSON.parse(result.json_metadata);
+		  jQuery('#title').val(result.title);
+		  jQuery('#image').val(jmeta.image.join(' '));
+		  jQuery('#tags').val(jmeta.tags.join(' '));
+ 		  jQuery(function() {
+var editor = editormd("editormd", {
 					path : "js/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
 					height: "400px",
+					value: result.body,
 					pluginPath: "js/plugins/",
 					autoLoadModules      : true,  
 					placeholder          : "Что же, пора что-то написать...",
@@ -272,9 +282,16 @@
 						}
 					}
 				});
-			//});
-			Init();
+			});
+
+		}
+  else console.error(err);
+});
+
+
+
 			mainMenu();
+
 		</script>
 	</body>
 </html>

@@ -1,0 +1,165 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Панель делегата</title>
+<script src="https://cdn.jsdelivr.net/npm/viz-world-js@0.9.9/dist/viz.min.js" type="text/javascript"></script>
+</head>
+<body>
+<h1>Настройте параметры делегата:</h1>
+<p>Цена создания аккаунта ликвидом </p>
+<p><input type="text" id="account_creation_fee" value="1.000 VIZ" placeholder="account_creation_fee"></p>
+<p>Множитель для создания аккаунта делегированием </p>
+  <p><input type="text" id="create_account_delegation_ratio" value=10 placeholder="create_account_delegation_ratio"></p>
+<p>Время отзыва делегирования после создания аккаунта делегированием (В секундах) </p>
+    <p><input type="text" id="create_account_delegation_time" value=2592000 placeholder="create_account_delegation_time"></p>
+<p>Максимальный размер блока </p>
+<p><input type="text" id="maximum_block_size" value=131072 placeholder="maximum_block_size"></p>
+<p>Минимальный объём делегирования </p>
+<p><input type="text" id="min_delegation" value="0.001 VIZ" placeholder="min_delegation"></p>
+<p>Минимальный процент куратора </p>
+<p><input type="text" id="min_curation_percent" value=0 placeholder="min_curation_percent"></p>
+<p>Максимальный процент куратора </p>
+<p><input type="text" id="max_curation_percent" value=10000 placeholder="max_curation_percent"></p>
+<p>Резерв пропускной способности для микро-аккаунтов </p>
+<p><input type="text" id="bandwidth_reserve_percent" value="1000" placeholder="bandwidth_reserve_percent"></p>
+<p>Максимальный размер микро-аккаунта </p>
+<p><input type="text" id="bandwidth_reserve_below" value="500.000000 SHARES" placeholder="bandwidth_reserve_below"></p>
+<p>Дополнительный расход энергии при флаге </p>
+<p><input type="text" id="flag_energy_additional_cost" value=1000 placeholder="flag_energy_additional_cost"></p>
+<p>Минимальное количество rshares для значимого голосования </p>
+<p><input type="text" id="vote_accounting_min_rshares" value=500000 placeholder="vote_accounting_min_rshares"></p>
+<p>Минимальный процент для одобрения заявки воркера </p>
+<p><input type="text" id="committee_request_approve_min_percent" value=1000 placeholder="committee_request_approve_min_percent"></p>
+<h2>Данные делегата</h2>
+<p>Приватный активный ключ аккаунта:</p>
+<p><input type="password" id="wif" value="" placeholder="wif"></p>
+<p>Логин:</p>
+<p><input type="text" id="owner" value="" placeholder="Логин"></p>
+<hr>
+<p>Сохранить логин и ключ в local storage браузера, чтоб не приходилось их вводить каждый раз?</p>
+<p><input type="checkbox" id="isSave"></p>
+<p align="center"><input type="button" value="Отправить параметры" onclick="send();"></p>
+</form>
+
+<h2>Применить параметры делегата:</h2>
+<p>Введите логин делегата, параметры которого хотите добавить в поля выше (Без @):</p>
+<p><input type="text" id="witness_name" value="denis-skripnik"></p>
+<p align="center"><input type="button" value="Получить их" onclick="witnessInfo();"</p>
+</form>
+
+<h2>Проголосовать за меня, как делегата</h2>
+<p>Аккаунт denis-skripnik</p>
+<form>
+  <p>Ваш активный ключ:</p>
+  <p><input type="password" id="VoteWif" value="" placeholder="wif"></p>
+  <p>Ваш логин:</p>
+  <p><input type="text" id="VoteAccount" value="" placeholder="Логин"></p>
+<p align="center"><input type="button" value="Проголосовать" onclick="witnessVote();"></p>
+</form>
+
+<script>
+var isLogin = localStorage.getItem('login');
+var isKey = localStorage.getItem('key');
+if (isLogin && isKey) {
+document.getElementById('owner').value = isLogin;
+document.getElementById('wif').value = isKey;
+document.getElementById('VoteAccount').value = isLogin;
+document.getElementById('VoteWif').value = isKey;
+document.getElementById('isSave').checked = true;
+} else if (isLogin && !isKey) {
+  document.getElementById('owner').value = isLogin;
+  document.getElementById('VoteAccount').value = isLogin;
+} else if (!isLogin && isKey) {
+  document.getElementById('wif').value = isKey;
+  document.getElementById('VoteWif').value = isKey;
+}
+
+function send() {
+var account_creation_fee = document.getElementById('account_creation_fee').value;
+var create_account_delegation_ratio = parseInt(document.getElementById('create_account_delegation_ratio').value);
+var create_account_delegation_time = parseInt(document.getElementById('create_account_delegation_time').value);
+var maximum_block_size = parseInt(document.getElementById('maximum_block_size').value);
+var min_delegation = document.getElementById('min_delegation').value;
+var min_curation_percent = parseInt(document.getElementById('min_curation_percent').value);
+var max_curation_percent = parseInt(document.getElementById('max_curation_percent').value);
+var bandwidth_reserve_percent = parseInt(document.getElementById('bandwidth_reserve_percent').value);
+var bandwidth_reserve_below = document.getElementById('bandwidth_reserve_below').value;
+var flag_energy_additional_cost = parseInt(document.getElementById('flag_energy_additional_cost').value);
+var vote_accounting_min_rshares = parseInt(document.getElementById('vote_accounting_min_rshares').value);
+var committee_request_approve_min_percent  = parseInt(document.getElementById('committee_request_approve_min_percent').value);
+var wif = document.getElementById('wif').value;
+var owner = document.getElementById('owner').value;
+var isSave = document.getElementById('isSave');
+
+if (isSave.checked) {
+  localStorage.setItem('login', owner);
+  localStorage.setItem('key', wif);
+} else {
+  localStorage.removeItem("login");
+  localStorage.removeItem("key");
+}
+
+let chain_properties = {
+  account_creation_fee:account_creation_fee,
+  create_account_delegation_ratio:create_account_delegation_ratio,
+  create_account_delegation_time:create_account_delegation_time,
+  maximum_block_size:maximum_block_size,
+  min_delegation:min_delegation,
+  min_curation_percent:min_curation_percent,
+  max_curation_percent:max_curation_percent,
+  bandwidth_reserve_percent:bandwidth_reserve_percent,
+  bandwidth_reserve_below:bandwidth_reserve_below,
+  flag_energy_additional_cost:flag_energy_additional_cost,
+  vote_accounting_min_rshares:vote_accounting_min_rshares,
+  committee_request_approve_min_percent:committee_request_approve_min_percent,
+};
+console.log(chain_properties);
+viz.broadcast.chainPropertiesUpdate(wif, owner, chain_properties, function(err, result) {
+  if (!err) {
+    console.log('chainPropertiesUpdate', result);
+    window.alert('Параметры успешно изменены!');
+  }
+  else console.error(err);
+});
+}
+
+function witnessInfo() {
+var witness_name = document.getElementById('witness_name').value;
+viz.api.getWitnessByAccount(witness_name, function(err, result) {
+  if ( ! err) {
+      console.log('getWitnessByAccount', result);
+document.getElementById('account_creation_fee').value = result.props.account_creation_fee;
+document.getElementById('create_account_delegation_ratio').value = result.props.create_account_delegation_ratio;
+document.getElementById('create_account_delegation_time').value = result.props.create_account_delegation_time;
+document.getElementById('maximum_block_size').value = result.props.maximum_block_size;
+document.getElementById('min_delegation').value = result.props.min_delegation;
+document.getElementById('min_curation_percent').value = result.props.min_curation_percent;
+document.getElementById('max_curation_percent').value = result.props.max_curation_percent;
+document.getElementById('bandwidth_reserve_percent').value = result.props.bandwidth_reserve_percent;
+document.getElementById('bandwidth_reserve_below').value = result.props.bandwidth_reserve_below;
+document.getElementById('flag_energy_additional_cost').value = result.props.flag_energy_additional_cost;
+document.getElementById('vote_accounting_min_rshares').value = result.props.vote_accounting_min_rshares;
+document.getElementById('committee_request_approve_min_percent').value =result.props.committee_request_approve_min_percent;
+document.getElementById('owner').value = result.owner;
+window.alert('Параметры возможно вставлены. Проверьте поля');
+      }
+  else console.error(err);
+});
+}
+
+function witnessVote() {
+var VoteWif = document.getElementById('VoteWif').value;
+var VoteAccount = document.getElementById('VoteAccount').value;
+var witness = 'denis-skripnik';
+
+viz.broadcast.accountWitnessVote(VoteWif, VoteAccount, witness, true, function(err, result) {
+  if (!err) {
+    console.log('accountWitnessVote', result);
+window.alert('Благодарю за то, что проголосовали за моего делегата.');
+  }
+  else window.alert('Возможно, вы уже проголосовали за двух делегатов.');
+});
+}
+</script>
+</body>
+</html>

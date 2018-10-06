@@ -75,7 +75,7 @@
 								<br>
 								<div class="center" style="text-align: center;">
 									<input type="hidden" name="ok" id="ok" value="false">
-									<input type="button" class="btn btn-primary" value="Войти" onclick="if(!storeKeyLocally()){return false;};this.form.submit();">
+									<input type="button" class="btn btn-primary" value="Войти" onclick="if(!storeKeyLocally()){return false;};this.form.submit();"> или <a href="reg.html">Зарегистрироваться по инвайт-коду</a>
 								</div>
 						</form>
 					</div>
@@ -116,7 +116,6 @@
 										{
 											document.getElementById('avatar').style = 'display:none';
 										}
-walletView(login);
 									</script>
 
 									<div class="row">
@@ -140,46 +139,6 @@ walletView(login);
 												<div id="qq">
 												</div>
 
-												<form action="" id="vote_form" style="display: none;">
-													<div style="float:left;">
-														<input type="range" name="power" min="1" max="100" step="1" value="100" style="width: 240px; margin-top: 10px; margin-right: 10px;" onchange="document.getElementById('vpower').innerHTML = this.value"> 
-													</div>			
-													<div style="float:left;">
-														<button type="button" onClick="votePost(this.form.power.value, this.form.permlink.value, this.form.author.value); ReblogUpvote(this.form.power.value, this.form.permlink.value, this.form.author.value); return false;">Оценить и поделиться<span id="vpower">100</span>%</button>
-													</div>
-													<input type="hidden" name="permlink" value="">
-													<input type="hidden" name="author" value="">
-													<div style="float:right;">
-														<button type="button" class="btn btn-link" title="Это действие влияет на видимость поста. Вплоть до его скрытия." onClick="votePost(-this.form.power.value, this.form.permlink.value, this.form.author.value); return false;"><img src="images/flag.png"></button>
-													</div>			
-												</form>
-												<br>
-												
-												<div id="my_vote">
-												</div>																								
-														
-												<div id="voters">
-												</div>
-												<br>
-												<br>
-												<div style="margin: auto; text-align: -webkit-center; display: none;">
-														Ожидаем загрузки комментариев...
-														<img style="" id="answers_loader" src="images/11.gif">
-													</div>
-												<div id="answers_list">			
-												</div>		
-												<div id="answer" style="display: none;">
-													<div class="well">
-														<div class="form-group">
-															<label for="editor">Комментарий</label>
-															<textarea id="editor" style="width: 100%;" rows="5"></textarea>						
-														</div>
-														<div class="form-group text-center">
-															<button type="button" class="btn btn-info" onclick="sendMainComment(document.getElementById('editor').value, this);">Отправить</button>
-														</div>
-													</div>
-												</div>		
-											</div>
 										</div>
 									</div>
 								</div>																																
@@ -203,6 +162,7 @@ walletView(login);
 		<script>
 			Init();
 			mainMenu();
+			walletView(login);
 		</script>
 	</body>
 </html>

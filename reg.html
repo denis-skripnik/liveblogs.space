@@ -20,6 +20,7 @@
 		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/3.0.0/css/fileinput.css" rel="stylesheet" type="text/css" />
 		<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700|Play&subset=latin,cyrillic" rel="stylesheet" type="text/css" />
 		<link href="css/1vtemplate.css" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="css/editormd.min.css" />
 		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>		
@@ -34,10 +35,21 @@
 		<script src="js/vizhelper.js" type="text/javascript"></script>
 		
 		<script src="js/view.js" type="text/javascript"></script>
+		<script src="js/editormd.min.js" type="text/javascript"></script>
 		<script language="javascript" type="text/javascript"></script>
 	</head>
+	
+	<style type="text/css" media="screen">
+		#editor { 
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+		}
+	</style>	
 	<body class="body">
-<header id="header_wrapper" class="mp_header_wrapper">
+	<header id="header_wrapper" class="mp_header_wrapper">
 			<nav id="header" class="navbar navbar-default radiusless">
 				<div class="main_wrapper">
 					<div class="navbar-header">
@@ -59,8 +71,8 @@
 					<div id="main_logo_wrapper">
 						<a href="index.html" id="logo_link"><img src="images/logo.png" class="img-responsive" alt="Live blogs space" title="Live blogs space"/></a>
 					</div>
-					<div id="login_div" class="row" style="margin-top: 5px; margin-bottom: 10px;">
-						<form action="index.html" method="post" name="adminForm" id="adminForm" class="form-validate col-sm-10 col-sm-offset-1">
+					<div id="login_div" class="row" style="margin-top: 5px; margin-bottom: 10px; display: none;">
+						<form action="" method="post" name="adminForm" id="adminForm" class="form-validate col-sm-10 col-sm-offset-1">
 								<div class="form-group1">
 									<label for="login" style="color: white;">Логин VIZ<span style="color: red;">*</span> </label>
 									<div class="input-group">
@@ -75,7 +87,7 @@
 								<br>
 								<div class="center" style="text-align: center;">
 									<input type="hidden" name="ok" id="ok" value="false">
-									<input type="button" class="btn btn-primary" value="Войти" onclick="if(!storeKeyLocally()){return false;};this.form.submit();"> или <a href="reg.html">Зарегистрироваться по инвайт-коду</a>
+									<input type="button" class="btn btn-primary" value="Войти" onclick="storeKeyLocally();">
 								</div>
 						</form>
 					</div>
@@ -96,97 +108,41 @@
 									</li>	
 									<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="active">
 										<span itemprop="name">
-											Популярное				
+											Регистрация по инвайт-коду				
 										</span>
 										<meta itemprop="position" content="1">
 									</li>
 								</ol>
-																																																							<div id="j_component">
-									<div style="margin: auto; text-align: -webkit-center;">
-									<img style="margin: auto;" id="loader" src="images/11.gif">
-									</div>
-									<script language="javascript" type="text/javascript">
-										var login = localStorage.getItem('login');
-										if(localStorage.getItem(login))
-										{
-											document.getElementById('login_div').style = 'display: none;';
-											document.getElementById('avatar').style = 'display:block';
-										}
-										else
-										{
-											document.getElementById('avatar').style = 'display:none';
-										}
-										getDiscussionsPopular();
-									</script>
-
-									<div class="row">
-										<div class="col-lg-5" id="x5">
-											<nav class="">
-												<div class="collapse navbar-collapse" id="items_collapsable_wrapper">
-													<div id="items_list_wrapper" class="row">
-													</div>
-												</div>
-											</nav>
+								<div id="j_component">									
+									<form action="index.html" method="post" name="postForm" id="postForm" class="form-validate col-sm-10 col-sm-offset-1">
+										<div class="form-group1">
+											<label for="newAccountName">Логин нового аккаунта<span style="color: red;">*</span> </label>
+											<input type="text" class="form-control required" id="new_account_name" name="newAccountName" required="required"> 
 										</div>
-										<div class="col-lg-7" id="x7">
-											<div id="item_content_wrapper">
-												<div style="margin: auto; text-align: -webkit-center;">
-													<img style="display: none;" id="content_loader" src="images/11.gif">
-												</div>
-												
-												<div id="query_header">
-												</div>
-												
-												<div id="qq">
-												</div>
-
-												<form action="" id="vote_form" style="display: none;">
-													<div style="float:left;">
-														<input type="range" name="power" max="100" step="1" value="100" style="width: 240px; margin-top: 10px; margin-right: 10px;" onchange="document.getElementById('vpower').innerHTML = this.value"> 
-													</div>			
-													<div style="float:left;">
-														<button type="button" onClick="votePost(this.form.power.value, this.form.permlink.value, this.form.author.value); ReblogUpvote(this.form.power.value, this.form.permlink.value, this.form.author.value); return false;">оценить на <span id="vpower"">100</span>%</button>
-													</div>
-													<input type="hidden" name="permlink" value="">
-													<input type="hidden" name="author" value="">
-													<div style="float:center;">
-														<button type="button" onClick="maximumVote(this.form.permlink.value, this.form.author.value); return false;">оценить на всю мою долю в VIZ</button>
-													</div>
-													<div style="float:right;">
-														<button type="button" class="btn btn-link" title="Это действие влияет на видимость поста. Вплоть до его скрытия." onClick="votePost(-this.form.power.value, this.form.permlink.value, this.form.author.value); return false;"><img src="images/flag.png"></button>
-													</div>			
-												</form>
-												<br>
-												
-												<div id="my_vote">
-												</div>																								
-														
-												<div id="voters">
-												</div>
-												<br>
-												<br>
-												<div style="margin: auto; text-align: -webkit-center; display: none;">
-														Ожидаем загрузки комментариев...
-														<img style="" id="answers_loader" src="images/11.gif">
-													</div>
-												<div id="answers_list">			
-												</div>		
-												<div id="answer" style="display: none;">
-													<div class="well">
-														<div class="form-group">
-															<label for="editor">Комментарий</label>
-															<textarea id="editor" style="width: 100%;" rows="5"></textarea>						
-														</div>
-														<div class="form-group text-center">
-															<button type="button" class="btn btn-info" onclick="sendMainComment(document.getElementById('editor').value, this);">Отправить</button>
-														</div>
-													</div>
-												</div>		
-											</div>
+										<div class="form-group1">
+											<label for="inviteSecret">Инвайт-код:<span style="color: red;">*</span> </label>
+											<input type="text" class="form-control required" id="invite_secret" name="inviteSecret" required="required" value=""> 
 										</div>
-									</div>
-								</div>																																
-							</div>
+										<div class="form-group1">
+											<label for="newAccountKey">Ключ (Будет и owner, и постинг, и активным ключом аккаунта):<span style="color: red;">*</span> </label>
+<input type="button" value="Генерировать" onclick="new_private_gen();">
+											<input type="text" clas
+											s="form-control required" id="new_account_key" name="newAccountKey" readonly required="required">
+<input type="button" id="new_private_copy" value="Скопировать в буфер обмена"
+</div>	
+										<div class="form-group1">
+<hr>
+<p><strong>ВНИМАНИЕ: запишите придуманный ключ в нескольких местах - его нельзя будет восстановить, если потеряете!</strong></p>
+<hr>
+</div>
+
+										<div class="form-group1">
+											<br>
+											<input type="button" class="btn btn-primary" value="Регистрировать" 
+												onclick="send_reg_data();">
+										</div>										
+								</div>
+							</div>										
 						</div>
 					</section>
 				</div>
@@ -195,7 +151,7 @@
 					<footer id="footer_wrapper">
 						<div id="footer" class="padding_tb20 row">
 							<div class="col-sm-12">
-								<div class="footer2">Разработка и дизайн клиента - <a href="user.html/\?author=captain">@captain</a></div>
+								<div class="footer2">Разработка и дизайн клиента - <a href="user.html?author=captain">@captain</a></div>
 							</div>
 						</div>
 					</footer>
@@ -203,8 +159,54 @@
 			</div>
 		</div>
 		<div class="clearfix"></div>
-		<script>
-			Init();
+		<script type="text/javascript">
+			var invite_code = getUrlVars()['invite'];
+if (invite_code) {
+document.getElementById('invite_secret').value = invite_code;
+$('#invite_secret').prop('readonly', true);
+}
+
+function pass_gen(){
+	let length=100;
+	let charset='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-=_:;.,@!^&*$';
+	let ret='';
+	for (var i=0,n=charset.length;i<length;++i){
+		ret+=charset.charAt(Math.floor(Math.random()*n));
+	}
+	let wif=viz.auth.toWif('',ret,'')
+	return wif;
+}
+
+function new_private_gen() {
+	$('#new_account_key').val(pass_gen());
+}
+
+	function send_reg_data() {
+var new_account_key_id = $("#new_account_key").val();
+		var resultWifToPublic = viz.auth.wifToPublic();
+	console.log('wifToPublic', resultWifToPublic);
+		inviteRegPage(document.getElementById('new_account_name').value, document.getElementById('invite_secret').value, resultWifToPublic, new_account_key_id);
+}
+
+//цепляем событие на onclick кнопки
+var button = document.getElementById('new_private_copy');
+button.addEventListener('click', function () {
+  //нашли наш контейнер
+  var ta = document.querySelector('#new_account_key');
+    ta.focus();
+    ta.setSelectionRange(0, ta.value.length);
+ 
+  try { 
+    document.execCommand('copy'); 
+  } catch(err) { 
+    console.log('Can`t copy, boss'); 
+  } 
+  //очистим выделение текста, чтобы пользователь не парился
+  window.getSelection().removeAllRanges();
+});
+
+
+Init();
 			mainMenu();
 		</script>
 	</body>
