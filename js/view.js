@@ -1141,7 +1141,7 @@ function Init()
 	{
 		user.login = localStorage.getItem('login');
 		jQuery('#login_div').hide();
-		jQuery('#hello').html('Привет, @' + user.login);
+		jQuery('#hello').html('Привет, <a href="user.html?author=' + user.login + '" target="_blank">@' + user.login + '</a>');
 		getUserPower(user.login);
 		
 		//check options
