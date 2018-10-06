@@ -221,6 +221,11 @@ input[type=range]:focus::-ms-fill-upper {
 	height: 48px;
 }
 
+#energyHelp{
+	color: #333; 
+	text-align: left;
+}
+
 .ava_div {
     background-clip: border-box;
     background-origin: content-box;
