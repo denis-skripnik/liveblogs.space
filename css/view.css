@@ -216,9 +216,16 @@ input[type=range]:focus::-ms-fill-upper {
 }
 
 #avatar{
-	color: white; 
-	text-align: center; 
 	height: 48px;
+}
+
+#battery {
+color: white;
+text-align: center;
+}
+#hello {
+color: white;
+text-align: center;
 }
 
 #energyHelp{
