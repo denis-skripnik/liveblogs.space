@@ -1267,7 +1267,6 @@ var CHAIN_ENERGY_REGENERATION_SECONDS = 10000 / config_res.CHAIN_ENERGY_REGENERA
 <li class="item-120 default current" id="post"><a href="post.html" >Новый пост</a></li>\
 <li class="item-120 default current" id="wallet"><a href="wallet.html" >Кошелёк</a></li>\
 <li class="item-120 default current" id="options" ><a href="options.html">Настройки</a></li><li class="item-120 default current" id="exit" ><a href="#" onClick="localStorage.clear(); location.reload();">Выход</a></li>\
-<li class="item-141 divider"><span class="separator ">разделитель</span></li>\
 </ul>\
 </div>\
 						</div>\
