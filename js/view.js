@@ -1378,7 +1378,7 @@ var CHAIN_ENERGY_REGENERATION_SECONDS = 10000 / config_res.CHAIN_ENERGY_REGENERA
 <div class="collapse navbar-collapse" id="collapse_navbar">\
 <ul class="nav navbar-nav">\
 <li class="item-120 default current active" id="blog"><a href="blog.html" >Мой блог</a></li>\
-<li class="item-120 default current" id="feed"><a href="followers-posts.html" >Посты друзей</a></li>\
+<li class="item-120 default current" id="feed"><a href="following-posts.html" >Посты друзей</a></li>\
 <li class="item-120 default current" id="feed"><a href="reblogs.html" >Рекомендации друзей</a></li>\
 <li class="item-120 default current" id="post"><a href="post.html" >Новый пост</a></li>\
 <li class="item-120 default current" id="wallet"><a href="wallet.html" >Кошелёк</a></li>\
