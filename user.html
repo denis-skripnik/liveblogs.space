@@ -33,6 +33,7 @@
 		<script src="js/moment.js" type="text/javascript"></script>
 		<script src="js/vizhelper.js" type="text/javascript"></script>
 		
+		<script src="js/xss.min.js" type="text/javascript"></script>
 		<script src="js/view.js" type="text/javascript"></script>
 		<script language="javascript" type="text/javascript"></script>
 	</head>
@@ -107,7 +108,7 @@
 									</div>
 									<script language="javascript" type="text/javascript">
 										var author = getUrlVars()['author'];
-$('title').html('Пользователь ' + author + ' | Live blogs space');
+										$('title').html('Пользователь ' + author + ' | Live blogs space');
 										getDiscussionsByBlog(author);
 										jQuery('#username').html(author);
 viz.api.getAccounts([author], function(err, result) {
