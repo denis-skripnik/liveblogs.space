@@ -13,19 +13,19 @@
 		<link href="favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 		<link href="css/view.css" rel="stylesheet" type="text/css" />
 		<!-- Latest compiled and minified CSS -->
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css" />
 		<link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 		<link href="css/bootstrap/bootstrap-social.css" rel="stylesheet" type="text/css" />
-		<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/3.0.0/css/fileinput.css" rel="stylesheet" type="text/css" />
-		<link href="https://fonts.googleapis.com/css?family=Exo+2:400,700|Play&subset=latin,cyrillic" rel="stylesheet" type="text/css" />
+		<link href="css/bootstrap/fileinput.css" rel="stylesheet" type="text/css" />
+		<link href="css/font-exo-cyrillic.css" rel="stylesheet" type="text/css" />
 		<link href="css/1vtemplate.css" rel="stylesheet" type="text/css" />
 		
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>		
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/sjcl/1.0.7/sjcl.min.js" type="text/javascript"></script>
-		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/3.0.0/js/fileinput.min.js" type="text/javascript"></script>
+		<script src="js/lib/jquery.min.js"></script>
+		<script src="js/lib/jquery-ui.min.js"></script>		
+		<script src="js/lib/sjcl.min.js" type="text/javascript"></script>
+		<script src="js/lib/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+		<script src="js/lib/fileinput.min.js" type="text/javascript"></script>
 		<script src="js/1vtemplate.js" type="text/javascript"></script>
 
 		<script src="https://cdn.jsdelivr.net/npm/viz-world-js@0.9.9/dist/viz.min.js" type="text/javascript"></script>
@@ -133,12 +133,17 @@
 													<img style="display: none;" id="content_loader" src="images/11.gif">
 												</div>
 												
-												<div id="query_header">
-												</div>
+												<div id="query_header"><h1>Кошелёк</h1></div>
 												
-												<div id="qq">
+												<div id="active_key_form">
+<form>
+<p><label for="active">Введите приватный активный ключ (Если регистрировались по инвайту, он совпадает с постинг ключом, при помощи которого авторизовались в liveblogs.space). Внимание: он никуда не передаётся, все операции выполняются у вас на компьютере, в вашем браузере.</label></p>
+<p><input type="password" name="active" id="this_active"></p>
+<input type="button" value="Войти в кошелёк" onclick="walletAuth();">
+</form>
 												</div>
-
+<div id="main_wallet></div>
+												
 										</div>
 									</div>
 								</div>																																
@@ -162,7 +167,10 @@
 		<script>
 			Init();
 			mainMenu();
-			walletView(login);
+function walletAuth() {
+var active_key = $('#this_active').val();
+console.log(login + ', ' + active_key);
+} // end walletAuth
 		</script>
 	</body>
 </html>

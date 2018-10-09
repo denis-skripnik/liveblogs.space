@@ -8,7 +8,7 @@
 		<meta name="rights" content="(с) Joopiter.ru и denis-skripnik.name" />
 		<meta name="description" content="Live blogs space - web-клиент для блокчейна VIZ, платформы для блоггеров. Его главным преимуществом является то, что он локальный, а также имеет свою экономику распределения вознаграждений (СМ. about.html)" />
 		
-		<title>Создать пост | Live blogs space</title>
+		<title>Изменить профиль | Live blogs space</title>
 		
 		<link href="favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 		<link href="css/view.css" rel="stylesheet" type="text/css" />
@@ -108,43 +108,64 @@
 									</li>	
 									<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="active">
 										<span itemprop="name">
-											Новый пост				
+											Изменение профиля				
 										</span>
 										<meta itemprop="position" content="1">
 									</li>
 								</ol>
-																																																							<div id="j_component">									
-<p><strong>70% авторских выплат пойдёт в SHARES, 30% - в VIZ. 1% прибыли отдаётся denis-skripnik.</strong></p>
-									<form action="index.html" method="post" name="postForm" id="postForm" class="form-validate col-sm-10 col-sm-offset-1">
-										<div class="form-group1">
-											<label for="title">Название<span style="color: red;">*</span> </label>
-											<input type="text" class="form-control required" id="title" name="title" required="required"> 
+								<div id="j_component">									
+									<form class="profile-update" action="" name="postForm" method="POST" id="postForm" onsubmit="return false">
+									<div class="form-group1">
+											<p><label for="name">Отображаемое имя (публичное)</label></p>
+											<p><input type="text" class="form-control required" placeholder="Псевдоним или Имя Фамилия" name="name"></p>
 										</div>
 										<div class="form-group1">
-											<label for="image">Картинка к посту (укажите URL)</label> (не дублируется в посте, показывается только в ленте)
-											<input type="text" class="form-control required" id="image" name="image"> 
+											<p><label for="gender">Пол</label></p>
+										<p><select class="form-control required" name="gender"><option value="">Не указан</option><option value="male">Мужской</option><option value="female">Женский</option></select></p>
 										</div>
 										<div class="form-group1">
-											<label for="title">Текст статьи<span style="color: red;">*</span> </label>
-										</div>
-																																																									<div class="form-group1">
-											<div id="editormd">												
-												<textarea style="display:none;" id="contentbody"></textarea>
-											</div>
-										</div>
-										
-										<div class="form-group1">
-											<label for="tags">Тэги, через пробел<span style="color: red;">*</span> </label>
-											<input type="text" class="form-control required" id="tags" name="tags" required="required"> 
-										</div>	
-										<div class="form-group1">
-											<a href="https://postimages.org/" target="_blank">Загрузка картинок...</a> 
-										</div>											
+											<p><label for="location">Местоположение</label></p>
+											<p><input type="text" class="form-control required" placeholder="Страна, Область, Город" name="location"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="about">О блоге, авторе, проекте</label></p>
+	<p><input type="text" class="form-control required" placeholder="" name="about"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="website">Веб-сайт (Если есть)</label></p>
+	<p><input type="text" class="form-control required" placeholder="http://" name="website"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="telegram">Телеграм</label></p>
+	<p><input type="text" class="form-control required" placeholder="Логин в Telegram" name="telegram"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="discord">Дискорд:</label></p>
+	<p><input type="text" class="form-control required" placeholder="Логин в Discord" name="discord"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="vkontakte">Вконтакте</label></p>
+	<p><input type="text" class="form-control required" placeholder="Логин VK.com" name="vkontakte"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="facebook">Facebook</label></p>
+	<p><input type="text" class="form-control required" placeholder="Логин в Facebook" name="facebook"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="twitter">Твиттер</label></p>
+	<p><input type="text" class="form-control required" placeholder="Логин в Twitter" name="twitter"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="skype">Скайп:</label></p>
+	<p><input type="text" class="form-control required" placeholder="Логин в Скайпе" name="skype"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="avatar">Аватарка (соотношение сторон 1:1, квадратная)</label></p>
+	<p><input type="text" class="form-control required" placeholder="URL-изображения" name="avatar"> <span class="action-button profile-update-upload-avatar">Загрузить</span></p>
+</div>	
 										<div class="form-group1">
 											<br>
-											<input type="button" class="btn btn-primary" value="Отправить" 
-												onclick="postBlog(document.getElementById('title').value,
-													document.getElementById('tags').value);">
+											<input type="button" onclick="	profile_save();" value="Сохранить профиль">
 										</div>										
 								</div>
 							</div>										
@@ -165,116 +186,97 @@
 		</div>
 		<div class="clearfix"></div>
 		<script type="text/javascript">
-			
-			//jQuery(function() {
-				var editor = editormd("editormd", {
-					path : "js/lib/", // Autoload modules mode, codemirror, marked... dependents libs path
-					height: "400px",
-					pluginPath: "js/plugins/",
-					autoLoadModules      : true,  
-					placeholder          : "Что же, пора что-то написать...",
-					emoji                : true,
-					flowChart            : true,
-					lang : {
-						name        : "ru-ru",
-						description : "Open source online Markdown editor.",
-						tocTitle    : "Документ",
-						toolbar     : {
-							undo             : "Отмена （Ctrl+Z）",
-							redo             : "Повтор（Ctrl+Y）",
-							bold             : "Жирно",
-							del              : "Зачеркнуто",
-							italic           : "Курсив",
-							quote            : "Цитата",
-							ucwords          : "Капитализировать",
-							uppercase        : "Верхний регистр",
-							lowercase        : "Нижний регистр",
-							h1               : "Заголовок 1",
-							h2               : "Заголовок 2",
-							h3               : "Заголовок 3",
-							h4               : "Заголовок 4",
-							h5               : "Заголовок 5",
-							h6               : "Заголовок 6",
-							"list-ul"        : "Список",
-							"list-ol"        : "Нумерованный список",
-							hr               : "Разделитель",
-							link             : "Ссылка",
-							"reference-link" : "Якорь",
-							image            : "Картинка",
-							code             : "Код",
-							"preformatted-text" : "Форматированный текст",
-							"code-block"     : "Блок кода",
-							table            : "Таблица",
-							datetime         : "Дата и время",
-							emoji            : "Emoji",
-							"html-entities"  : "HTML",
-							pagebreak        : "Перенос строки",
-							"goto-line"      : "Переход",
-							watch            : "Скрыть предпросмотр",
-							unwatch          : "Показать предпросмотра",
-							preview          : "Предпросмотр",
-							fullscreen       : "Полный экран",
-							clear            : "Очистить",
-							search           : "Поиск",
-							help             : "Помощь",
-							info             : "Инфо" + editormd.title
-							},
-						buttons : {
-							enter  : "Да",
-							cancel : "Нет",
-							close  : "Закрыть"
-						},
-						dialog : {
-							link : {
-								title    : "Заголовок",
-								url      : "URL",
-								urlTitle : "title",
-								urlEmpty : "Пустой"
-							},
-							referenceLink : {
-								title    : "Ссылка",
-								name     : "Название",
-								url      : "Линк",
-								urlId    : "ID",
-								urlTitle : "Заголовок",
-								nameEmpty: "Error: Ссылка не может быть пустой.",
-								idEmpty  : "Error: Заполните ID.",
-								urlEmpty : "Error: Заполните URL."
-							},
-							image : {
-								title    : "Изображение",
-								url      : "Адрес",
-								link     : "Ссылка",
-								alt      : "Название",
-								uploadButton     : "Загрузить",
-								imageURLEmpty    : "Error: Заполните URL.",
-								uploadFileEmpty  : "Error: upload pictures cannot be empty!",
-								formatNotAllowed : "Error: only allows to upload pictures file, upload allowed image file format:"
-							},
-							preformattedText : {
-								title             : "Код", 
-								emptyAlert        : "Error: Please fill in the Preformatted text or content of the codes."
-							},
-							codeBlock : {
-								title             : "Блок кода",         
-								selectLabel       : "Языки: ",
-								selectDefaultText : "выберите язык...",
-								otherLanguage     : "Другой язык",
-								unselectedLanguageAlert : "Error: Please select the code language.",
-								codeEmptyAlert    : "Error: Please fill in the code content."
-							},
-							htmlEntities : {
-								title : "HTML Вставки"
-							},
-							help : {
-								title : "Помощь"
-							}
-						}
+Init();
+			mainMenu();
+
+	if(0<$('.profile-update').length){
+		var test_user=user.login;
+	var key = localStorage.getItem(test_user);
+		viz.api.getAccounts([test_user],function(err,response){
+			if(!err){
+				let json_metadata=response[0].json_metadata;
+				let metadata;
+				if(''==json_metadata){
+					metadata={};
+				}
+				else{
+					metadata=JSON.parse(json_metadata);
+				}
+
+				if(typeof metadata.profile == 'undefined'){
+					metadata.profile={};
+				}
+				if(typeof metadata.profile.about !== 'undefined'){
+					$('input[name=about]').val(metadata.profile.about);
+				}
+				if(typeof metadata.profile.name !== 'undefined'){
+					$('input[name=name]').val(metadata.profile.name);
+				}
+				if(typeof metadata.profile.location !== 'undefined'){
+					$('input[name=location]').val(metadata.profile.location);
+				}
+				if(typeof metadata.profile.website !== 'undefined'){
+					$('input[name=website]').val(metadata.profile.website);
+				}
+				if(typeof metadata.profile.profile_image !== 'undefined'){
+					$('input[name=avatar]').val(metadata.profile.profile_image);
+				}
+				if(typeof metadata.profile.telegram !== 'undefined'){
+					$('input[name=telegram]').val(metadata.profile.telegram);
+				}
+				if(typeof metadata.profile.discord !== 'undefined'){
+					$('input[name=discord]').val(metadata.profile.discord);
+				}
+				if(typeof metadata.profile.vkontakte !== 'undefined'){
+					$('input[name=vkontakte]').val(metadata.profile.vkontakte);
+				}
+				if(typeof metadata.profile.facebook !== 'undefined'){
+					$('input[name=facebook]').val(metadata.profile.facebook);
+				}
+				if(typeof metadata.profile.twitter !== 'undefined'){
+					$('input[name=twitter]').val(metadata.profile.twitter);
+				}
+				if(typeof metadata.profile.skype !== 'undefined'){
+					$('input[name=skype]').val(metadata.profile.telegram);
+				}
+				if(typeof metadata.profile.gender !== 'undefined'){
+					$('select[name=gender]').val(metadata.profile.gender);
+				}
+			}
+			else{
+console.log(err);
+			}
+		});
+	}
+
+	function profile_save(){
+		var test_user=user.login;
+	var key = localStorage.getItem(test_user);
+				let metadata;
+				metadata.profile.about=$('input[name=about]').val();
+				metadata.profile.name=$('input[name=name]').val();
+				metadata.profile.location=$('input[name=location]').val();
+				metadata.profile.website=$('input[name=website]').val();
+				metadata.profile.profile_image=$('input[name=avatar]').val();
+				metadata.profile.telegram=$('input[name=telegram]').val();
+				metadata.profile.discord=$('input[name=discord]').val();
+								metadata.profile.vkontakte=$('input[name=vkontakte]').val();
+												metadata.profile.facebook=$('input[name=facebook]').val();
+																metadata.profile.twitter=$('input[name=twitter]').val();
+																				metadata.profile.skype=$('input[name=skype]').val();
+				metadata.profile.gender=$('.profile-update select[name=gender]').val();
+
+				json_metadata=JSON.stringify(metadata);
+				console.log(json_metadata);
+				viz.broadcast.accountMetadata(key,test_user,json_metadata,function(err, result){
+					if(!err){
+						console.log('Ок. Ваш профиль сохранён.');
+					}
+					else{
+						console.log(err);
 					}
 				});
-			//});
-			Init();
-			mainMenu();
+		}
 		</script>
 	</body>
 </html>

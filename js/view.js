@@ -4,7 +4,7 @@ if(localStorage.getItem('node'))
 }
 else
 {
-	viz.config.set('websocket','wss://testnet.viz.world/');
+	viz.config.set('websocket','wss://ws.viz.ropox.tools');
 }
 var globalVars = new Object();
 var article = new Object();
@@ -229,7 +229,7 @@ function votePost(power, permlink, author)
 		}
 
 function maximumVote(permlink, author) {
-var q = window.confirm('Это действие приведет к голосованию со 100% силой, но при этом вы израсходуете 20% энергии на восстановление которой потребуется 24 часа, автор получит больше выплаты. Чтобы узнать, что такое "энергия", нажмите на ссылку "Твоя энергия" вверху страницы. Вы действительно хотите сделать его?')
+var q = window.confirm('Это действие приведет к голосованию со 100% силой, но при этом вы израсходуете 20% энергии на восстановление которой потребуется 24 часа, автор получит больше выплаты. Также будет сделан репост. Чтобы узнать, что такое "энергия", нажмите на ссылку "Твоя энергия" вверху страницы. Вы действительно хотите сделать его?')
 if (q === true) {
 votePost(2000, permlink, author); ReblogUpvote(100, permlink, author);
 }
@@ -294,6 +294,7 @@ var shares_payout_value = parseFloat(operation.shares_payout_value)+parseFloat(o
 var beneficiary_payout_value = parseFloat(operation.beneficiary_payout_value)*0.02439024390243902;
 		vl = 'авторских: ' + operation.payout_value + ' и ' + shares_payout_value.toFixed(6) + ' SHARES, ' + 'Кураторских: ' + operation.curator_payout_value + ', Бенефициарских: ' + beneficiary_payout_value.toFixed(6) + ' SHARES';
 	}
+	var content_body = operation.body;
 
 	var tags = '';
 	if(typeof metadata.tags !== undefined)
@@ -324,7 +325,13 @@ if (metadata.tags[i] !== 'liveblogs') {
 		var s = 'onClick="getContentX(\''+operation.permlink.trim() +'\', \''+operation.author.trim() +'\');"';
 		var h = 'javascript:void(0)';
 	}
-	q_div.innerHTML = '<div class="q_header_wrapper"><h3><a href="'+h+'" '+s+'>'+ title + '</a></h3></div>' +  dt +' - Автор: <a href="user.html?author='+ author +'" title="Все посты пользователя">@' + author + '</a>' + '<br/> Голосов <strong>' + votes + '</strong> на сумму <strong>' + vl + '</strong>  Отдаёт кураторам: <strong>' + curation_percent + '%</strong> выплаты<br/>' + tags;
+if (user.login === operation.author) {
+var edit_post = '(<a href="edit.html?author=' + operation.author + '&permlink=' + operation.permlink + '" target="_blank">Редактировать</a>)';
+} else {
+var edit_post = '';
+}
+
+	q_div.innerHTML = '<div class="q_header_wrapper"><h3><a href="'+h+'" '+s+'>'+ title + '</a>' + edit_post + '</h3></div>' +  dt +' - Автор: <a href="user.html?author='+ author +'" title="Все посты пользователя">@' + author + '</a>' + '<br/> Голосов <strong>' + votes + '</strong> на сумму <strong>' + vl + '</strong>  Отдаёт кураторам: <strong>' + curation_percent + '%</strong> выплаты<br/>' + tags + '<div class="anons_body">' + content_body + '</div>';
 	
 	var clearFix = document.createElement("div");
 	clearFix.classList.add("clearFix");
@@ -656,16 +663,17 @@ function getContentX(permlink, author)
 			document.getElementById('content_loader').style = 'display:none'; 
 			document.getElementById('loader').style = 'display:none'; 
 		}
+
 		var result = data;
 		marked.setOptions({
 		  renderer: new marked.Renderer(),
 		  gfm: true,
 		  tables: true,
-		  breaks: false,
+		  breaks: true,
 		  pedantic: false,
 		  sanitize: false,
 		  smartLists: true,
-		  smartypants: false
+		  smartypants: false,
 		});
 		article.text = result.body;
 		var main_div = document.getElementById('qq');
@@ -679,8 +687,31 @@ function getContentX(permlink, author)
 	//	console.log(newbody);
 		newbody = prepareContent(newbody);
 		
+var options = {
+ whiteList: {
+	iframe: ['src', 'frameborder', 'allow', 'allowfullscreen'],
+			  a: ['href', 'title', 'target'],
+			  table: [],
+			  img: ['src', 'title', 'alt'],
+			  td: [],
+th: [],
+tr: [],
+h1: [],
+h2: [],
+h3: [],
+h4: [],
+h5: [],
+h6: [],
+br: [],
+hr: [],
+blockquote: [],
+p: [],
+em: [],
+small: []
+}
+};
 
-		main_div.innerHTML = newbody;
+		   main_div.innerHTML = filterXSS(newbody, options);
 
 		var date = new Date(result.created);
 		var offset = date.getTimezoneOffset();
@@ -744,7 +775,14 @@ var vyplata = result.cashout_time;
 		}
 		
 		var header = document.createElement("div");
-		header.innerHTML = "<h1><a href='show.html?author="+ author +"&permlink="+ permlink +"'>"+result.title+"</a><br><small>"+dt+" Автор - <a href='user.html?author="+ author +"' title='Все посты пользователя'>@"+result.author+"</a> "+ follow + "</small></h1>" + '<p class="help-text">Голосов <strong>'+result.active_votes.length+'</strong> на сумму <strong>'+vl+'</strong>  выплата '+getCommentDate(vyplata)+'  Отдаёт кураторам: <strong>'+curation_percent+'%</strong> от выплаты<br/>' + tags + '</p>';
+		if (user.login === author) {
+			var edit_post = '(<a href="edit.html?author=' + author + '&permlink=' + permlink + '" target="_blank">Редактировать</a>)';
+			} else {
+			var edit_post = '';
+			}
+			history.pushState('', '', 'show.html?author=' + author + '&permlink=' + permlink);
+$('title').html(result.title + ' | Live blogs space');
+			header.innerHTML = "<h1><a href='show.html?author="+ author +"&permlink="+ permlink +"'>"+result.title+"</a>" + edit_post + "<br><small>"+dt+" Автор - <a href='user.html?author="+ author +"' title='Все посты пользователя'>@"+result.author+"</a> "+ follow + "</small></h1>" + '<p class="help-text">Голосов <strong>'+result.active_votes.length+'</strong> на сумму <strong>'+vl+'</strong>  выплата '+getCommentDate(vyplata)+'  Отдаёт кураторам: <strong>'+curation_percent+'%</strong> от выплаты<br/>' + tags + '</p>';
 		
 		var ava = document.createElement("div");
 		ava.style.float = 'left';
@@ -916,17 +954,22 @@ function addComentX(operation)
 	actions.style.textAlign = 'right';
 	actions.style.marginBottom = '5px';
 	
+	var action_edit = document.createElement("div");
+	action_edit.style.textAlign = 'left';
+	action_edit.style.marginBottom = '5px';
+
 	var dt = getCommentDate(operation.created);
 	var ava = document.createElement("div");
 	ava.style.float = 'left';
 		
-	header.innerHTML = "<div><h3>"+operation.title+" <small>"+dt+" Автор - <a href='user.html?author="+operation.author+"' title='Все посты пользователя'>@"+operation.author+'</a></small></h3></div>'; 
+	header.innerHTML = "<div><h3>"+operation.title+" <small>"+dt+" Автор - <a href='user.html?author="+operation.author+"' title='Все посты пользователя'>@"+operation.author+'</a></small></h3></div>';
 	main_div.appendChild(header);
 	header.appendChild(ava);
 		
 	var answer = document.createElement("div");
 	answer.classList.add("panel-body");
-	answer.innerHTML = marked(operation.body);
+	answer.id = 'body_' + operation.permlink.trim();
+		answer.innerHTML = marked(operation.body);
 	if(isLoggedIn())
 	{
 		actions.innerHTML = '<a href="javascript:void(0);" onClick="document.getElementById(\'id_'+operation.permlink+'\').style.display = \'block\'; this.style.display = \'none\';" class="reply">Ответить</a>';
@@ -936,9 +979,19 @@ function addComentX(operation)
 		send.margin = '8px';
 		send.id = 'id_' + operation.permlink.trim();
 		actions.appendChild(send);
+if (user.login === operation.author) {
+		action_edit.innerHTML = '<a href="javascript:void(0);" onClick="document.getElementById(\'edit_'+operation.permlink+'\').style.display = \'block\'; this.style.display = \'inline\';" class="edit">редактировать</a>';
+		var send_edit = document.createElement("div");
+		send_edit.innerHTML = "<textarea id='editarea_"+operation.permlink+"' style='width: 92%; height: 100px; margin: 5px;'>" + operation.body + "</textarea><button onClick=\"editComment('"+operation.parent_author+"', '"+operation.parent_permlink+"', '"+operation.permlink+"', '"+operation.author+"', 'editarea_"+operation.permlink+"', this, true);\">Изменить</button>";
+		send_edit.style.display = 'none';
+		send_edit.margin = '8px';
+		send_edit.id = 'edit_' + operation.permlink.trim();
+		action_edit.appendChild(send_edit);
+	}
 	}
 	main_div.appendChild(answer);
 	main_div.appendChild(actions);
+	main_div.appendChild(action_edit);
 	if(isLoggedIn())
 	{
 		document.getElementById('answer').style = 'display: block';
@@ -1082,7 +1135,70 @@ function sendComment(permlink, author, txt_id, button, hide)
 	}
 }
 
-function sendMainComment(button)
+function editComment(parent_author, parent_permlink, permlink, author, txt_id, button, hide)
+{
+	var login = localStorage.getItem('login');
+	var text = document.getElementById(txt_id).value;
+	var dv = document.createElement('div');
+	dv.innerHTML = text;
+	var text = dv.textContent || dv.innerText || "";
+	var parts = explode( '-', permlink );
+	var pl = '';
+	for(var i = 0; i< parts.length - 1; i++)
+	{
+		if(i == 0)
+		{
+			pl += parts[i];
+		}
+		else{
+			pl += '-' + parts[i];
+		}
+		
+	}
+	var date = new Date();
+	var dt = date.getFullYear() + date.getMonth().toString() + date.getDate().toString()+ 't' + date.getHours().toString() + date.getMinutes().toString() + date.getSeconds().toString() + date.getMilliseconds().toString() + 'z';
+	if(text && login)
+	{
+		var key = getPostingKey();
+		if(key)
+		{
+			viz.broadcast.content(key,
+				parent_author,
+				parent_permlink,
+				author,
+				permlink,
+				'',
+				text,
+	5000,
+	'{"app":"liveblogs.space","format":"text"}',
+[],
+				function(err, result) {
+					console.log(err);
+					if(result)
+					{
+						jQuery('#body_' + permlink).html(marked(text));
+						console.log(result);
+						document.getElementById(txt_id).value = '';
+						if(hide)
+						{
+							document.getElementById(txt_id).style = 'display:none';
+							button.style = 'display:none';
+						}					
+					}
+					if(err)
+					{
+						console.log( err.payload.error.message);
+						//if(err.i.payload.data.code == 10)
+						{
+							alert('Ошибка при изменении. ' + err.payload.error.message);
+						}
+					}				
+				});			 
+			}		
+		}
+		}
+
+	function sendMainComment(button)
 {
 	sendComment(article.permlink, article.author, 'editor', button, false); 
 }
@@ -1392,7 +1508,7 @@ var full_tags = tags + " liveblogs";
 			});	
 }
 
-function editPostBlog(permlink, title, tags)
+function editPostBlog(author, permlink, title, tags)
 {
 	var image = jQuery('#image').val();
 	var key = getPostingKey();
@@ -1440,18 +1556,16 @@ var full_tags = tags + " liveblogs";
 	}
 	
 	console.log(permlink, tags, user.login, title, editor.getMarkdown().trim());
-	const benecs = [{account: user.login, weight:4000}];
-	if(user.login != "denis-skripnik") benecs.push({account: "denis-skripnik", weight:100});
 	viz.broadcast.content(key,
 			'',
 			'',
-			user.login,
+			author,
 			permlink,
 			title.trim(),
 			editor.getMarkdown().trim(),
 			5000,
 			'{"tags":["'+tags+'"], "app": "liveblogs.space", "format": "markdown"'+img+'}',
-			[[ 0, {"beneficiaries":benecs} ]],
+[],
 			function(err, result) {
 				if(err)
 				{
@@ -1476,11 +1590,6 @@ window.alert('Регистрация прошла успешно.\nВаш лог
 	else console.error(err);
   	});
 }
-
-function walletView(login) {
-jQuery('#query_header').html('<h1>Кошелёк</h1>');
-}
-
 
 function loadOptions()
 {
