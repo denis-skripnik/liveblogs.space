@@ -714,7 +714,8 @@ ul: [],
 ol: [],
 li: [],
 center: [],
-code: []
+code: [],
+del: []
 }
 };
 
