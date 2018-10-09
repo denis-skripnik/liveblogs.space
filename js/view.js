@@ -707,7 +707,13 @@ hr: [],
 blockquote: [],
 p: [],
 em: [],
-small: []
+small: [],
+b: [],
+strong: [],
+ul: [],
+ol: [],
+li: [],
+center: []
 }
 };
 
