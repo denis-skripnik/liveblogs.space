@@ -713,7 +713,8 @@ strong: [],
 ul: [],
 ol: [],
 li: [],
-center: []
+center: [],
+code: []
 }
 };
 
