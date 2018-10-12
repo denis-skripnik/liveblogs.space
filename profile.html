@@ -114,8 +114,10 @@
 									</li>
 								</ol>
 								<div id="j_component">									
+<h1>Изменение публичного профиля</h1>
 									<form class="profile-update" action="" name="postForm" method="POST" id="postForm" onsubmit="return false">
-									<div class="form-group1">
+<h2>Основное:</h2>
+										<div class="form-group1">
 											<p><label for="name">Отображаемое имя (публичное)</label></p>
 											<p><input type="text" class="form-control required" placeholder="Псевдоним или Имя Фамилия" name="name"></p>
 										</div>
@@ -128,9 +130,20 @@
 											<p><input type="text" class="form-control required" placeholder="Страна, Область, Город" name="location"></p>
 </div>	
 <div class="form-group1">
-	<p><label for="about">О блоге, авторе, проекте</label></p>
+	<p><label for="about">Об аккаунте</label></p>
 	<p><input type="text" class="form-control required" placeholder="" name="about"></p>
 </div>	
+<div class="form-group1">
+	<p><label for="Interests">Интересы (Перечисляйте через пробел):</label></p>
+	<p><input type="text" class="form-control required" placeholder="" name="Interests"></p>
+</div>
+<div class="form-group1">
+	<p><label for="avatar">Аватарка (соотношение сторон 1:1, квадратная)</label></p>
+	<p><input type="text" class="form-control required" placeholder="URL-изображения" name="avatar"></p>
+<div class="drdrop"><input type="button" id="addimg" data-storage="false" value="Загрузить аватарку" onclick="document.querySelector(&#39;#loadinp&#39;).click()" ></div><input id="loadinp" style="visibility: collapse; width: 0px;" type="file" onchange="upload(this.files[0])"><p></p>
+</div>	
+<h2 class="tt" onclick="spoiler('account_links'); return false">Ссылки (Соцсети, сайт и пр.) (Заполнять не обязательно)</h2>
+<div id="account_links" class="terms" style="display: none;">
 <div class="form-group1">
 	<p><label for="website">Веб-сайт (Если есть)</label></p>
 	<p><input type="text" class="form-control required" placeholder="http://" name="website"></p>
@@ -142,6 +155,10 @@
 <div class="form-group1">
 	<p><label for="discord">Дискорд:</label></p>
 	<p><input type="text" class="form-control required" placeholder="Логин в Discord" name="discord"></p>
+</div>	
+<div class="form-group1">
+	<p><label for="instagram">Инстаграм:</label></p>
+	<p><input type="text" class="form-control required" placeholder="Логин в Instagram" name="instagram"></p>
 </div>	
 <div class="form-group1">
 	<p><label for="vkontakte">Вконтакте</label></p>
@@ -159,10 +176,7 @@
 	<p><label for="skype">Скайп:</label></p>
 	<p><input type="text" class="form-control required" placeholder="Логин в Скайпе" name="skype"></p>
 </div>	
-<div class="form-group1">
-	<p><label for="avatar">Аватарка (соотношение сторон 1:1, квадратная)</label></p>
-	<p><input type="text" class="form-control required" placeholder="URL-изображения" name="avatar"> <span class="action-button profile-update-upload-avatar">Загрузить</span></p>
-</div>	
+</div>
 										<div class="form-group1">
 											<br>
 											<input type="button" onclick="	profile_save();" value="Сохранить профиль">
@@ -208,8 +222,11 @@ Init();
 				}
 				if(typeof metadata.profile.about !== 'undefined'){
 					$('input[name=about]').val(metadata.profile.about);
-				}
-				if(typeof metadata.profile.name !== 'undefined'){
+	}
+				if(typeof metadata.profile.interests !== 'undefined'){
+					$('input[name=Interests]').val(metadata.profile.interests.join(' '));
+	}
+	if(typeof metadata.profile.name !== 'undefined'){
 					$('input[name=name]').val(metadata.profile.name);
 				}
 				if(typeof metadata.profile.location !== 'undefined'){
@@ -227,6 +244,9 @@ Init();
 				if(typeof metadata.profile.discord !== 'undefined'){
 					$('input[name=discord]').val(metadata.profile.discord);
 				}
+				if(typeof metadata.profile.instagram !== 'undefined'){
+					$('input[name=instagram]').val(metadata.profile.instagram);
+				}
 				if(typeof metadata.profile.vkontakte !== 'undefined'){
 					$('input[name=vkontakte]').val(metadata.profile.vkontakte);
 				}
@@ -237,7 +257,7 @@ Init();
 					$('input[name=twitter]').val(metadata.profile.twitter);
 				}
 				if(typeof metadata.profile.skype !== 'undefined'){
-					$('input[name=skype]').val(metadata.profile.telegram);
+					$('input[name=skype]').val(metadata.profile.skype);
 				}
 				if(typeof metadata.profile.gender !== 'undefined'){
 					$('select[name=gender]').val(metadata.profile.gender);
@@ -252,14 +272,27 @@ console.log(err);
 	function profile_save(){
 		var test_user=user.login;
 	var key = localStorage.getItem(test_user);
-				let metadata;
+	var pk = sjcl.decrypt(test_user, key);
+
+	let 					metadata={};
+					metadata.profile={};
 				metadata.profile.about=$('input[name=about]').val();
+var fullInterests = $('input[name=Interests]').val();
+	var i = fullInterests.split(' ');
+	var i2 = [];
+	i.forEach(function(item){
+			i2.push(item.toLowerCase().trim());
+				
+	});
+	i2 = unique(i2);
+metadata.profile.interests = i2;
 				metadata.profile.name=$('input[name=name]').val();
 				metadata.profile.location=$('input[name=location]').val();
 				metadata.profile.website=$('input[name=website]').val();
 				metadata.profile.profile_image=$('input[name=avatar]').val();
 				metadata.profile.telegram=$('input[name=telegram]').val();
 				metadata.profile.discord=$('input[name=discord]').val();
+				metadata.profile.instagram=$('input[name=instagram]').val();
 								metadata.profile.vkontakte=$('input[name=vkontakte]').val();
 												metadata.profile.facebook=$('input[name=facebook]').val();
 																metadata.profile.twitter=$('input[name=twitter]').val();
@@ -268,15 +301,39 @@ console.log(err);
 
 				json_metadata=JSON.stringify(metadata);
 				console.log(json_metadata);
-				viz.broadcast.accountMetadata(key,test_user,json_metadata,function(err, result){
+				viz.broadcast.accountMetadata(pk,test_user,json_metadata,function(err, result){
 					if(!err){
-						console.log('Ок. Ваш профиль сохранён.');
+						window.alert('Ок. Ваш профиль сохранён.');
 					}
 					else{
-						console.log(err);
+						window.alert(err);
 					}
 				});
 		}
+   var featuredImage = [];
+       window.ondragover = function(e) {e.preventDefault()}
+       window.ondrop = function(e) {e.preventDefault(); upload(e.dataTransfer.files[0]); }
+   function upload(file) {
+       if (!file || !file.type.match(/image.*/)) return;
+       document.getElementById("addimg").classList.add('Загрузка');
+       var fd = new FormData();
+       fd.append("image", file);
+       var xhr = new XMLHttpRequest();
+       xhr.open("POST", "https://api.imgur.com/3/image.json");
+       xhr.onload = function() {
+           var imgurl = JSON.parse(xhr.responseText).data.link;
+   
+$('input[name=avatar]').val(imgurl);
+           featuredImage.push(imgurl);
+           document.getElementById("addimg").classList.add('hasload');
+   
+   
+       }
+       xhr.setRequestHeader('Authorization', 'Client-ID 372d5f766d47d1d');
+   
+       xhr.send(fd);
+   }
+
 		</script>
 	</body>
 </html>

@@ -135,11 +135,10 @@
 												
 												<div id="query_header"><h1>Кошелёк</h1></div>
 												
-												<div id="active_key_form">
+												<div id="wallet_page">
 <form>
-<p><label for="active">Введите приватный активный ключ (Если регистрировались по инвайту, он совпадает с постинг ключом, при помощи которого авторизовались в liveblogs.space). Внимание: он никуда не передаётся, все операции выполняются у вас на компьютере, в вашем браузере.</label></p>
-<p><input type="password" name="active" id="this_active"></p>
-<input type="button" value="Войти в кошелёк" onclick="walletAuth();">
+												<div id="unblock_form">
+</div>
 </form>
 												</div>
 <div id="main_wallet></div>
@@ -167,10 +166,16 @@
 		<script>
 			Init();
 			mainMenu();
-function walletAuth() {
-var active_key = $('#this_active').val();
-console.log(login + ', ' + active_key);
-} // end walletAuth
-		</script>
+if (!localStorage.getItem('ActiveKey') && active_key === '') {
+$('#unblock_form').css("display", "block");
+$('#unblock_form').html('<p><label for="active">Введите приватный активный ключ (Если регистрировались по инвайту, он совпадает с постинг ключом, при помощи которого авторизовались в liveblogs.space). Внимание: он никуда не передаётся, все операции выполняются у вас на компьютере, в вашем браузере.</label></p>\
+<p><input type="password" name="active" id="this_active"></p>\
+<p><input type="checkbox" id="isSaveActive"> Сохранить активный ключ</p>\
+<p align="center"><input type="button" value="Войти в кошелёк" onclick="walletAuth();"></p>');
+}  else if (localStorage.getItem('ActiveKey')) {
+jQuery("#wallet_page").append('<p align="center"><a onclick="localStorage.removeItem(\'ActiveKey\'\);     location.reload();">Удалить активный ключ</a></p>');
+walletData();
+}
+										</script>
 	</body>
 </html>

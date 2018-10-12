@@ -111,11 +111,104 @@
 										$('title').html('Пользователь ' + author + ' | Live blogs space');
 										getDiscussionsByBlog(author);
 										jQuery('#username').html(author);
-viz.api.getAccounts([author], function(err, result) {
+										viz.api.getAccounts([author], function(err, result) {
 //  console.log(err, result);
+if (result.length === 0) {
+console.log('ok');
+jQuery('#item_content_wrapper').html('<h1>Пользователь не найден!</h1>\
+<p align="center"><strong>Пожалуйста, проверьте его написание или, если вы перешли по ссылке с логином, обратитесь к тому, кто её разместил, чтобы он исправил и сообщил вам правильную.</strong></p>');
+}
+
   if (!err) {
-    result.forEach(function(item) {
-		var follow = '';
+  result.forEach(function(item) {
+	let json_metadata=item.json_metadata;
+				let metadata;
+				if(''==json_metadata){
+					metadata={};
+				}
+				else{
+					metadata=JSON.parse(json_metadata);
+				}
+
+				if(typeof metadata.profile == 'undefined'){
+					metadata.profile={};
+				}
+if (metadata.profile.about){
+$('#account_about').html(metadata.profile.about);
+}
+if(typeof metadata.profile.interests !== 'undefined'){
+if (metadata.profile.interests) {
+	var interests = metadata.profile.interests;
+var interest_element = '';
+var interests_list = '';
+interests.forEach(function(interest) {
+interest_element += '<a href="tag.html?tag=' + interest + '" target="_blank">' + interest + '</a>, ';
+interests_list += interest + ',';
+});
+interest_element = interest_element.replace(/,\s*$/, "");
+interests_list = interests_list.replace(/,\s*$/, "");
+$('#more_info_list').append('<li>Интересы (<a href="tag.html?tag=' + interests_list + '" target="_blank">Показать ленту постов со всеми интересами пользователя</a>):<br/>' + interest_element + '</li>');
+}
+	}
+				if(typeof metadata.profile.location !== 'undefined'){
+if (metadata.profile.location) {
+					$('#more_info_list').append('<li>Местоположение: ' + metadata.profile.location + '</li>');
+}
+				}
+				if(typeof metadata.profile.website !== 'undefined'){
+if (metadata.profile.website) {
+					$('#more_info_list').append('<li>Сайт: <a href="' + metadata.profile.website + '" target="_blank">' + metadata.profile.website + '</a></li>');
+}
+				}
+				if(typeof metadata.profile.telegram !== 'undefined'){
+if (metadata.profile.telegram) {
+					$('#more_info_list').append('<li>Telegram: <a href="https://t.me/' + metadata.profile.telegram + '" target="_blank">' + metadata.profile.telegram + '</a></li>');
+}
+				}
+				if(typeof metadata.profile.discord !== 'undefined'){
+if (metadata.profile.discord) {
+					$('#more_info_list').append('<li>Discord: ' + metadata.profile.discord + '</li>');
+}
+				}
+				if(typeof metadata.profile.instagram !== 'undefined'){
+if (metadata.profile.instagram) {
+					$('#more_info_list').append('<li>Instagram: <a href="https://www.instagram.com/' + metadata.profile.instagram + '" target="_blank">' + metadata.profile.instagram + '</a></li>');
+}
+				}
+				if(typeof metadata.profile.vkontakte !== 'undefined'){
+if (metadata.profile.vkontakte) {
+					$('#more_info_list').append('<li>Вконтакте: <a href="https://vk.com/' + metadata.profile.vkontakte + '" target="_blank">' + metadata.profile.vkontakte + '</a></li>');
+}
+				}
+				if(typeof metadata.profile.facebook !== 'undefined'){
+if (metadata.profile.facebook) {
+					$('#more_info_list').append('<li>Facebook: <a href="https://facebook.com/' + metadata.profile.facebook + '" target="_blank">' + metadata.profile.facebook + '</a></li>');
+}
+				}
+				if(typeof metadata.profile.twitter !== 'undefined'){
+if (metadata.profile.twitter) {
+					$('#more_info_list').append('<li>Твиттер: <a href="https://twitter.com/' + metadata.profile.twitter + '" target="_blank">' + metadata.profile.twitter + '</a></li>');
+}
+				}
+				if(typeof metadata.profile.skype !== 'undefined'){
+if (metadata.profile.skype) {
+					$('#more_info_list').append('<li>Скайп: <a href="skype:' + metadata.profile.skype + '" target="_blank">' + metadata.profile.skype + '</a></li>');
+}
+				}
+				if(typeof metadata.profile.gender !== 'undefined'){
+if (metadata.profile.gender) {
+if (metadata.profile.gender === 'male') {
+					var gender = 'мужской';
+} else if (metadata.profile.gender === 'female') {
+	var gender = 'женский';
+} else {
+	var gender = 'не указан';
+}
+$('#more_info_list').append('<li>Пол: ' + gender + '</li>');
+}
+				}
+
+				var follow = '';
 		if(isLoggedIn() && document.getElementById('vote_form'))
 		{
 			follow = '<span class="tt" onclick="spoiler(\'follow\'); return false">Действия...</span>';
@@ -135,8 +228,12 @@ viz.api.getAccounts([author], function(err, result) {
 			follow += "<button class='btn btn-danger' onClick='ignore(\""+author+"\"); style.display=\"none\"'>Игнорировать</button> ";
 			follow += '</span>';
 		}
+if (metadata.profile.name) {
+		jQuery("#account_name").html(metadata.profile.name+follow);
+} else {
 	jQuery("#account_name").html(author+follow);
-  jQuery("#account_content_count").html(item.subcontent_count);
+}
+		jQuery("#account_content_count").html(item.subcontent_count);
 jQuery("#account_vote_count").html(item.vote_count);
 jQuery("#account_post_count").html(item.content_count);
 jQuery("#account_balance").html(item.balance);
@@ -153,9 +250,23 @@ jQuery("#active_vesting_withdraw").html(' Выводится по <span id="acco
 }
 jQuery("#account_full_vesting_withdraw").html(full_vesting_withdraw);
 jQuery("#account_vesting_withdraw_rate").html(item.vesting_withdraw_rate);
+
+				var ava = document.getElementById("ava");
+						if(metadata.profile.profile_image != undefined)
+						{
+							ava.style.backgroundImage = "url('https://imgp.golos.io/256x256/"+metadata.profile.profile_image+"')";
+							
+						}else{
+							ava.style.backgroundImage = "url('images/ninja.png')";
+						}
+				ava.classList.add('ava_div');
+			
+
     });
   }
-  else console.error(err);
+  else {
+jQuery('#item_content_wrapper').html('<p align="center"><strong>Ошибка. Возможно, проблемы на стороне блокчейна.</strong></p>')
+ }
  });
 
 var type = 'delegated';
@@ -211,6 +322,7 @@ result.sort(function(a, b) {
       console.log('getFollowing', item);
 following_element += '<a href="user.html?author=' + item.following + '" target="_blank">@' + item.following + '</a>, ';
     });
+		following_element = following_element.replace(/,\s*$/, "");
 jQuery("#following_body").html(following_element);
 	}
   else console.error(err);
@@ -229,6 +341,7 @@ result.sort(function(a, b) {
       console.log('getFollowers', item);
 follower_element += '<a href="user.html?author=' + item.follower + '" target="_blank">@' + item.follower + '</a>, ';
     });
+		follower_element = follower_element.replace(/,\s*$/, "");
 jQuery("#followers_body").html(follower_element);
 	}
   else console.error(err);
@@ -250,8 +363,11 @@ jQuery("#followers_body").html(follower_element);
 													<img style="display: none;" id="content_loader" src="images/11.gif">
 												</div>
 												
-<h1 id="account_name"></h1>
+<div id="ava"></div>
+												<h1 id="account_name"></h1>
 <h2>Баланс: <span id="account_balance"></span> и <span id="account_vesting_shares"></span></h2>
+<div id="account_about"></div>
+<p align="center"><a id="transfer_to_this_user" target="_blank">Перевести VIZ пользователю</a></p>
 <ul>
 <li>Делегировано другим аккаунтам: <span id="account_delegated_vesting_shares"></span>;
 <div id="modal_delegated_vesting_shares" class="modal fade">
@@ -329,6 +445,11 @@ jQuery("#followers_body").html(follower_element);
 </li>
 </ul>
 
+<a class="tt" onclick="spoiler('more_info'); return false">Подробная информация о пользователе</a>
+<div id="more_info" class="terms" style="display: none;">
+<ul id="more_info_list">
+</ul>
+</div>
 												
 												<div id="query_header">
 												</div>
@@ -341,7 +462,7 @@ jQuery("#followers_body").html(follower_element);
 														<input type="range" name="power" max="100" step="1" value="100" style="width: 240px; margin-top: 10px; margin-right: 10px;" onchange="document.getElementById('vpower').innerHTML = this.value"> 
 													</div>			
 													<div style="float:left;">
-														<button type="button" onClick="votePost(this.form.power.value, this.form.permlink.value, this.form.author.value); return false;">оценить на <span id="vpower"">100</span>%</button>
+														<button type="button" onClick="votePost(this.form.power.value, this.form.permlink.value, this.form.author.value); return false;">оценить на <span id="vpower">100</span>%</button>
 													</div>
 													<input type="hidden" name="permlink" value="">
 													<input type="hidden" name="author" value="">
@@ -403,6 +524,12 @@ jQuery("#followers_body").html(follower_element);
 		<script>
 			Init();
 			mainMenu();
-		</script>
+										if (user.login !== author) {
+var transfer_url = 'wallet.html?to=' + author;
+ $('#transfer_to_this_user').attr('href',transfer_url);
+  } else {
+$('#transfer_to_this_user').css('display', 'none');
+ }
+			</script>
 	</body>
 </html>

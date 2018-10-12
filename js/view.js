@@ -14,6 +14,7 @@ var startPermlink;
 user.following = [];
 user.followers = [];
 //Init();
+var active_key = '';
 
 function removeChildrenRecursively(node)
 {
@@ -284,8 +285,12 @@ function AddBlockX(operation)
 	var pending_payout_value = operation.pending_payout_value;
 	var total_pending_payout_value = operation.total_pending_payout_value;
 var curation_percent = operation.curation_percent/100;
-	var votes = operation.active_votes.length;
-	var vl = total_pending_payout_value;
+if (operation.active_votes.length !== 0) {
+var votes = ' Голосов <strong>' + operation.active_votes.length + '</strong> ';
+} else if (operation.cashout_time === "1969-12-31T23:59:59") {
+	var votes = '';
+}
+var vl = total_pending_payout_value;
 	if(total_payout_value > total_pending_payout_value)
 	{
 		vl = total_payout_value;
@@ -331,7 +336,7 @@ var edit_post = '(<a href="edit.html?author=' + operation.author + '&permlink=' 
 var edit_post = '';
 }
 
-	q_div.innerHTML = '<div class="q_header_wrapper"><h3><a href="'+h+'" '+s+'>'+ title + '</a>' + edit_post + '</h3></div>' +  dt +' - Автор: <a href="user.html?author='+ author +'" title="Все посты пользователя">@' + author + '</a>' + '<br/> Голосов <strong>' + votes + '</strong> на сумму <strong>' + vl + '</strong>  Отдаёт кураторам: <strong>' + curation_percent + '%</strong> выплаты<br/>' + tags + '<div class="anons_body">' + content_body + '</div>';
+	q_div.innerHTML = '<div class="q_header_wrapper"><h3><a href="'+h+'" '+s+'>'+ title + '</a>' + edit_post + '</h3></div>' +  dt +' - Автор: <a href="user.html?author='+ author +'" title="Все посты пользователя">@' + author + '</a>' + '<br/>' + votes + 'Сумма <strong>' + vl + '</strong>  Отдаёт кураторам: <strong>' + curation_percent + '%</strong> выплаты<br/>' + tags + '<div class="anons_body">' + content_body + '</div>';
 	
 	var clearFix = document.createElement("div");
 	clearFix.classList.add("clearFix");
@@ -356,7 +361,7 @@ function getDiscussionsByAuthor(author)
 			for(operation of data)
 			{
 				//console.log(operation);
-if (operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik') {
+				if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
 				AddBlockX(operation);
 }
 				}//);
@@ -385,7 +390,7 @@ function getDiscussionsByBlog(author)
 			for(operation of data)
 			{
 				if(operation.author === author) {
-if (operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik') {
+					if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
 				AddBlockX(operation);
 }
 				}
@@ -404,7 +409,7 @@ function getDiscussionsTrending()
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-if (operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik') {
+				if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
 			AddBlockX(operation);
 }
 			});
@@ -422,7 +427,7 @@ function getDiscussionsPopular(date)
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-if (operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik') {
+				if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
 			AddBlockX(operation);
 }
 			});
@@ -463,7 +468,7 @@ function getDiscussionsByTags(tags)
 			if(data.length > 0)
 			{			
 				data.forEach(function (operation){
-if (operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik') {
+					if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
 				AddBlockX(operation);
 }
 				});
@@ -504,7 +509,7 @@ function getDiscussions(start_author, start_permlink)
             //data.forEach(function (operation)
 			for(operation of data)
 			{
-if (operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik') {
+				if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
 		AddBlockX(operation);
 }
 		}//);
@@ -552,7 +557,7 @@ function getDiscussionsByFeed(login, start_author, start_permlink)
 					if ( ! err) {
 					 result.forEach(function(item) {
 if (item.following === operation.author)
-if (operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik') {
+if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
 	AddBlockX(operation);
 }
 	});
@@ -608,7 +613,7 @@ data.sort(function(a, b) {
 					if ( ! err) {
 					 result.forEach(function(item) {
 if (item.following != operation.author)
-if (operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik') {
+if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
 	AddBlockX(operation);
 }
 	});
@@ -665,6 +670,7 @@ function getContentX(permlink, author)
 		}
 
 		var result = data;
+		if (result.curation_percent === 5000 && result.beneficiaries && result.beneficiaries.length && result.beneficiaries[0].account === 'denis-skripnik' || result.beneficiaries[1].account === 'denis-skripnik') {
 		marked.setOptions({
 		  renderer: new marked.Renderer(),
 		  gfm: true,
@@ -689,10 +695,10 @@ function getContentX(permlink, author)
 		
 var options = {
  whiteList: {
-	iframe: ['src', 'frameborder', 'allow', 'allowfullscreen'],
+	iframe: ['width', 'height', 'src', 'frameborder', 'allow', 'allowfullscreen'],
 			  a: ['href', 'title', 'target'],
 			  table: [],
-			  img: ['src', 'title', 'alt'],
+			  img: ['width', 'height', 'src', 'title', 'alt'],
 			  td: [],
 th: [],
 tr: [],
@@ -742,7 +748,15 @@ if (metadata.tags[i] !== 'liveblogs') {
 		var dt = date.toLocaleDateString("ru-RU") + ' ' + date.toLocaleTimeString("ru-RU");
 	  
 var curation_percent = result.curation_percent/100;
-	  var vl = result.total_pending_payout_value;
+if (result.active_votes.length !== 0) {
+var votes = 'Голосов <strong>'+result.active_votes.length+'</strong> ';
+} else if (result.cashout_time === "1969-12-31T23:59:59") {
+var votes = '';
+} else {
+var votes = 'Голосов <strong>'+result.active_votes.length+'</strong> ';
+}
+
+var vl = result.total_pending_payout_value;
 		if(result.total_payout_value > result.total_pending_payout_value)
 		{
 			vl = result.total_payout_value;
@@ -790,7 +804,7 @@ var vyplata = result.cashout_time;
 			}
 			history.pushState('', '', 'show.html?author=' + author + '&permlink=' + permlink);
 $('title').html(result.title + ' | Live blogs space');
-			header.innerHTML = "<h1><a href='show.html?author="+ author +"&permlink="+ permlink +"'>"+result.title+"</a>" + edit_post + "<br><small>"+dt+" Автор - <a href='user.html?author="+ author +"' title='Все посты пользователя'>@"+result.author+"</a> "+ follow + "</small></h1>" + '<p class="help-text">Голосов <strong>'+result.active_votes.length+'</strong> на сумму <strong>'+vl+'</strong>  выплата '+getCommentDate(vyplata)+'  Отдаёт кураторам: <strong>'+curation_percent+'%</strong> от выплаты<br/>' + tags + '</p>';
+			header.innerHTML = "<h1><a href='show.html?author="+ author +"&permlink="+ permlink +"'>"+result.title+"</a>" + edit_post + "<br><small>"+dt+" Автор - <a href='user.html?author="+ author +"' title='Все посты пользователя'>@"+result.author+"</a> "+ follow + "</small></h1>" + '<p class="help-text">' + votes + 'Сумма <strong>'+vl+'</strong>  выплата '+getCommentDate(vyplata)+'  Отдаёт кураторам: <strong>'+curation_percent+'%</strong> от выплаты<br/>' + tags + '</p>';
 		
 		var ava = document.createElement("div");
 		ava.style.float = 'left';
@@ -839,6 +853,7 @@ $('title').html(result.title + ' | Live blogs space');
 				ava.classList.add('ava_div');
 			}
 		});  
+	}
 	});
 	
 	viz.api.getContentReplies(author, permlink, -1, function(err, data){
@@ -1390,6 +1405,7 @@ var CHAIN_ENERGY_REGENERATION_SECONDS = 10000 / config_res.CHAIN_ENERGY_REGENERA
 <li class="item-120 default current" id="feed"><a href="reblogs.html" >Рекомендации друзей</a></li>\
 <li class="item-120 default current" id="post"><a href="post.html" >Новый пост</a></li>\
 <li class="item-120 default current" id="wallet"><a href="wallet.html" >Кошелёк</a></li>\
+<li class="item-120 default current" id="change_profile"><a href="profile.html" >Изменить профиль</a></li>\
 <li class="item-120 default current" id="options" ><a href="options.html">Настройки</a></li><li class="item-120 default current" id="exit" ><a href="#" onClick="localStorage.clear(); location.reload();">Выход</a></li>\
 </ul>\
 </div>\
@@ -1589,6 +1605,17 @@ var full_tags = tags + " liveblogs";
 			});	
 }
 
+function pass_gen(){
+	let length=100;
+	let charset='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+-=_:;.,@!^&*$';
+	let ret='';
+	for (var i=0,n=charset.length;i<length;++i){
+		ret+=charset.charAt(Math.floor(Math.random()*n));
+	}
+	let wif=viz.auth.toWif('',ret,'')
+	return wif;
+}
+
 function inviteRegPage(new_account_name, invite_secret, new_account_key, private_key) {
 	viz.broadcast.inviteRegistration('5KcfoRuDfkhrLCxVcE9x51J6KN9aM9fpb78tLrvvFckxVV6FyFW', 'invite', new_account_name, invite_secret, new_account_key, function(err, result) {
 		if (!err) {
@@ -1598,6 +1625,598 @@ window.alert('Регистрация прошла успешно.\nВаш лог
 	else console.error(err);
   	});
 }
+
+function accountHistoryCompareDate(a, b)
+{
+	if(a[1].timestamp > b[1].timestamp)
+	{
+		return -1;
+	}
+	else{
+		return 1;
+	}
+}
+
+function fast_str_replace(search,replace,str){
+	return str.split(search).join(replace);
+}
+
+function date_str(timestamp,add_time,add_seconds,remove_today=false){
+	if(-1==timestamp){
+		var d=new Date();
+	}
+	else{
+		var d=new Date(timestamp);
+	}
+	var day=d.getDate();
+	if(day<10){
+		day='0'+day;
+	}
+	var month=d.getMonth()+1;
+	if(month<10){
+		month='0'+month;
+	}
+	var minutes=d.getMinutes();
+	if(minutes<10){
+		minutes='0'+minutes;
+	}
+	var hours=d.getHours();
+	if(hours<10){
+		hours='0'+hours;
+	}
+	var seconds=d.getSeconds();
+	if(seconds<10){
+		seconds='0'+seconds;
+	}
+	var datetime_str=day+'.'+month+'.'+d.getFullYear();
+	if(add_time){
+		datetime_str=datetime_str+' '+hours+':'+minutes;
+		if(add_seconds){
+			datetime_str=datetime_str+':'+seconds;
+		}
+	}
+	if(remove_today){
+		datetime_str=fast_str_replace(date_str(-1)+' ','',datetime_str);
+	}
+	return datetime_str;
+}
+
+function walletData() {
+active_key = sjcl.decrypt(user.login + '_activeKey', localStorage.getItem('ActiveKey'));
+
+		$('#unblock_form').css("display", "none");
+jQuery("#wallet_page").append('<div id="main_wallet_info"></div>');
+		viz.api.getAccounts([user.login], function(err, result) {
+//  console.log(err, result);
+  if (!err) {
+    result.forEach(function(item) {
+	jQuery("#main_wallet_info").append('<p>Баланс: ' + item.balance + ' и ' + item.vesting_shares + '</p>');
+jQuery("#main_wallet_info").append('<a class="tt" onclick="spoiler(\'wallet_actions\'\); return false">(Действия)</a>\
+<ul id="wallet_actions" class="terms" style="display: none;"><li><a href="#viz_diposit_modal" class="btn btn-primary" data-toggle="modal">Пополнить счёт</a></li>\
+<li><a href="#vesting_withdraw_modal" class="btn btn-primary" data-toggle="modal">Вывод SHARES в VIZ</a></li>\
+<li><a href="#viz_transfer_modal" class="btn btn-primary" data-toggle="modal">Перевести VIZ</a></li>\
+<li><a href="#vesting_delegate_modal" class="btn btn-primary" data-toggle="modal">Делегировать SHARES</a></li>\
+<li><a href="#create_invite_form_modal" class="btn btn-primary" data-toggle="modal">Создать инвайт-код</a></li></ul>\
+<div id="viz_diposit_modal" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Пополнение счёта вашего аккаунта в VIZ</h4>\
+      </div>\
+      <div class="modal-body">\
+<p><strong>Пополнение производится с использованием инвайт-кодов. Получить за фиат или криптовалюту их вы сможете, обратившись к пользователям VIZ, например, к создателю liveblogs.</strong></p>\
+	  <div id="action_vesting_diposit"></div>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>\
+<div id="vesting_withdraw_modal" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Вывод SHARES в VIZ</h4>\
+      </div>\
+      <div class="modal-body">\
+<div id="action_vesting_withdraw"></div>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>\
+<div id="viz_transfer_modal" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Перевод VIZ на другой аккаунт</h4>\
+      </div>\
+      <div class="modal-body">\
+	  <div id="action_viz_transfer"></div>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>\
+<div id="vesting_delegate_modal" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Делегирование SHARES</h4>\
+      </div>\
+      <div class="modal-body">\
+<div id="action_vesting_delegate"></div>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>\
+<div id="create_invite_form_modal" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Создание инвайта</h4>\
+      </div>\
+      <div class="modal-body">\
+<p>Инвайты могут использоваться при регистрации и для перевода в баланс</p>\
+	  <div id="create_invite"></div>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>');
+
+var type = 'received';
+viz.api.getVestingDelegations(user.login, '', 100, type, function(err, res) {
+  //console.log(err, res);
+  if ( ! err) {
+var vs_amount = '';
+  var body_received_vesting_shares = '';
+  res.forEach(function(item) {
+      console.log('getVestingDelegations', item);
+vs_amount = item.vesting_shares;
+	  body_received_vesting_shares = '<tr><td><a href="user.html?author=' + item.delegator + '" target="_blank">@' + item.delegator + '</a></td><td>' + vs_amount + '</td></tr>';
+		jQuery("#body_received_vesting_shares").append(body_received_vesting_shares);
+	});
+ }
+  else console.error(err);
+});
+jQuery("#main_wallet_info").append('<div><p>Делегировали другие пользователи вам <a href="#modal_received_vesting_shares" class="btn btn-primary" data-toggle="modal">' + item.received_vesting_shares + '</a></p>\
+<div id="modal_received_vesting_shares" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Список аккаунтов, которые делегировали SHARES этому пользователю</h4>\
+      </div>\
+      <div class="modal-body">\
+<table id="body_received_vesting_shares"><tr><th>Логин</th><th>Сумма</th></tr></table>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>\
+</div>');
+var type = 'delegated';
+viz.api.getVestingDelegations(user.login, '', 100, type, function(err, res) {
+  //console.log(err, res);
+  if ( ! err) {
+var vesting_shares_amount = '';
+  var body_delegated_vesting_shares = '';
+  res.forEach(function(item) {
+      console.log('getVestingDelegations', item);
+vesting_shares_amount = item.vesting_shares;
+	  body_delegated_vesting_shares = '<tr id="delegated_vesting_shares_' + item.delegatee + '"><td><a href="user.html?author=' + item.delegatee + '" target="_blank">@' + item.delegatee + '</a></td><td>' + vesting_shares_amount + '</td><td><input type="button" id="cancel_delegated_vesting_shares_' + item.delegatee + '" value="Отменить делегирование"></td></tr>';
+		jQuery("#body_delegated_vesting_shares").append(body_delegated_vesting_shares);
+ $('#cancel_delegated_vesting_shares_' + item.delegatee).click(function(){
+viz.broadcast.delegateVestingShares(active_key, user.login, item.delegatee, '0.000000 SHARES', function(err, result) {
+if (!err) {
+window.alert('Делегирование пользователю ' + item.delegatee + ' отменено.');
+$('#delegated_vesting_shares_' + item.delegatee).css("display", "none");
+} else {
+window.alert(err);
+}
+});
+ });
+ });
+ }
+  else console.error(err);
+});
+
+jQuery("#main_wallet_info").append('<div><p>Делегировано другим пользователям (Без учёта отменённого) <a href="#modal_delegated_vesting_shares" class="btn btn-primary" data-toggle="modal">' + item.delegated_vesting_shares + '</a></p>\
+<div id="modal_delegated_vesting_shares" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Список аккаунтов, которым вы делегировали SHARES</h4>\
+      </div>\
+      <div class="modal-body">\
+<table id="body_delegated_vesting_shares"><tr><th>Логин</th><th>Сумма</th><th>Отменить делегирование</th></tr></table>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>\
+</div>');
+
+var full_vesting = (parseFloat(item.vesting_shares) - parseFloat(item.delegated_vesting_shares) + parseFloat(item.received_vesting_shares)).toFixed(6);
+jQuery("#main_wallet_info").append('<p>Ваша доля (С учётом полученного и переданного), которая влияет на голосование за посты: ' + full_vesting + ' SHARES</p>');
+
+var vesting_withdraw_rate = parseFloat(item.vesting_withdraw_rate);
+var nvwithdrawal = Date.parse(item.next_vesting_withdrawal);
+var next_vesting_withdrawal = date_str(nvwithdrawal-(new Date().getTimezoneOffset()*60000),true,false,true);
+var full_vesting_withdraw = (vesting_withdraw_rate*28).toFixed(6) + ' SHARES';
+if (full_vesting_withdraw !== '0.000000 SHARES') {
+jQuery("#wallet_page").append('<div id="info_vesting_withdraw"></div>');
+jQuery("#info_vesting_withdraw").append('<p>Выводится по ' + vesting_withdraw_rate + ' SHARES 28 дней</p>');
+jQuery("#info_vesting_withdraw").append('<p>Следующий вывод: ' + next_vesting_withdrawal + '</p>');
+jQuery("#info_vesting_withdraw").append('<p>В конечном итоге вы выведите ' + full_vesting_withdraw + '</p>');
+jQuery("#info_vesting_withdraw").append('<p><input type="button" id="cancel_vesting_withdraw" value="Отменить вывод SHARES"></p>');
+ $("#cancel_vesting_withdraw").click(function(){
+viz.broadcast.withdrawVesting(active_key, user.login, '0.000000 SHARES', function(err, result) {
+  if (!err) {
+window.alert('Вывод отменён.');
+$('#info_vesting_withdraw').css('display', 'none');
+  } else {
+window.alert(err);
+  }
+});
+}); // end subform
+}
+
+ jQuery("#action_vesting_diposit").append('<form>\
+<p><label for="invite_secret">Инвайт-код (Начинается с 5):</label></p>\
+<p><input type="text" name="invite_secret" id="invite_secret" placeholder="5K..."></p>\
+ <p><input type="button" id="action_vesting_diposit_start" value="Пополнить"></p>\
+</form>');
+
+ $("#action_vesting_diposit_start").click(function(){
+var invite_secret = $('#invite_secret').val();
+viz.broadcast.claimInviteBalance(active_key, user.login, user.login, invite_secret, function(err, result) {
+if (!err) {
+window.alert('Пополнение прошло успешно.');
+} else {
+window.alert('Ошибка: ' + err);
+}
+});
+
+}); // end subform
+
+var max_vesting_withdraw = (parseFloat(item.vesting_shares) - parseFloat(item.delegated_vesting_shares) - parseFloat(full_vesting_withdraw)).toFixed(6);
+ jQuery("#action_vesting_withdraw").append('<p><strong>Предупреждение: если у вас сейчас уже есть вывод, отправка этой формы сбросит сумму на вывод.</strong></p>');
+ jQuery("#action_vesting_withdraw").append('<form>\
+<p><label for="vesting_withdraw_amount">Сумма на вывод (<span id="max_vesting_withdraw">Вывести все доступные ' + new Number(parseFloat(max_vesting_withdraw)).toFixed(6) + ' SHARES</span>):</label></p>\
+<p><input type="text" name="vesting_withdraw_amount" id="action_vesting_withdraw_amount" placeholder="1.000000"></p>\
+ <p><input type="button" id="action_vesting_withdraw_start" value="Начать вывод"></p>\
+</form>');
+  $("#max_vesting_withdraw").click(function(){
+ $('#action_vesting_withdraw_amount').val(new Number(parseFloat(max_vesting_withdraw)).toFixed(6));
+  });
+ $("#action_vesting_withdraw_start").click(function(){
+var action_vesting_withdraw_amount = $('#action_vesting_withdraw_amount').val() + ' SHARES';
+viz.broadcast.withdrawVesting(active_key, user.login, action_vesting_withdraw_amount, function(err, result) {
+if (!err) {
+window.alert('Вывод на ' + action_vesting_withdraw_amount + ' начат.');
+} else {
+window.alert('Ошибка: ' + err);
+}
+  });
+
+}); // end subform
+
+ jQuery("#action_viz_transfer").append('<form>\
+<p><label for="viz_transfer_to">Кому:</label></p>\
+<p><input type="text" name="viz_transfer_to" id="action_viz_transfer_to" placeholder="Введите получателя"></p>\
+ <p><label for="viz_transfer_amount">Сумма перевода (<span id="max_vesting_transfer">Перевести все доступные ' + new Number(parseFloat(item.balance)).toFixed(3) + ' VIZ</span>):</label></p>\
+<p><input type="text" name="viz_transfer_amount" id="action_viz_transfer_amount" placeholder="1.000"></p>\
+<p><label for="viz_transfer_memo">Заметка (описание) к платежу:</label></p>\
+<p><input type="text" name="viz_transfer_memo" id="action_viz_transfer_memo" placeholder="Введите memo"></p>\
+<p><input type="checkbox" id="transfer_to_vesting"> Перевести в SHARES</p>\
+ <p><input type="button" id="action_viz_transfer_start" value="Перевести"></p>\
+</form>');
+
+  $("#max_vesting_transfer").click(function(){
+ $('#action_viz_transfer_amount').val(new Number(parseFloat(item.balance)).toFixed(3));
+  });
+ $("#action_viz_transfer_start").click(function(){
+ var action_viz_transfer_to = $('#action_viz_transfer_to').val();
+ var action_viz_transfer_amount = $('#action_viz_transfer_amount').val() + ' VIZ';
+var action_viz_transfer_memo = $('#action_viz_transfer_memo').val();
+var transfer_to_vesting = document.getElementById('transfer_to_vesting');
+
+if (transfer_to_vesting.checked) {
+viz.broadcast.transferToVesting(active_key, user.login, action_viz_transfer_to, action_viz_transfer_amount, function(err, result) {
+if (!err) {
+window.alert('Вы перевели ' + action_viz_transfer_amount + ' пользователю ' + action_viz_transfer_to + ' в SHARES.');
+} else {
+window.alert('Ошибка: ' + err);
+}
+  });
+} else {
+viz.broadcast.transfer(active_key, user.login, action_viz_transfer_to, action_viz_transfer_amount, action_viz_transfer_memo, function(err, result) {
+if (!err) {
+window.alert('Вы перевели ' + action_viz_transfer_amount + ' пользователю ' + action_viz_transfer_to + '.');
+} else {
+window.alert('Ошибка: ' + err);
+}
+  });
+}
+}); // end subform
+
+var max_vesting_deligate = (parseFloat(item.vesting_shares) - parseFloat(item.delegated_vesting_shares)).toFixed(6);
+ jQuery("#action_vesting_delegate").append('<form>\
+<p><label for="vesting_delegate_to">Кому:</label></p>\
+<p><input type="text" name="vesting_delegate_to" id="action_vesting_delegate_to" placeholder="Введите получателя"></p>\
+ <p><label for="vesting_delegate_amount">Сумма делегирования (<span id="max_vesting_delegate">Делегировать все доступные ' + new Number(parseFloat(max_vesting_deligate)).toFixed(6) + ' SHARES</span>):</label></p>\
+<p><input type="text" name="vesting_delegate_amount" id="action_vesting_delegate_amount" placeholder="1.000000"></p>\
+ <p><input type="button" id="action_vesting_delegate_start" value="делегировать"></p>\
+</form>');
+
+  $("#max_vesting_delegate").click(function(){
+ $('#action_vesting_delegate_amount').val(new Number(parseFloat(max_vesting_deligate)).toFixed(6));
+  });
+ $("#action_vesting_delegate_start").click(function(){
+ var action_vesting_delegate_to = $('#action_vesting_delegate_to').val();
+ var action_vesting_delegate_amount = $('#action_vesting_delegate_amount').val() + ' SHARES';
+viz.broadcast.delegateVestingShares(active_key, user.login, action_vesting_delegate_to, action_vesting_delegate_amount, function(err, result) {
+if (!err) {
+window.alert('Вы делегировали ' + action_vesting_delegate_amount + '.');
+} else {
+window.alert('Ошибка: ' + err);
+}
+  });
+
+}); // end subform
+
+ jQuery("#create_invite").append('<form>\
+ <p><label for="create_invite_balance">Баланс инвайта (<span id="max_invite_balance">В баланс инвайта все доступные ' + new Number(parseFloat(item.balance)).toFixed(3) + ' VIZ</span>):</label></p>\
+<p><input type="text" name="create_invite_balance" id="create_invite_amount" placeholder="1.000"></p>\
+<p><label for="create_invite_key">Инвайт-код:</label></p>\
+<p><input type="button" value="Генерировать" id="new_private_gen"><br>\
+<input type="text" name="create_invite_key" id="create_invite_key" readonly placeholder="Сгенерируйте инвайт-код"><br>\
+<input type="button" id="new_private_copy" value="Скопировать в буфер обмена"></p>\
+ <p><input type="button" id="create_invite_start" value="Создать инвайт"></p>\
+</form>');
+
+$("#new_private_gen").click(function(){
+	$('#create_invite_key').val(pass_gen());
+});
+
+//цепляем событие на onclick кнопки
+var button = document.getElementById('new_private_copy');
+button.addEventListener('click', function () {
+  //нашли наш контейнер
+  var ta = document.querySelector('#create_invite_key');
+    ta.focus();
+    ta.setSelectionRange(0, ta.value.length);
+ 
+  try { 
+    document.execCommand('copy'); 
+  } catch(err) { 
+    console.log('Can`t copy, boss'); 
+  } 
+  //очистим выделение текста, чтобы пользователь не парился
+  window.getSelection().removeAllRanges();
+});
+  
+  $("#max_invite_balance").click(function(){
+ $('#create_invite_amount').val(new Number(parseFloat(item.balance)).toFixed(3));
+  });
+ $("#create_invite_start").click(function(){
+ var create_invite_amount = $('#create_invite_amount').val() + ' VIZ';
+var create_private_invite_key = $('#create_invite_key').val();
+		var create_invite_key = viz.auth.wifToPublic(create_private_invite_key);
+viz.broadcast.createInvite(active_key, user.login, create_invite_amount, create_invite_key, function(err, result) {
+if (!err) {
+jQuery("#create_invite").append('<div id="invite_modal" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Вы создали инвайт-код</h4>\
+      </div>\
+      <div class="modal-body">\
+<ul><li>Инвайд-код: ' + create_private_invite_key + '</li><li>Вы можете тому, кто пожелает зарегистрироваться, дать эту ссылку: <span id="invite_reg_link">https://liveblogs.space/reg.html?invite=' + create_private_invite_key + '</span><br><input type="button" id="invite_reg_link_copy" value="Скопировать ссылку в буфер обмена"></p></li><li>Баланс: ' + create_invite_amount + '</li></ul>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>');
+    $("#invite_modal").modal('show');
+
+//цепляем событие на onclick кнопки
+var button = document.getElementById('invite_reg_link_copy');
+button.addEventListener('click', function () {
+  //нашли наш контейнер
+  var ta = document.getElementById('invite_reg_link'); 
+  //производим его выделение
+  var range = document.createRange();
+  range.selectNode(ta); 
+  window.getSelection().addRange(range); 
+ 
+  //пытаемся скопировать текст в буфер обмена
+  try { 
+    document.execCommand('copy'); 
+  } catch(err) { 
+    console.log('Can`t copy, boss'); 
+  } 
+  //очистим выделение текста, чтобы пользователь не парился
+  window.getSelection().removeAllRanges();
+});
+} else {
+window.alert('Ошибка: ' + err);
+}
+  });
+}); // end subform
+
+jQuery('#main_wallet_info').append('<div id="witnesses_vote_button"><strong>Проголосовать за создателя проекта liveblogs.space.</strong></div>');
+var witness_votes = item.witness_votes;
+var witness_votes_count = witness_votes.length;
+witness_votes.forEach(function(witness_vote) {
+if (witness_votes_count === 2 || witness_vote === 'denis-skripnik') {
+$("#witnesses_vote_button").css("display", "none");
+} else {
+$("#witnesses_vote_button").css("display", "inline");
+}
+	});
+
+  $("#witnesses_vote_button").click(function(){
+viz.broadcast.accountWitnessVote(active_key, user.login, 'denis-skripnik', true, function(err, result) {
+if (!err) {
+window.alert('Благодарю вас за голос!');
+} else {
+window.alert('Ошибка: ' + err);
+}
+});
+$("#witnesses_vote_button").css("display", "none");
+  });
+  
+var to = getUrlVars()['to'];
+var amount = getUrlVars()['amount'];
+var memo = getUrlVars()['memo'];
+
+if (to && amount && memo) {
+$(document).ready(function(){
+$("#viz_transfer_modal").modal('show');
+$('#action_viz_transfer_to').val(to).prop('readonly', true);
+$('#action_viz_transfer_amount').val(amount).prop('readonly', true);
+$('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
+});
+} else if (to && memo) {
+$(document).ready(function(){
+$("#viz_transfer_modal").modal('show');
+$('#action_viz_transfer_to').val(to).prop('readonly', true);
+$('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
+}); 
+} else if (amount && memo) {
+$(document).ready(function(){
+$("#viz_transfer_modal").modal('show');
+$('#action_viz_transfer_amount').val(amount).prop('readonly', true);
+$('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
+});
+} else if (to && amount) {
+$(document).ready(function(){
+$("#viz_transfer_modal").modal('show');
+$('#action_viz_transfer_to').val(to).prop('readonly', true);
+$('#action_viz_transfer_amount').val(amount).prop('readonly', true);
+});
+} else if (to) {
+$(document).ready(function(){
+$("#viz_transfer_modal").modal('show');
+$('#action_viz_transfer_to').val(to).prop('readonly', true);
+});
+} else if (amount) {
+$(document).ready(function(){
+$("#viz_transfer_modal").modal('show');
+$('#action_viz_transfer_amount').val(amount).prop('readonly', true);
+});
+} else if (memo) {
+$(document).ready(function(){
+$("#viz_transfer_modal").modal('show');
+$('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
+});
+}
+
+    });
+  }
+  else console.error(err);
+ });
+
+ // История переводов:
+ jQuery("#wallet_page").append('<div id="wallet_transfer_history"></div>');
+ viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
+ if (!err) {
+  jQuery("#wallet_transfer_history").append('<h2>История переводов средств</h2>\
+  <table id="transfer_history_table"><tr><th>Дата и время платежа</th>\
+<th>От кого</th>\
+<th>Кому</th>\
+<th>Сумма</th>\
+<th>memo (Заметка)</th></tr>');
+			result.sort(accountHistoryCompareDate);
+ result.forEach(function(item) {
+var get_time = Date.parse(item[1].timestamp);
+var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
+
+        var op = item[1].op;
+var from = op[1].from;
+var to = op[1].to;
+var amount = op[1].amount;
+var memo = op[1].memo;
+
+	   if (from && to && amount && memo) {
+  jQuery("#transfer_history_table").append('<tr class="' + from + '"><td>' + transfer_datetime + '</td>\
+<td><a href="user.html?author=' + from + '" target="_blank">@' + from + '</a></td>\
+<td><a href="user.html?author=' + to + '" target="_blank">@' + to + '</a></td>\
+<td>' + amount + '</td>\
+<td>' + memo + '</td>\
+  </tr>');
+
+  
+
+  }
+  });
+  jQuery("#wallet_transfer_history").append('</table>');
+
+	} else {
+window.alert('Ошибка: ' + err);
+}
+ });
+ }
+
+			function walletAuth() {
+			let active = $('#this_active').val();
+var isSaveActive = document.getElementById('isSaveActive');
+			if (isSaveActive.checked) {
+		localStorage.setItem('ActiveKey', sjcl.encrypt(user.login + '_activeKey', active));
+			}
+			if (localStorage.getItem('ActiveKey')) {
+		var isActiveKey = sjcl.decrypt(user.login + '_activeKey', localStorage.getItem('ActiveKey'));
+jQuery("#wallet_page").append('<p align="center"><a onclick="localStorage.removeItem(\'ActiveKey\'\)">Удалить активный ключ</a></p>');
+} else {
+var isActiveKey = active;
+}
+
+			var resultIsActiveWif = viz.auth.isWif(isActiveKey);
+console.log(resultIsActiveWif);
+			if (resultIsActiveWif === true) {
+			active_key = isActiveKey;
+window.alert('Вы успешно вошли в кошелёк.');
+} else {
+window.alert('Активный ключ имеет неверный формат. Пожалуйста, попробуйте ещё раз.');
+}
+
+			if (active_key === '') {
+$('#unblock_form').css("display", "block");
+$('#unblock_form').html('<p><label for="active">Введите приватный активный ключ (Если регистрировались по инвайту, он совпадает с постинг ключом, при помощи которого авторизовались в liveblogs.space). Внимание: он никуда не передаётся, все операции выполняются у вас на компьютере, в вашем браузере.</label></p>\
+<p><input type="password" name="active" id="this_active"></p>\
+<p><input type="checkbox" id="isSaveActive"> Сохранить активный ключ</p>\
+<p align="center"><input type="button" value="Войти в кошелёк" onclick="walletAuth();"></p>');
+} else if (active_key !== '' && user.login) {
+walletData();
+}
+
+			} // end walletAuth
 
 function loadOptions()
 {
