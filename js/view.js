@@ -289,7 +289,10 @@ if (operation.active_votes.length !== 0) {
 var votes = ' Голосов <strong>' + operation.active_votes.length + '</strong> ';
 } else if (operation.cashout_time === "1969-12-31T23:59:59") {
 	var votes = '';
+} else {
+	var votes = ' Голосов <strong>' + operation.active_votes.length + '</strong> ';
 }
+
 var vl = total_pending_payout_value;
 	if(total_payout_value > total_pending_payout_value)
 	{
