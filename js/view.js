@@ -1695,6 +1695,7 @@ jQuery("#main_wallet_info").append('<a class="tt" onclick="spoiler(\'wallet_acti
 <ul id="wallet_actions" class="terms" style="display: none;"><li><a href="#viz_diposit_modal" class="btn btn-primary" data-toggle="modal">Пополнить счёт</a></li>\
 <li><a href="#vesting_withdraw_modal" class="btn btn-primary" data-toggle="modal">Вывод SHARES в VIZ</a></li>\
 <li><a href="#viz_transfer_modal" class="btn btn-primary" data-toggle="modal">Перевести VIZ</a></li>\
+<li><a href="#to_shares_transfer_modal" class="btn btn-primary" data-toggle="modal">VIZ в SHARES этого аккаунта</a></li>\
 <li><a href="#vesting_delegate_modal" class="btn btn-primary" data-toggle="modal">Делегировать SHARES</a></li>\
 <li><a href="#create_invite_form_modal" class="btn btn-primary" data-toggle="modal">Создать инвайт-код</a></li></ul>\
 <div id="viz_diposit_modal" class="modal fade">\
@@ -1739,6 +1740,22 @@ jQuery("#main_wallet_info").append('<a class="tt" onclick="spoiler(\'wallet_acti
       </div>\
       <div class="modal-body">\
 	  <div id="action_viz_transfer"></div>\
+      </div>\
+      <div class="modal-footer">\
+        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
+      </div>\
+    </div>\
+  </div>\
+</div>\
+<div id="to_shares_transfer_modal" class="modal fade">\
+  <div class="modal-dialog">\
+    <div class="modal-content">\
+      <div class="modal-header">\
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+        <h4 class="modal-title">Перевод VIZ в SHARES этого аккаунта</h4>\
+      </div>\
+      <div class="modal-body">\
+	  <div id="action_to_shares_transfer"></div>\
       </div>\
       <div class="modal-footer">\
         <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
@@ -1883,7 +1900,7 @@ window.alert(err);
 }); // end subform
 }
 
- jQuery("#action_vesting_diposit").append('<form>\
+ jQuery("#action_vesting_diposit").append('<form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">\
 <p><label for="invite_secret">Инвайт-код (Начинается с 5):</label></p>\
 <p><input type="text" name="invite_secret" id="invite_secret" placeholder="5K..."></p>\
  <p><input type="button" id="action_vesting_diposit_start" value="Пополнить"></p>\
@@ -1903,7 +1920,7 @@ window.alert('Ошибка: ' + err);
 
 var max_vesting_withdraw = (parseFloat(item.vesting_shares) - parseFloat(item.delegated_vesting_shares) - parseFloat(full_vesting_withdraw)).toFixed(6);
  jQuery("#action_vesting_withdraw").append('<p><strong>Предупреждение: если у вас сейчас уже есть вывод, отправка этой формы сбросит сумму на вывод.</strong></p>');
- jQuery("#action_vesting_withdraw").append('<form>\
+ jQuery("#action_vesting_withdraw").append('<form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">\
 <p><label for="vesting_withdraw_amount">Сумма на вывод (<span id="max_vesting_withdraw">Вывести все доступные ' + new Number(parseFloat(max_vesting_withdraw)).toFixed(6) + ' SHARES</span>):</label></p>\
 <p><input type="text" name="vesting_withdraw_amount" id="action_vesting_withdraw_amount" placeholder="1.000000"></p>\
  <p><input type="button" id="action_vesting_withdraw_start" value="Начать вывод"></p>\
@@ -1923,7 +1940,7 @@ window.alert('Ошибка: ' + err);
 
 }); // end subform
 
- jQuery("#action_viz_transfer").append('<form>\
+ jQuery("#action_viz_transfer").append('<form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">\
 <p><label for="viz_transfer_to">Кому:</label></p>\
 <p><input type="text" name="viz_transfer_to" id="action_viz_transfer_to" placeholder="Введите получателя"></p>\
  <p><label for="viz_transfer_amount">Сумма перевода (<span id="max_vesting_transfer">Перевести все доступные ' + new Number(parseFloat(item.balance)).toFixed(3) + ' VIZ</span>):</label></p>\
@@ -1962,8 +1979,28 @@ window.alert('Ошибка: ' + err);
 }
 }); // end subform
 
+ jQuery("#action_to_shares_transfer").append('<form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">\
+ <p><label for="to_shares_transfer_amount">Количество VIZ (<span id="max_to_shares_transfer">Все доступные ' + new Number(parseFloat(item.balance)).toFixed(3) + ' VIZ</span>):</label></p>\
+<p><input type="text" name="to_shares_transfer_amount" id="action_to_shares_transfer_amount" placeholder="1.000"></p>\
+ <p><input type="button" id="action_to_shares_transfer_start" value="Начать перевод"></p>\
+</form>');
+
+  $("#max_to_shares_transfer").click(function(){
+ $('#action_to_shares_transfer_amount').val(new Number(parseFloat(item.balance)).toFixed(3));
+  });
+ $("#action_to_shares_transfer_start").click(function(){
+ var action_to_shares_transfer_amount = $('#action_to_shares_transfer_amount').val() + ' VIZ';
+viz.broadcast.transferToVesting(active_key, user.login, user.login, action_to_shares_transfer_amount, function(err, result) {
+if (!err) {
+window.alert('Вы успешно перевели ' + action_to_shares_transfer_amount + ' VIZ в SHARES своего аккаунта.');
+} else {
+window.alert('Ошибка: ' + err);
+}
+  });
+}); // end subform
+
 var max_vesting_deligate = (parseFloat(item.vesting_shares) - parseFloat(item.delegated_vesting_shares)).toFixed(6);
- jQuery("#action_vesting_delegate").append('<form>\
+ jQuery("#action_vesting_delegate").append('<form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">\
 <p><label for="vesting_delegate_to">Кому:</label></p>\
 <p><input type="text" name="vesting_delegate_to" id="action_vesting_delegate_to" placeholder="Введите получателя"></p>\
  <p><label for="vesting_delegate_amount">Сумма делегирования (<span id="max_vesting_delegate">Делегировать все доступные ' + new Number(parseFloat(max_vesting_deligate)).toFixed(6) + ' SHARES</span>):</label></p>\
@@ -1987,7 +2024,7 @@ window.alert('Ошибка: ' + err);
 
 }); // end subform
 
- jQuery("#create_invite").append('<form>\
+ jQuery("#create_invite").append('<form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">\
  <p><label for="create_invite_balance">Баланс инвайта (<span id="max_invite_balance">В баланс инвайта все доступные ' + new Number(parseFloat(item.balance)).toFixed(3) + ' VIZ</span>):</label></p>\
 <p><input type="text" name="create_invite_balance" id="create_invite_amount" placeholder="1.000"></p>\
 <p><label for="create_invite_key">Инвайт-код:</label></p>\
