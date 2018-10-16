@@ -100,7 +100,7 @@ function showQuery(operation)
 	});
 	
 	
-	a_div.innerHTML = "<div style='font-size: 12px; background-image:url(\"https://liveblogs.space/images/messages.png\");'><strong>"+replies+"</strong></div>";
+	a_div.innerHTML = "<div style='font-size: 12px; background-image:url(\"images/messages.png\");'><strong>"+replies+"</strong></div>";
 	
 	var tags = '';
 	if(typeof metadata.tags !=="undefined")
