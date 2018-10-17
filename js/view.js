@@ -639,6 +639,14 @@ function prepareContent(text) {
  }).replace(/ (@[^< \.,]+)/gi, user => ` <a href="user.html?author=${user.trim().slice(1)}">${user.trim()}</a>`)
 }
 
+function setLocation(curLoc){
+    try {
+      history.pushState(null, null, curLoc);
+      return;
+    } catch(e) {}
+    location.hash = '#' + curLoc;
+}
+
 function getContentX(permlink, author)
 {
 	article.permlink = permlink;
@@ -806,7 +814,8 @@ var vyplata = result.cashout_time;
 			} else {
 			var edit_post = '';
 			}
-			history.pushState('', '', 'show.html?author=' + author + '&permlink=' + permlink);
+			
+setLocation('show.html?author=' + author + '&permlink=' + permlink);
 $('title').html(result.title + ' | Live blogs space');
 			header.innerHTML = "<h1><a href='show.html?author="+ author +"&permlink="+ permlink +"'>"+result.title+"</a>" + edit_post + "<br><small>"+dt+" Автор - <a href='user.html?author="+ author +"' title='Все посты пользователя'>@"+result.author+"</a> "+ follow + "</small></h1>" + '<p class="help-text">' + votes + 'Сумма <strong>'+vl+'</strong>  выплата '+getCommentDate(vyplata)+'  Отдаёт кураторам: <strong>'+curation_percent+'%</strong> от выплаты<br/>' + tags + '</p>';
 		
