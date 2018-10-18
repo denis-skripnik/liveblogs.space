@@ -1350,7 +1350,6 @@ var minPercent = 100/(vote_shares / vote_accounting_min_rshares);
 var min_percent = minPercent.toFixed();
 if (min_percent <=100) {
 $('input[name=power]').attr("min", min_percent);
-console.log(min_percent);
 } else if (min_percent > 100) {
 	$('input[type=range]').attr("min", 100);
 }
