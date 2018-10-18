@@ -34,7 +34,6 @@
 		<script src="js/vizhelper.js" type="text/javascript"></script>
 		
 		<script src="js/view.js" type="text/javascript"></script>
-		<script language="javascript" type="text/javascript"></script>
 	</head>
 	<body class="body">
 <header id="header_wrapper" class="mp_header_wrapper">
@@ -105,19 +104,6 @@
 									<div style="margin: auto; text-align: -webkit-center;">
 									<img style="margin: auto;" id="loader" src="images/11.gif">
 									</div>
-									<script language="javascript" type="text/javascript">
-										var login = localStorage.getItem('login');
-										if(localStorage.getItem(login))
-										{
-											document.getElementById('login_div').style = 'display: none;';
-											document.getElementById('avatar').style = 'display:block';
-										}
-										else
-										{
-											document.getElementById('avatar').style = 'display:none';
-										}
-									</script>
-
 									<div class="row">
 										<div class="col-lg-5" id="x5">
 											<nav class="">
@@ -384,7 +370,19 @@
 		<script>
 			Init();
 			mainMenu();
-if (!localStorage.getItem('ActiveKey') && active_key === '') {
+
+										var login = localStorage.getItem('login');
+										if(localStorage.getItem(login))
+										{
+											document.getElementById('login_div').style = 'display: none;';
+											document.getElementById('avatar').style = 'display:block';
+										}
+										else
+										{
+											document.getElementById('avatar').style = 'display:none';
+										}
+
+			if (!localStorage.getItem('ActiveKey') && active_key === '') {
 $('#unblock_form').css("display", "block");
 $('#unblock_form').html('<p><label for="active">Введите приватный активный ключ (Если регистрировались по инвайту, он совпадает с постинг ключом, при помощи которого авторизовались в liveblogs.space). Внимание: он никуда не передаётся, все операции выполняются у вас на компьютере, в вашем браузере.</label></p>\
 <p><input type="password" name="active" id="this_active"></p>\

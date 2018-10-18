@@ -1438,7 +1438,8 @@ var mainMenuCode = '						<ul class="list-inline text-right">\
 							<li class="item-135"><a href="tag.html?tag=поэзия,стихи,творчество,фотография,фото,чернобелоефото,рукоделие,вязание,поэзияфото,проза,рассказ,сказки,handmade">Творчество</a></li>\
 							<li class="item-134"><a href="tag.html?tag=btc,bitcoin,блокчейн,токен,ico,bounty,криптовалюта,биткоин,майнинг,token,криптовалюты,altcoin,cryptocurrency,сатоши,bitshares,dex,monero,xmr,монеро,токены">Криптоновости<a></li>\
 							<li class="item-137"><a href="tag.html?tag=linux,линукс,pyton,delphi,windows,coding,php,laravel,codecustoms,microsoft,skype,телеком,apple,soft,java,js,javascript,программирование">IT</a></li>\
-						</ul>';
+							<li class="item-141"><a href="tag.html?tag=магазин,товар,услуга,товары,услуги,купить,продать,куплю,продам,куплепродажа,компания,реклама,buy,продукты,продукт,product,products">Коммерция</a></li>\
+							</ul>';
       jQuery('#main-menu').html(mainMenuCode);
 }
 

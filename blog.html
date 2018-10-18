@@ -35,7 +35,6 @@
 		
 		<script src="js/xss.min.js"></script>
 		<script src="js/view.js" type="text/javascript"></script>
-		<script language="javascript" type="text/javascript"></script>
 	</head>
 	<body class="body">
 <header id="header_wrapper" class="mp_header_wrapper">
@@ -107,19 +106,6 @@
 									<div style="margin: auto; text-align: -webkit-center;">
 									<img style="margin: auto;" id="loader" src="images/11.gif">
 									</div>
-									<script language="javascript" type="text/javascript">
-										var login = localStorage.getItem('login');
-										if(localStorage.getItem(login))
-										{
-											document.getElementById('login_div').style = 'display: none;';
-											document.getElementById('avatar').style = 'display:block';
-										}
-										else
-										{
-											document.getElementById('avatar').style = 'display:none';
-										}
-										getDiscussionsByBlog(login);
-									</script>
 
 									<div class="row">
 										<div class="col-lg-5" id="x5">
@@ -208,6 +194,18 @@
 		<script>
 			Init();
 			mainMenu();
-		</script>
+
+										var login = localStorage.getItem('login');
+										if(localStorage.getItem(login))
+										{
+											document.getElementById('login_div').style = 'display: none;';
+											document.getElementById('avatar').style = 'display:block';
+										}
+										else
+										{
+											document.getElementById('avatar').style = 'display:none';
+										}
+										getDiscussionsByBlog(login);
+			</script>
 	</body>
 </html>
