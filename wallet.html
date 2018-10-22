@@ -128,7 +128,7 @@
 </form>
 <div id="delete_active_key"></div>
 <div id="main_wallet_info" style="display: none;">
-	<p>Баланс: <span id="viz_balance"></span> VIZ и <span id="viz_vesting_shares"></span></p>
+	<p>Баланс: <span class="viz_balance"></span> VIZ и <span class="viz_vesting_shares"></span></p>
 <a class="tt" onclick="spoiler('wallet_actions'); return false">(Действия)</a>
 <ul id="wallet_actions" class="terms" style="display: none;"><li><a href="#viz_diposit_modal" class="btn btn-primary" data-toggle="modal">Пополнить счёт</a></li>
 <li><a href="#vesting_withdraw_modal" class="btn btn-primary" data-toggle="modal">Вывод SHARES в VIZ</a></li>
@@ -194,7 +194,7 @@
 <form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">
 <p><label for="viz_transfer_to">Кому:</label></p>
 <p><input type="text" name="viz_transfer_to" id="action_viz_transfer_to" placeholder="Введите получателя"></p>
- <p><label for="viz_transfer_amount">Сумма перевода (<span id="max_vesting_transfer">Перевести все доступные <span id="viz_balance"></span> VIZ</span>):</label></p>
+ <p><label for="viz_transfer_amount">Сумма перевода (<span id="max_vesting_transfer">Перевести все доступные <span class="viz_balance"></span> VIZ</span>):</label></p>
 <p><input type="text" name="viz_transfer_amount" id="action_viz_transfer_amount" placeholder="1.000"></p>
 <p><label for="viz_transfer_memo">Заметка (описание) к платежу:</label></p>
 <p><input type="text" name="viz_transfer_memo" id="action_viz_transfer_memo" placeholder="Введите memo"></p>
@@ -218,7 +218,7 @@
       </div>
       <div class="modal-body">
 	  <div id="action_to_shares_transfer"><form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">
- <p><label for="to_shares_transfer_amount">Количество VIZ (<span id="max_to_shares_transfer">Все доступные <span id="viz_balance"></span> VIZ</span>):</label></p>
+ <p><label for="to_shares_transfer_amount">Количество VIZ (<span id="max_to_shares_transfer">Все доступные <span class="viz_balance"></span> VIZ</span>):</label></p>
 <p><input type="text" name="to_shares_transfer_amount" id="action_to_shares_transfer_amount" placeholder="1.000"></p>
  <p><input type="button" id="action_to_shares_transfer_start" value="Начать перевод"></p>
 </form></div>
@@ -261,7 +261,7 @@
       <div class="modal-body">
 <p>Инвайты могут использоваться при регистрации и для перевода в баланс</p>
 	  <div id="create_invite"><form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">
- <p><label for="create_invite_balance">Баланс инвайта (<span id="max_invite_balance">В баланс инвайта все доступные <span id="viz_balance"></span> VIZ</span>):</label></p>
+ <p><label for="create_invite_balance">Баланс инвайта (<span id="max_invite_balance">В баланс инвайта все доступные <span class="viz_balance"></span> VIZ</span>):</label></p>
 <p><input type="text" name="create_invite_balance" id="create_invite_amount" placeholder="1.000"></p>
 <p><label for="create_invite_key">Инвайт-код:</label></p>
 <p><input type="button" value="Генерировать" id="new_private_gen"><br>
@@ -277,7 +277,7 @@
         <h4 class="modal-title">Вы создали инвайт-код</h4>
       </div>
       <div class="modal-body">
-<ul><li>Инвайд-код: <span id="create_private_invite_key_result"></span> </li><li>Вы можете тому, кто пожелает зарегистрироваться, дать эту ссылку: <span id="invite_reg_link"></span><br><input type="button" id="invite_reg_link_copy" value="Скопировать ссылку в буфер обмена"></p></li><li>Баланс: <span id="create_invite_amount"></span></li></ul>
+<ul><li>Инвайд-код: <span id="create_private_invite_key_result"></span> </li><li>Вы можете тому, кто пожелает зарегистрироваться, дать эту ссылку: <span id="invite_reg_link"></span><br><input type="button" id="invite_reg_link_copy" value="Скопировать ссылку в буфер обмена"></p></li><li>Баланс: <span id="create_invite_result_amount"></span></li></ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal" onclick="location.reload();">Закрыть</button>
@@ -293,7 +293,7 @@
   </div>
 </div>
 </div>
-<div><p>Делегировали другие пользователи вам <a href="#modal_received_vesting_shares" class="btn btn-primary" data-toggle="modal"><span id="received_vesting_shares_result"></span></a></p>
+<div><p>Делегировали другие пользователи вам <a href="#modal_received_vesting_shares" class="btn btn-primary" data-toggle="modal"><span class="received_vesting_shares_result"></span></a></p>
 <div id="modal_received_vesting_shares" class="modal fade">
   <div class="modal-dialog">\
     <div class="modal-content">
@@ -311,7 +311,7 @@
   </div>
 </div>
 </div>
-<div><p>Делегировано другим пользователям (Без учёта отменённого) <a href="#modal_delegated_vesting_shares" class="btn btn-primary" data-toggle="modal"><span id="delegated_vesting_shares_result"></span></a></p>
+<div><p>Делегировано другим пользователям (Без учёта отменённого) <a href="#modal_delegated_vesting_shares" class="btn btn-primary" data-toggle="modal"><span class="delegated_vesting_shares_result"></span></a></p>
 <div id="modal_delegated_vesting_shares" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">

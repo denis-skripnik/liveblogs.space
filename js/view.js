@@ -230,9 +230,13 @@ function votePost(power, permlink, author)
 		}
 
 function maximumVote(permlink, author) {
-var q = window.confirm('Это действие приведет к голосованию с силой в 2000%. При этом вы израсходуете 20% энергии на восстановление которой потребуется 24 часа, но автор получит больше выплаты. Также будет сделан репост. Чтобы узнать, что такое "энергия", нажмите на ссылку "Твоя энергия" вверху страницы. Вы действительно хотите сделать его?')
+var q = window.confirm('Это действие приведет к голосованию с силой в 2000%. При этом вы израсходуете 20% энергии на восстановление которой потребуется 24 часа, но автор получит больше выплаты. Также вы порекомендуете его своим подписчикам. Чтобы узнать, что такое "энергия", нажмите на ссылку "Твоя энергия" вверху страницы. Вы действительно хотите сделать его?')
 if (q === true) {
-votePost(2000, permlink, author); ReblogUpvote(100, permlink, author);
+if (author === user.login) {
+alert('Голосование за себя при помощи данной кнопки недопустимо.')
+} else {
+	votePost(2000, permlink, author); ReblogUpvote(100, permlink, author);
+}
 }
 }
 
@@ -1705,10 +1709,10 @@ viz.api.getAccounts([account], function(err, result){
  if (!err) {
  result.forEach(function(acc) {
 
- $("#viz_balance").html(new Number(parseFloat(acc.balance)).toFixed(3));
-$("#viz_vesting_shares").html(acc.vesting_shares);
-$("#received_vesting_shares_result").html(acc.received_vesting_shares);
-$("#delegated_vesting_shares_result").html(acc.delegated_vesting_shares);
+ $(".viz_balance").html(new Number(parseFloat(acc.balance)).toFixed(3));
+$(".viz_vesting_shares").html(acc.vesting_shares);
+$(".received_vesting_shares_result").html(acc.received_vesting_shares);
+$(".delegated_vesting_shares_result").html(acc.delegated_vesting_shares);
 var type = 'received';
 viz.api.getVestingDelegations(account, '', 100, type, function(err, res) {
   if ( ! err) {
@@ -1899,7 +1903,7 @@ button.addEventListener('click', function () {
 var create_private_invite_key = $('#create_invite_key').val();
 $("#create_private_invite_key_result").html(create_private_invite_key);
 $("#invite_reg_link").html('https://liveblogs.space/reg.html?invite=' + create_private_invite_key);
-$("#create_invite_amount").html(create_invite_amount);
+$("#create_invite_result_amount").html(create_invite_amount);
 		var create_invite_key = viz.auth.wifToPublic(create_private_invite_key);
 viz.broadcast.createInvite(active_key, account, create_invite_amount, create_invite_key, function(err, result) {
 if (!err) {
@@ -2028,7 +2032,7 @@ var to = op[1].to;
 var amount = op[1].amount;
 var memo = op[1].memo;
 
-	   if (from && to && amount && memo) {
+	   if (from && to && amount) {
   jQuery("#transfer_history_tbody").append('<tr class="filtered ' + from + '"><td>' + transfer_datetime + '</td>\
 <td><a href="user.html?author=' + from + '" target="_blank">@' + from + '</a></td>\
 <td><a href="user.html?author=' + to + '" target="_blank">@' + to + '</a></td>\
