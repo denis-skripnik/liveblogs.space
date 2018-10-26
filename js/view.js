@@ -1307,6 +1307,9 @@ function Init()
 			document.getElementById('x5').classList.remove('col-lg-5');
 			document.getElementById('x5').classList.add('col-lg-12');
 		}
+
+    getFollowingMe();
+    getFollowersMe();
 	}
 	//jQuery('#items_list_wrapper').height = window.heigh - 120;	
 	//document.getElementById("items_list_wrapper").style.maxHeight = jQuery(window).height() - 120;
