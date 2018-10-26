@@ -368,7 +368,7 @@ function getDiscussionsByAuthor(author)
 			for(operation of data)
 			{
 				//console.log(operation);
-				if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 				AddBlockX(operation);
 }
 				}//);
@@ -397,7 +397,7 @@ function getDiscussionsByBlog(author)
 			for(operation of data)
 			{
 				if(operation.author === author) {
-					if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
+					if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 				AddBlockX(operation);
 }
 				}
@@ -416,7 +416,7 @@ function getDiscussionsTrending()
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 			AddBlockX(operation);
 }
 			});
@@ -434,7 +434,7 @@ function getDiscussionsPopular(date)
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 			AddBlockX(operation);
 }
 			});
@@ -475,7 +475,7 @@ function getDiscussionsByTags(tags)
 			if(data.length > 0)
 			{			
 				data.forEach(function (operation){
-					if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
+					if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 				AddBlockX(operation);
 }
 				});
@@ -516,7 +516,7 @@ function getDiscussions(start_author, start_permlink)
             //data.forEach(function (operation)
 			for(operation of data)
 			{
-				if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 		AddBlockX(operation);
 }
 		}//);
@@ -564,7 +564,7 @@ function getDiscussionsByFeed(login, start_author, start_permlink)
 					if ( ! err) {
 					 result.forEach(function(item) {
 if (item.following === operation.author)
-if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
+if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 	AddBlockX(operation);
 }
 	});
@@ -620,7 +620,7 @@ data.sort(function(a, b) {
 					if ( ! err) {
 					 result.forEach(function(item) {
 if (item.following != operation.author)
-if (operation.curation_percent === 5000 && operation.beneficiaries && operation.beneficiaries.length && operation.beneficiaries[0].account === 'denis-skripnik' || operation.beneficiaries[1].account === 'denis-skripnik') {
+if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 	AddBlockX(operation);
 }
 	});
@@ -686,7 +686,7 @@ function getContentX(permlink, author)
 		}
 
 		var result = data;
-		if (result.curation_percent === 5000 && result.beneficiaries && result.beneficiaries.length && result.beneficiaries[0].account === 'denis-skripnik' || result.beneficiaries[1].account === 'denis-skripnik') {
+		if (result.curation_percent === 5000 && Array.isArray(result.beneficiaries) && result.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 		marked.setOptions({
 		  renderer: new marked.Renderer(),
 		  gfm: true,
