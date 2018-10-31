@@ -306,8 +306,63 @@ var shares_payout_value = parseFloat(operation.shares_payout_value)+parseFloat(o
 var beneficiary_payout_value = parseFloat(operation.beneficiary_payout_value)*0.02439024390243902;
 		vl = 'авторских: ' + operation.payout_value + ' и ' + shares_payout_value.toFixed(6) + ' SHARES, ' + 'Кураторских: ' + operation.curator_payout_value + ', Бенефициарских: ' + beneficiary_payout_value.toFixed(6) + ' SHARES';
 	}
-	var content_body = operation.body;
+		marked.setOptions({
+		  renderer: new marked.Renderer(),
+		  gfm: true,
+		  tables: true,
+		  breaks: true,
+		  pedantic: false,
+		  sanitize: false,
+		  smartLists: true,
+		  smartypants: false,
+		});
+		/*var re = /https:\/\/golos.io/gi;
+		var newbody = operation.body.replace(re, 'https://liveblogs.space');
+		var re = /https:\/\/golos.blog/gi;
+		var newbody = newbody.replace(re, 'https://liveblogs.space');
+		var re = /https:\/\/goldvoice.club/gi;
+		var newbody = newbody.replace(re, 'https://liveblogs.space');*/
+		var newbody = marked(operation.body);
+	//	console.log(newbody);
+		newbody = prepareContent(newbody);
+      newbody = newbody.replace(/<[^>]*>/g, "");
+      newbody = newbody.replace(/https?:\/\/[^\s]+/g, "");
+		
+	  var options = {
+ whiteList: {
+	iframe: ['width', 'height', 'src', 'frameborder', 'allow', 'allowfullscreen'],
+			  a: ['href', 'title', 'target'],
+			  table: [],
+			  img: ['width', 'height', 'src', 'title', 'alt'],
+			  td: [],
+th: [],
+tr: [],
+h1: [],
+h2: [],
+h3: [],
+h4: [],
+h5: [],
+h6: [],
+br: [],
+hr: [],
+blockquote: [],
+p: [],
+em: [],
+small: [],
+b: [],
+strong: [],
+ul: [],
+ol: [],
+li: [],
+center: [],
+code: [],
+del: []
+}, onTagAttr: (tag, name, value, isWhite) => {if(tag == "a" && name== "href" && value.match(/^user.html/)) {return 'href="'+value+'"';}}
+};
 
+		   var content_body = filterXSS(newbody, options);
+
+	
 	var tags = '';
 	if(typeof metadata.tags !== undefined)
 	{
@@ -384,6 +439,7 @@ function getDiscussionsByBlog(author)
 	 {
 		 'limit': 100,
 		 "select_authors": [author],
+'truncate_body': 40,
 		 'select_tags': ['liveblogs']
 		 }
 	 viz.api.getDiscussionsByBlog(params, function(err, data){
@@ -397,7 +453,7 @@ function getDiscussionsByBlog(author)
 			for(operation of data)
 			{
 				if(operation.author === author) {
-					if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 				AddBlockX(operation);
 }
 				}
@@ -410,7 +466,7 @@ function getDiscussionsByBlog(author)
 function getDiscussionsTrending() 
 {
 	document.getElementById('loader').style = 'display:block';
-	viz.api.getDiscussionsByTrending({"limit": 100, 'select_tags': ['liveblogs']}, function(err, data){
+	viz.api.getDiscussionsByTrending({"limit": 100, 'truncate_body': 40, 'select_tags': ['liveblogs']}, function(err, data){
 		//console.log(err,data);
 		
 		if(data.length > 0)
@@ -428,7 +484,7 @@ function getDiscussionsTrending()
 function getDiscussionsPopular(date)
 {
 	document.getElementById('loader').style = 'display:block';
-	viz.api.getDiscussionsByHot({"limit": 100, 'select_tags': ['liveblogs']}, function(err, data){
+	viz.api.getDiscussionsByHot({"limit": 100, 'truncate_body': 40, 'select_tags': ['liveblogs']}, function(err, data){
 		//console.log(err,data);
 		
 		if(data.length > 0)
@@ -475,7 +531,7 @@ function getDiscussionsByTags(tags)
 			if(data.length > 0)
 			{			
 				data.forEach(function (operation){
-					if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 				AddBlockX(operation);
 }
 				});
@@ -564,7 +620,7 @@ function getDiscussionsByFeed(login, start_author, start_permlink)
 					if ( ! err) {
 					 result.forEach(function(item) {
 if (item.following === operation.author)
-if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 	AddBlockX(operation);
 }
 	});
@@ -620,7 +676,7 @@ data.sort(function(a, b) {
 					if ( ! err) {
 					 result.forEach(function(item) {
 if (item.following != operation.author)
-if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 	AddBlockX(operation);
 }
 	});
@@ -686,7 +742,7 @@ function getContentX(permlink, author)
 		}
 
 		var result = data;
-		if (result.curation_percent === 5000 && Array.isArray(result.beneficiaries) && result.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (result.curation_percent === 5000 && Array.isArray(result.beneficiaries) && result.beneficiaries.some(b => b.account === 'denis-skripnik')) {
 		marked.setOptions({
 		  renderer: new marked.Renderer(),
 		  gfm: true,
@@ -802,11 +858,11 @@ var vyplata = result.cashout_time;
 			}
 			if(user.following.includes(author))
 			{
-				follow += "<button class='btn btn-warning' onClick='follow(\""+author+"\"); style.display=\"none\"'>Отписаться</button> ";
+				follow += "<button class='btn btn-warning' onClick='follow(\""+author+"\", \"\"); style.display=\"none\"'>Отписаться</button> ";
 			}
 			else
 			{
-				follow += "<button class='btn btn-success' onClick='follow(\""+author+"\"); style.display=\"none\"'>Подписаться</button> ";
+			follow += "<button class='btn btn-success' onClick='follow(\""+author+"\", \"\"); style.display=\"none\"'>Подписаться</button> ";
 			}			
 			follow += "<button class='btn btn-danger' onClick='ignore(\""+author+"\"); style.display=\"none\"'>Игнорировать</button> ";
 			follow += '</span>';
@@ -974,8 +1030,13 @@ function isVoted(permlink, author, voter)
 					data.forEach(function(operation){
 						if(operation.voter == voter)
 						{
-							document.getElementById('my_vote').innerHTML = '<hr><div>Оценено мной на <strong>'+operation.percent / 5+' %</strong></div>';
+							document.getElementById('my_vote').innerHTML = '<hr><div>Поддержано мной на <strong>'+operation.percent / 5+' %</strong><hr><input type="button" id="show_vote_form" value="Поддержать с другим процентом"></div>';
 							document.getElementById('vote_form').style = 'display: none';
+
+							$("#show_vote_form").click(function(){
+$('#show_vote_form').css("display", "none");
+$('#vote_form').css("display", "block");
+});
 						}
 					});
 				}
@@ -1006,10 +1067,61 @@ function addComentX(operation)
 	main_div.appendChild(header);
 	header.appendChild(ava);
 		
-	var answer = document.createElement("div");
+		marked.setOptions({
+		  renderer: new marked.Renderer(),
+		  gfm: true,
+		  tables: true,
+		  breaks: true,
+		  pedantic: false,
+		  sanitize: false,
+		  smartLists: true,
+		  smartypants: false,
+		});
+		/*var re = /https:\/\/golos.io/gi;
+		var newbody = operation.body.replace(re, 'https://liveblogs.space');
+		var re = /https:\/\/golos.blog/gi;
+		var newbody = newbody.replace(re, 'https://liveblogs.space');
+		var re = /https:\/\/goldvoice.club/gi;
+		var newbody = newbody.replace(re, 'https://liveblogs.space');*/
+		var newbody = marked(operation.body);
+		newbody = prepareContent(newbody);
+		
+var options = {
+ whiteList: {
+	iframe: ['width', 'height', 'src', 'frameborder', 'allow', 'allowfullscreen'],
+			  a: ['href', 'title', 'target'],
+			  table: [],
+			  img: ['width', 'height', 'src', 'title', 'alt'],
+			  td: [],
+th: [],
+tr: [],
+h1: [],
+h2: [],
+h3: [],
+h4: [],
+h5: [],
+h6: [],
+br: [],
+hr: [],
+blockquote: [],
+p: [],
+em: [],
+small: [],
+b: [],
+strong: [],
+ul: [],
+ol: [],
+li: [],
+center: [],
+code: [],
+del: []
+}, onTagAttr: (tag, name, value, isWhite) => {if(tag == "a" && name== "href" && value.match(/^user.html/)) {return 'href="'+value+'"';}}
+};
+
+		var answer = document.createElement("div");
 	answer.classList.add("panel-body");
 	answer.id = 'body_' + operation.permlink.trim();
-		answer.innerHTML = marked(operation.body);
+		answer.innerHTML = filterXSS(newbody, options);
 	if(isLoggedIn())
 	{
 		actions.innerHTML = '<a href="javascript:void(0);" onClick="document.getElementById(\'id_'+operation.permlink+'\').style.display = \'block\'; this.style.display = \'none\';" class="reply">Ответить</a>';
@@ -1123,6 +1235,7 @@ function sendComment(permlink, author, txt_id, button, hide)
 	var date = new Date();
 	var dt = date.getFullYear() + date.getMonth().toString() + date.getDate().toString()+ 't' + date.getHours().toString() + date.getMinutes().toString() + date.getSeconds().toString() + date.getMilliseconds().toString() + 'z';
 	var new_permlink = 're-' + author + '-' + pl + '-' + dt;
+	var json_metadata = {};
 	if(text && login)
 	{
 		var key = getPostingKey();
@@ -1130,6 +1243,12 @@ function sendComment(permlink, author, txt_id, button, hide)
 		{
 			const benecs = [{account: user.login, weight:4000}];
 			if(user.login != "denis-skripnik") benecs.push({account: "denis-skripnik", weight:100});
+			var comment_users = text.match(/@([a-z0-9.-]+)/g);
+		json_metadata.app = 'liveblogs.space';
+		json_metadata.format = 'markdown';
+		if (comment_users) {
+		json_metadata.users = [comment_users];
+		}
 			viz.broadcast.content(key,
 			author,
 			permlink,
@@ -1138,7 +1257,7 @@ function sendComment(permlink, author, txt_id, button, hide)
 			'',
 			text,
 5000,
-'{"app":"liveblogs.space","format":"text"}',
+JSON.stringify(json_metadata),
 [[ 0, {"beneficiaries":benecs} ]],
 			function(err, result) {
 				console.log(err);
@@ -1197,11 +1316,18 @@ function editComment(parent_author, parent_permlink, permlink, author, txt_id, b
 	}
 	var date = new Date();
 	var dt = date.getFullYear() + date.getMonth().toString() + date.getDate().toString()+ 't' + date.getHours().toString() + date.getMinutes().toString() + date.getSeconds().toString() + date.getMilliseconds().toString() + 'z';
+	var json_metadata = {};
 	if(text && login)
 	{
 		var key = getPostingKey();
 		if(key)
 		{
+			var comment_users = text.match(/@([a-z0-9.-]+)/g);
+		json_metadata.app = 'liveblogs.space';
+		json_metadata.format = 'markdown';
+		if (post_users) {
+		json_metadata.users = [comment_users];
+		}
 			viz.broadcast.content(key,
 				parent_author,
 				parent_permlink,
@@ -1210,7 +1336,7 @@ function editComment(parent_author, parent_permlink, permlink, author, txt_id, b
 				'',
 				text,
 	5000,
-	'{"app":"liveblogs.space","format":"text"}',
+	JSON.stringify(json_metadata),
 [],
 				function(err, result) {
 					console.log(err);
@@ -1299,7 +1425,26 @@ function Init()
 		jQuery('#login_div').hide();
 		jQuery('#hello').html('Привет, <a href="user.html?author=' + user.login + '" target="_blank">@' + user.login + '</a>');
 		getUserPower(user.login);
-		
+
+viz.api.getAccounts([localStorage.getItem('login')], function(err, result){
+	var all_shares = parseFloat(result[0].vesting_shares) - parseFloat(result[0].delegated_vesting_shares) + parseFloat(result[0].received_vesting_shares);
+var vote_shares = all_shares * 1000000 *2000 / 10000 / 20;
+
+	viz.api.getChainProperties(function(err, result) {
+		if (!err) {
+var vote_accounting_min_rshares = result.vote_accounting_min_rshares * 5;
+var minPercent = 100/(vote_shares / vote_accounting_min_rshares);
+var min_percent = minPercent.toFixed();
+if (min_percent <=100) {
+$('input[name=power]').attr("min", min_percent);
+} else if (min_percent > 100) {
+	$('input[type=range]').attr("min", 100);
+}
+}
+		  else console.error(err);
+	  });
+	});
+
 		//check options
 		if(localStorage.getItem('open') == 'true')
 		{
@@ -1307,10 +1452,10 @@ function Init()
 			document.getElementById('x5').classList.remove('col-lg-5');
 			document.getElementById('x5').classList.add('col-lg-12');
 		}
-
     getFollowingMe();
     getFollowersMe();
-	}
+
+		}
 	//jQuery('#items_list_wrapper').height = window.heigh - 120;	
 	//document.getElementById("items_list_wrapper").style.maxHeight = jQuery(window).height() - 120;
 	//document.getElementById("items_list_wrapper").height = jQuery(window).height() - 120;
@@ -1346,48 +1491,22 @@ function storeKeyLocally()
 	}
 }
 
-viz.api.getAccounts([localStorage.getItem('login')], function(err, result){
-	var all_shares = parseFloat(result[0].vesting_shares) - parseFloat(result[0].delegated_vesting_shares) + parseFloat(result[0].received_vesting_shares);
-var vote_shares = all_shares * 1000000 *2000 / 10000 / 20;
-
-	viz.api.getChainProperties(function(err, result) {
-		if (!err) {
-var vote_accounting_min_rshares = result.vote_accounting_min_rshares * 5;
-var minPercent = 100/(vote_shares / vote_accounting_min_rshares);
-var min_percent = minPercent.toFixed();
-if (min_percent <=100) {
-$('input[name=power]').attr("min", min_percent);
-} else if (min_percent > 100) {
-	$('input[type=range]').attr("min", 100);
-}
-}
-		  else console.error(err);
-	  });
-	});
-
-
 function getUserPower(login)
 {
 	var timerId = setInterval(function() {
 	
-		viz.api.getAccounts([login], function(err, result){
-	var power = result[0].energy;//Voting Power последнего апа
-	var votetime = Date.parse(result[0].last_vote_time);//время последнего апа
-  viz.api.getDynamicGlobalProperties(function(err, result) {  
-	var curtime = Date.parse(result.time);//время последнего известного блока чейна
-viz.api.getConfig(function(err, config_res) {
-var CHAIN_ENERGY_REGENERATION_SECONDS = 10000 / config_res.CHAIN_ENERGY_REGENERATION_SECONDS;
-
-	var volume =(power+((curtime-votetime)/1000)* CHAIN_ENERGY_REGENERATION_SECONDS);//расчет текущей Voting Power
-	var charge;	//перемнная для приёма volume и вывода в консоль
-	if(volume>=10000)charge=100.00;
-	else charge=+(volume/100).toFixed(2); //округление значения volume до второго знака
-  
-			jQuery('#battery').html( '<a href="#energyHelp" class="btn btn-primary" data-toggle="modal">твоя энергия</a>: ' + charge + '%');
-		});
-	});
-});
-
+    viz.api.getAccounts([login],function(err,response){
+	if(typeof response[0] !== 'undefined'){
+        let last_vote_time=Date.parse(response[0].last_vote_time);
+        let delta_time=parseInt((new Date().getTime() - last_vote_time+(new Date().getTimezoneOffset()*60000))/1000);
+        let energy=response[0].energy;
+        let new_energy=parseInt(energy+(delta_time*10000/432000));//CHAIN_ENERGY_REGENERATION_SECONDS 5 days
+        if(new_energy>10000){
+          new_energy=10000;
+        }
+	jQuery('#battery').html( '<a href="#energyHelp" class="btn btn-primary" data-toggle="modal">твоя энергия</a>: ' + new_energy/100 + '%');
+      }
+    });
 }, 3000);
 	  jQuery('#avatar').append('<div id="energyHelp" class="modal fade">\
 	  <div class="modal-dialog">\
@@ -1400,7 +1519,7 @@ var CHAIN_ENERGY_REGENERATION_SECONDS = 10000 / config_res.CHAIN_ENERGY_REGENERA
 <ol><li>Энергия - показатель в блокчейне VIZ, который уменьшается при оценке постов, создании нового аккаунта и понижении доли (SHARES);</li>\
 <li>За сутки восстанавливается 20%;</li>\
 <li>На liveblogs.space оценка поста в 100% тратит 1% энергии, т.е. в сутки так, чтобы энергия на следующий день восстановилась, вы можете делать 20 оценок. Если же вы готовы ждать восстановления, например, 5 дней, можете проголосовать 100 раз;</li>\
-<li>Между кнопками "оценить на ...%" и флагом есть ещё одна: "Пост - огонь!" - она тратит 20% энергии, т.е. будет она восстанавливаться сутки до прежних значений.</li></ol>\
+<li>Между кнопками "Поддержать автора на ...%" и флагом есть ещё одна: "Пост - огонь!" - она тратит 20% энергии, т.е. будет она восстанавливаться сутки до прежних значений.</li></ol>\
 		  </div>\
 		  <div class="modal-footer">\
 			<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
@@ -1502,7 +1621,8 @@ function postBlog(title, tags)
 		return;
 	}
 	
-var full_tags = tags + " liveblogs";
+	var json_metadata = {};
+	var full_tags = tags + " liveblogs";
 	var t = full_tags.split(' ');
 	var t2 = [];
 	t.forEach(function(item){
@@ -1510,7 +1630,7 @@ var full_tags = tags + " liveblogs";
 				
 	});
 	t2 = unique(t2);
-	tags = t2.join('","');
+	json_metadata.tags = t2;
 	var new_permlink = title;
 	new_permlink = new_permlink.replace(/\s+/g,"-");	
 	
@@ -1518,7 +1638,7 @@ var full_tags = tags + " liveblogs";
 	
 	if(image)
 	{
-		img = ', "image": ["'+image+'"]';
+		json_metadata.image = [image];
 	}
 	
 	new_permlink = detransliterate(new_permlink, 1).toLowerCase();
@@ -1531,15 +1651,22 @@ window.alert("пост с таким url уже есть. Пожалуйста, 
     } else {
 	const benecs = [{account: user.login, weight:4000}];
 	if(user.login != "denis-skripnik") benecs.push({account: "denis-skripnik", weight:100});
-	viz.broadcast.content(key,
+	var body = editor.getMarkdown().trim();
+	var post_users = body.match(/@([a-z0-9.-]+)/g);
+json_metadata.app = 'liveblogs.space';
+json_metadata.format = 'markdown';
+if (post_users) {
+json_metadata.users = [post_users];
+}
+viz.broadcast.content(key,
 			'',
 			'',
 			user.login,
 			new_permlink,
 			title.trim(),
-			editor.getMarkdown().trim(),
+			body,
 			5000,
-			'{"tags":["'+tags+'"], "app": "liveblogs.space", "format": "markdown"'+img+'}',
+			JSON.stringify(json_metadata),
 			[[ 0, {"beneficiaries":benecs} ]],
 			function(err, result) {
 				if(err)
@@ -1588,7 +1715,8 @@ function editPostBlog(author, permlink, title, tags)
 		return;
 	}
 	
-var full_tags = tags + " liveblogs";
+	var json_metadata = {};
+	var full_tags = tags + " liveblogs";
 	var t = full_tags.split(' ');
 	var t2 = [];
 	t.forEach(function(item){
@@ -1596,25 +1724,32 @@ var full_tags = tags + " liveblogs";
 				
 	});
 	t2 = unique(t2);
-	tags = t2.join('","');
+	json_metadata.tags = t2;
 	
 	var img = '';
 	
 	if(image)
 	{
-		img = ', "image": ["'+image+'"]';
+		json_metadata.image = [image];
 	}
 	
 	console.log(permlink, tags, user.login, title, editor.getMarkdown().trim());
+	var body = editor.getMarkdown().trim();
+	var post_users = body.match(/@([a-z0-9.-]+)/g);
+json_metadata.app = 'liveblogs.space';
+json_metadata.format = 'markdown';
+if (post_users) {
+json_metadata.users = [post_users];
+}
 	viz.broadcast.content(key,
 			'',
 			'',
 			author,
 			permlink,
 			title.trim(),
-			editor.getMarkdown().trim(),
+			body,
 			5000,
-			'{"tags":["'+tags+'"], "app": "liveblogs.space", "format": "markdown"'+img+'}',
+			JSON.stringify(json_metadata),
 [],
 			function(err, result) {
 				if(err)
