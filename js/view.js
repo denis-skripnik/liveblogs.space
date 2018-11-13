@@ -1,12 +1,38 @@
-if(localStorage.getItem('node'))
-{
-	viz.config.set('websocket', localStorage.getItem('node'));
-}
-else
-{
-	viz.config.set('websocket','wss://ws.viz.ropox.tools');
-}
-var globalVars = new Object();
+function checkWorkingNode() {
+	const NODES = [
+	 "wss://ws.viz.ropox.too", 
+	 "wss://ws.viz.ropox.tools", 
+	 "wss://api.viz.blckchnd.com/ws", 
+	 "wss://lexai.host/ws"
+	];
+	let node = localStorage.getItem("node") || NODES[0];
+	const idx = Math.max(NODES.indexOf(node), 0);
+	let checked = 0;
+	const find = (idx) => {
+	 if(idx >= NODES.length) {
+	  idx = 0;
+	 }
+	 if(checked >= NODES.length) {
+	  alert("no working nodes found");
+	  return;
+	 }
+	 node = NODES[idx];
+	 viz.api.stop();
+	 viz.config.set("websocket", node);
+	 viz.api.getDynamicGlobalPropertiesAsync()
+	  .then(props => {
+	   console.log("found working node", node);
+	   localStorage.setItem("node", node);
+	  })
+	  .catch(e => {
+	   console.log("connection error", node, e);
+	   find(idx+1);
+	  });
+	}
+	find(idx);
+   }
+checkWorkingNode();
+	var globalVars = new Object();
 var article = new Object();
 var user = new Object();
 var startAuthor;
@@ -97,6 +123,11 @@ function isLoggedIn()
 	return false;
 }
 
+var wordForm = function(num,word){  
+	cases = [2, 0, 1, 1, 1, 2];  
+	return word[ (num%100>4 && num%100<20)? 2 : cases[(num%10<5)?num%10:5] ];  
+}
+
 function getFollowersCount()
 {
 	var login = localStorage.getItem('login');
@@ -171,7 +202,8 @@ function getFollowingMe()
 				user.following[i] = operation.following;	
 				i++;
 			});
-			//console.log(user.following);
+// console.log(user.following);
+window.onFollowingLoaded(user.following)
 		}else{
 			console.log(err);
 		}
@@ -204,8 +236,8 @@ if (percent == 100) {
 
 function votePost(power, permlink, author)
 {
-	voter = user.login;
-	var full_weight = power * 100;
+voter = user.login;
+var full_weight = power * 100;
 	var weight = full_weight/20;
 	var key = localStorage.getItem(voter);
 	if(key == '')
@@ -227,13 +259,13 @@ function votePost(power, permlink, author)
 				  console.log(err);
 			 }
 		});
-		}
+	}
 
 function maximumVote(permlink, author) {
-var q = window.confirm('Это действие приведет к голосованию с силой в 2000%. При этом вы израсходуете 20% энергии на восстановление которой потребуется 24 часа, но автор получит больше выплаты. Также вы порекомендуете его своим подписчикам. Чтобы узнать, что такое "энергия", нажмите на ссылку "Твоя энергия" вверху страницы. Вы действительно хотите сделать его?')
+var q = window.confirm('Воспользовавшись этой кнопкой, вы подарите 2000 улыбок. Просим обратить внимание на то, что они восстанавливаются сутки (Если вы нажмёте эту кнопку 2 раза в одни сутки, придётся ждать 2 дня для полного восстановления их количества. Также вы порекомендуете пост своим подписчикам. Вы действительно хотите подарить 2000 улыбок?')
 if (q === true) {
 if (author === user.login) {
-alert('Голосование за себя при помощи данной кнопки недопустимо.')
+alert('Улыбаться самому себе при помощи данной кнопки недопустимо.')
 } else {
 	votePost(2000, permlink, author); ReblogUpvote(100, permlink, author);
 }
@@ -289,12 +321,24 @@ function AddBlockX(operation)
 	var pending_payout_value = operation.pending_payout_value;
 	var total_pending_payout_value = operation.total_pending_payout_value;
 var curation_percent = operation.curation_percent/100;
+var upvote_percents = 0;
+operation.active_votes.forEach(function(item) {
+	if (item.percent / 5 < 0) {
+upvote_percents += 1;
+	}
+	});
+if (upvote_percents > 0) {
+var data_upvotes = operation.active_votes.length-upvote_percents;
+} else {
+	var data_upvotes = operation.active_votes.length;
+}
+
 if (operation.active_votes.length !== 0) {
-var votes = ' Голосов <strong>' + operation.active_votes.length + '</strong> ';
+	var votes = wordForm(data_upvotes, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' <strong>' + data_upvotes + wordForm(data_upvotes, [' человек', ' человека', ' человек']) + '</strong> ';
 } else if (operation.cashout_time === "1969-12-31T23:59:59") {
 	var votes = '';
 } else {
-	var votes = ' Голосов <strong>' + operation.active_votes.length + '</strong> ';
+	var votes = wordForm(data_upvotes, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' <strong>' + data_upvotes + wordForm(data_upvotes, [' человек', ' человека', ' человек']) + '</strong> ';
 }
 
 var vl = total_pending_payout_value;
@@ -356,6 +400,8 @@ ol: [],
 li: [],
 center: [],
 code: [],
+thead: [],
+tbody: [],
 del: []
 }, onTagAttr: (tag, name, value, isWhite) => {if(tag == "a" && name== "href" && value.match(/^user.html/)) {return 'href="'+value+'"';}}
 };
@@ -398,7 +444,7 @@ var edit_post = '(<a href="edit.html?author=' + operation.author + '&permlink=' 
 var edit_post = '';
 }
 
-	q_div.innerHTML = '<div class="q_header_wrapper"><h3><a href="'+h+'" '+s+'>'+ title + '</a>' + edit_post + '</h3></div>' +  dt +' - Автор: <a href="user.html?author='+ author +'" title="Все посты пользователя">@' + author + '</a>' + '<br/>' + votes + 'Сумма <strong>' + vl + '</strong>  Отдаёт кураторам: <strong>' + curation_percent + '%</strong> выплаты<br/>' + tags + '<div class="anons_body">' + content_body + '</div>';
+	q_div.innerHTML = '<div class="q_header_wrapper"><h3><a href="'+h+'" '+s+'>'+ title + '</a>' + edit_post + '</h3></div>' +  dt +' - <a href="user.html?author='+ author +'" title="Все посты пользователя">@' + author + '</a>' + '<br/>' + votes + 'Сумма <strong>' + vl + '</strong>  Возвращает улыбнувшимся <strong>' + curation_percent + '%</strong> выплаты<br/>' + tags + '<div class="anons_body">' + content_body + '</div>';
 	
 	var clearFix = document.createElement("div");
 	clearFix.classList.add("clearFix");
@@ -423,7 +469,7 @@ function getDiscussionsByAuthor(author)
 			for(operation of data)
 			{
 				//console.log(operation);
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 				AddBlockX(operation);
 }
 				}//);
@@ -453,7 +499,7 @@ function getDiscussionsByBlog(author)
 			for(operation of data)
 			{
 				if(operation.author === author) {
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 				AddBlockX(operation);
 }
 				}
@@ -472,7 +518,7 @@ function getDiscussionsTrending()
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 			AddBlockX(operation);
 }
 			});
@@ -490,7 +536,7 @@ function getDiscussionsPopular(date)
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 			AddBlockX(operation);
 }
 			});
@@ -531,7 +577,7 @@ function getDiscussionsByTags(tags)
 			if(data.length > 0)
 			{			
 				data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 				AddBlockX(operation);
 }
 				});
@@ -572,7 +618,7 @@ function getDiscussions(start_author, start_permlink)
             //data.forEach(function (operation)
 			for(operation of data)
 			{
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 		AddBlockX(operation);
 }
 		}//);
@@ -616,24 +662,18 @@ function getDiscussionsByFeed(login, start_author, start_permlink)
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-				viz.api.getFollowing(login, '', 'blog', 100, function(err, result) {
-					if ( ! err) {
-					 result.forEach(function(item) {
-if (item.following === operation.author)
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (user.following.includes(operation.author)) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 	AddBlockX(operation);
+				}
 }
-	});
-		}
-		else console.error(err);
 		});
-			});
-		}
+	}
 		document.getElementById('loader').style = 'display:none'; 
 	});
 }
 
-function getReblogsPost(login, start_author, start_permlink)
+  function getRecomendationPosts(login, start_author, start_permlink)
 {
 	document.getElementById('loader').style = 'display:block';
 	 start_author = typeof start_author !== 'undefined' ?  start_author : '';
@@ -664,7 +704,11 @@ function getReblogsPost(login, start_author, start_permlink)
      }
 	viz.api.getDiscussionsByFeed(params, function(err, data){
 		//console.log(err,data);
-data.sort(function(a, b) {
+ 		let index = {};
+		let key = (p) => p.author + ":" + p.permlink;
+		let check = (p) => {if(!index[key(p)]) {index[key(p)] = 1; return true}}
+		data = data.filter(p => check(p));
+		data.sort(function(a, b) {
   if(a.active_votes_count < b.active_votes_count) return -1;
   if(a.active_votes_count > b.active_votes_count) return 1;
   return 0;
@@ -672,17 +716,11 @@ data.sort(function(a, b) {
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-				viz.api.getFollowing(login, '', 'blog', 100, function(err, result) {
-					if ( ! err) {
-					 result.forEach(function(item) {
-if (item.following != operation.author)
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+if (!user.following.includes(operation.author)) {
+				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 	AddBlockX(operation);
 }
-	});
-		}
-		else console.error(err);
-		});
+}
 			});
 		}
 		document.getElementById('loader').style = 'display:none'; 
@@ -707,6 +745,7 @@ function setLocation(curLoc){
     location.hash = '#' + curLoc;
 }
 
+var content_users = '';
 function getContentX(permlink, author)
 {
 	article.permlink = permlink;
@@ -742,7 +781,7 @@ function getContentX(permlink, author)
 		}
 
 		var result = data;
-				if (result.curation_percent === 5000 && Array.isArray(result.beneficiaries) && result.beneficiaries.some(b => b.account === 'denis-skripnik')) {
+				if (result.curation_percent === 5000 && Array.isArray(result.beneficiaries) && result.beneficiaries.some(b => b.account === result.author)) {
 		marked.setOptions({
 		  renderer: new marked.Renderer(),
 		  gfm: true,
@@ -793,6 +832,8 @@ ol: [],
 li: [],
 center: [],
 code: [],
+thead: [],
+tbody: [],
 del: []
 }, onTagAttr: (tag, name, value, isWhite) => {if(tag == "a" && name== "href" && value.match(/^user.html/)) {return 'href="'+value+'"';}}
 };
@@ -817,15 +858,23 @@ if (metadata.tags[i] !== 'liveblogs') {
 				}
 		}
 	}	
-		var dt = date.toLocaleDateString("ru-RU") + ' ' + date.toLocaleTimeString("ru-RU");
+	if (user.login === result.author) {
+		$('#notify_users').css("display", "block");
+		} else {
+			$('#notify_users').css("display", "none");
+		}
+		
+	var dt = date.toLocaleDateString("ru-RU") + ' ' + date.toLocaleTimeString("ru-RU");
 	  
 var curation_percent = result.curation_percent/100;
 if (result.active_votes.length !== 0) {
-var votes = 'Голосов <strong>'+result.active_votes.length+'</strong> ';
+var smile_count = $(".smile_count").html();
+	var votes = wordForm(smile_count, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' <strong><span class="smile_count"></span>'+wordForm(smile_count, [' человек', ' человека', ' человек'])+'</strong> ';
 } else if (result.cashout_time === "1969-12-31T23:59:59") {
 var votes = '';
 } else {
-var votes = 'Голосов <strong>'+result.active_votes.length+'</strong> ';
+	var smile_count = $(".smile_count").html();
+	var votes = wordForm(smile_count, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' <strong><span class="smile_count"></span>' + wordForm(smile_count, [' человек', ' человека', ' человек'])+'</strong> ';
 }
 
 var vl = result.total_pending_payout_value;
@@ -852,6 +901,7 @@ var vyplata = result.cashout_time;
 		{
 			follow = '<span class="tt" onclick="spoiler(\'follow\'); return false">больше...</span>';
 			follow += '<span id="follow" class="terms" style="display: none;">';
+if (user.login !== author) {
 			if(user.followers.includes(author))
 			{
 				follow += "<div style='float: left; margin-top: -7px; margin-right: 5px;'> <img src='images/hs.png' title='Подписан на вас'> </div>";
@@ -862,12 +912,17 @@ var vyplata = result.cashout_time;
 			}
 			else
 			{
-			follow += "<button class='btn btn-success' onClick='follow(\""+author+"\", \"\"); style.display=\"none\"'>Подписаться</button> ";
+			follow += "<button class='btn btn-success' onClick='follow(\""+author+"\", \"blog\"); style.display=\"none\"'>Подписаться</button> ";
 			}			
 			follow += "<button class='btn btn-danger' onClick='ignore(\""+author+"\"); style.display=\"none\"'>Игнорировать</button> ";
+		} else {
+content_users = metadata.users;
+			follow += '<div id="notify_users"><input type="button" value="Упомянуть всех пользователей, указанных в посте" onclick="mention(content_users, article.author, \'https://liveblogs.space/show.html?author=\' + article.author + \'&permlink=\' + article.permlink);"></div>';
+		}
 			follow += '</span>';
 		}
 		
+
 		var header = document.createElement("div");
 		if (user.login === author) {
 			var edit_post = '(<a href="edit.html?author=' + author + '&permlink=' + permlink + '" target="_blank">Редактировать</a>)';
@@ -875,9 +930,9 @@ var vyplata = result.cashout_time;
 			var edit_post = '';
 			}
 			
-setLocation('show.html?author=' + author + '&permlink=' + permlink);
+			setLocation('show.html?author=' + author + '&permlink=' + permlink);
 $('title').html(result.title + ' | Live blogs space');
-			header.innerHTML = "<h1><a href='show.html?author="+ author +"&permlink="+ permlink +"'>"+result.title+"</a>" + edit_post + "<br><small>"+dt+" Автор - <a href='user.html?author="+ author +"' title='Все посты пользователя'>@"+result.author+"</a> "+ follow + "</small></h1>" + '<p class="help-text">' + votes + 'Сумма <strong>'+vl+'</strong>  выплата '+getCommentDate(vyplata)+'  Отдаёт кураторам: <strong>'+curation_percent+'%</strong> от выплаты<br/>' + tags + '</p>';
+			header.innerHTML = "<h1><a href='show.html?author="+ author +"&permlink="+ permlink +"'>"+result.title+"</a>" + edit_post + "<br><small>"+dt+" <a href='user.html?author="+ author +"' title='Все посты пользователя'>@"+result.author+"</a> "+ follow + "</small></h1>" + '<p class="help-text">' + votes + 'Сумма <strong>'+vl+'</strong> выплата '+getCommentDate(vyplata)+'  Возвращает улыбнувшимся <strong>'+curation_percent+'%</strong> от выплаты<br/>' + tags + '</p>';
 		
 		var ava = document.createElement("div");
 		ava.style.float = 'left';
@@ -929,7 +984,8 @@ $('title').html(result.title + ' | Live blogs space');
 	}
 	});
 	
-	viz.api.getContentReplies(author, permlink, -1, function(err, data){
+
+	viz.api.getContentReplies(author, permlink, 0, function(err, data){
 		if(data.length > 0)
 		{
 			data.forEach(function(operation){
@@ -953,12 +1009,23 @@ $('title').html(result.title + ' | Live blogs space');
 		if(data.length > 0)
 		{
 			var s = '';
+var upvote_percents = 0;
 			data.forEach(function(operation){
-
-			s = s + "<a href='user.html?author="+operation.voter+"' title='"+operation.percent / 5 +"%'>@"+operation.voter+"</a> ";
+if (operation.percent / 5 >=0) {
+				s = s + "<a href='user.html?author="+operation.voter+"' title='"+operation.percent / 5 + wordForm(operation.percent / 5, [' улыбка', ' улыбки', ' улыбок']) + " '>@"+operation.voter+"</a> ";
+			} else {
+upvote_percents += 1;
+			}
 			});
-			document.getElementById('voters').innerHTML = '<hr><div>Оценили ('+data.length+'): <span class="tt" onclick="spoiler(\'all_votes\'); return false">показать</span> <span id="all_votes" class="terms" style="display: none;"><small>' + s + '</small></span></div>';
+if (upvote_percents > 0) {
+var data_upvotes = data.length-upvote_percents;
+	document.getElementById('voters').innerHTML = '<hr><div>' + wordForm(data_upvotes, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' ('+data_upvotes+'): <span class="tt" onclick="spoiler(\'all_votes\'); return false">показать</span> <span id="all_votes" class="terms" style="display: none;"><small>' + s + '</small></span></div>';
+$(".smile_count").html(data_upvotes);
+} else {
+			document.getElementById('voters').innerHTML = '<hr><div>' + wordForm(data.length, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' ('+data.length+'): <span class="tt" onclick="spoiler(\'all_votes\'); return false">показать</span> <span id="all_votes" class="terms" style="display: none;"><small>' + s + '</small></span></div>';
+			$(".smile_count").html(data.length);
 		}
+	}
 	});	
 	
 }
@@ -971,19 +1038,31 @@ function updateVotes(permlink, author)
 			if(data.length > 0)
 			{
 				var s = '';
+var upvote_percents = 0;
 				data.forEach(function(operation){
-					s = s + "<a href='user.html?author="+operation.voter+"' title='"+operation.percent / 5 +"%'>@"+operation.voter+"</a> ";
+					if (operation.percent / 5 >=0) {
+					s = s + "<a href='user.html?author="+operation.voter+"' title='"+operation.percent / 5 +wordForm(operation.percent / 5, [' улыбка', ' улыбки', ' улыбок'])+"'>@"+operation.voter+"</a> ";
+					} else {
+upvote_percents += 1;
+					}
 				});
-				document.getElementById('voters').innerHTML = '<hr><div>Оценили ('+data.length+'): <span class="tt" onclick="spoiler(\'all_votes\'); return false">показать</span> <span id="all_votes" class="terms" style="display: none;"><small>' + s + '</small></span></div>';
+				if (upvote_percents > 0) {
+					var data_upvotes = data.length-upvote_percents;
+					document.getElementById('voters').innerHTML = '<hr><div>' + wordForm(data_upvotes, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' ('+data_upvotes+'): <span class="tt" onclick="spoiler(\'all_votes\'); return false">показать</span> <span id="all_votes" class="terms" style="display: none;"><small>' + s + '</small></span></div>';
+					$(".smile_count").html(data_upvotes);
+				} else {
+					document.getElementById('voters').innerHTML = '<hr><div>' + wordForm(data.length, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' ('+data.length+'): <span class="tt" onclick="spoiler(\'all_votes\'); return false">показать</span> <span id="all_votes" class="terms" style="display: none;"><small>' + s + '</small></span></div>';
+					$(".smile_count").html(data.length);
+				}
 			}
 	});	
 }
 
-function follow(author)
+function follow(author, what)
 {
 	var login = localStorage.getItem('login');
 	var pk = getPostingKeyByLogin(login);
-	var json=JSON.stringify(['follow',{follower:login,following:author,what:['blog']}]);
+	var json=JSON.stringify(['follow',{follower:login,following:author,what:[what]}]);
 	viz.broadcast.custom(pk,[],[login],'follow',json,function(err, result){
 		console.log(err);
 		if(!err){
@@ -1028,12 +1107,11 @@ function isVoted(permlink, author, voter)
 				if(data.length > 0)
 				{
 					data.forEach(function(operation){
-						if(operation.voter == voter)
+						if(operation.voter == voter && operation.percent > 0)
 						{
-							document.getElementById('my_vote').innerHTML = '<hr><div>Поддержано мной на <strong>'+operation.percent / 5+' %</strong><hr><input type="button" id="show_vote_form" value="Поддержать с другим процентом"></div>';
+							document.getElementById('my_vote').innerHTML = '<hr><div>Ты подарил этому посту <strong>'+operation.percent / 5+wordForm(operation.percent / 5, [' улыбка', ' улыбки', ' улыбок'])+' </strong><hr><input type="button" id="show_vote_form" value="Подарить другое количество улыбок"></div>';
 							document.getElementById('vote_form').style = 'display: none';
-
-							$("#show_vote_form").click(function(){
+													$("#show_vote_form").click(function(){
 $('#show_vote_form').css("display", "none");
 $('#vote_form').css("display", "block");
 });
@@ -1063,7 +1141,7 @@ function addComentX(operation)
 	var ava = document.createElement("div");
 	ava.style.float = 'left';
 		
-	header.innerHTML = "<div><h3>"+operation.title+" <small>"+dt+" Автор - <a href='user.html?author="+operation.author+"' title='Все посты пользователя'>@"+operation.author+'</a></small></h3></div>';
+	header.innerHTML = "<div><h3>"+operation.title+" <small>"+dt+" <a href='user.html?author="+operation.author+"' title='Все посты пользователя'>@"+operation.author+'</a></small></h3></div>';
 	main_div.appendChild(header);
 	header.appendChild(ava);
 		
@@ -1183,7 +1261,7 @@ if (user.login === operation.author) {
 
 function getRepliesX(author, permlink, parent)
 {
-	viz.api.getContentReplies(author, permlink, -1, function(err, data){
+	viz.api.getContentReplies(author, permlink, 0, function(err, data){
 		//console.log(err, data);
 		if(data.length > 0)
 		{
@@ -1243,11 +1321,11 @@ function sendComment(permlink, author, txt_id, button, hide)
 		{
 			const benecs = [{account: user.login, weight:4000}];
 			if(user.login != "denis-skripnik") benecs.push({account: "denis-skripnik", weight:100});
-			var comment_users = text.match(/@([a-z0-9.-]+)/g);
+			var comment_users = text.match(/@([a-z0-9.-]{3,})/g);
 		json_metadata.app = 'liveblogs.space';
 		json_metadata.format = 'markdown';
 		if (comment_users) {
-		json_metadata.users = [comment_users];
+		json_metadata.users = comment_users;
 		}
 			viz.broadcast.content(key,
 			author,
@@ -1270,10 +1348,11 @@ JSON.stringify(json_metadata),
 						document.getElementById(txt_id).style = 'display:none';
 						button.style = 'display:none';
 					}					
-					viz.api.getContentReplies(article.author, article.permlink, -1, function(err, data){
+					viz.api.getContentReplies(article.author, article.permlink, 0, function(err, data){
 						if(data.length > 0)
 						{
-								data.forEach(function(operation){
+							document.getElementById('answers_list').innerHTML = '';
+							data.forEach(function(operation){
 									var main_div = addComentX(operation);
 									document.getElementById('answers_list').appendChild(main_div);
 									getRepliesX(operation.author, operation.permlink, main_div)
@@ -1322,12 +1401,12 @@ function editComment(parent_author, parent_permlink, permlink, author, txt_id, b
 		var key = getPostingKey();
 		if(key)
 		{
-			var comment_users = text.match(/@([a-z0-9.-]+)/g);
+			var comment_users = text.match(/@([a-z0-9.-]{3,})/g);
 		json_metadata.app = 'liveblogs.space';
 		json_metadata.format = 'markdown';
-		if (post_users) {
-		json_metadata.users = [comment_users];
-		}
+		if (comment_users) {
+		json_metadata.users = comment_users;
+	}
 			viz.broadcast.content(key,
 				parent_author,
 				parent_permlink,
@@ -1407,6 +1486,39 @@ function loadUserCard(login)
 	}); 
 }
 
+function mention(users, author, post_url) {
+var q = window.confirm('Вы действительно хотите выполнить отправку уведомлений? Это переведёт по 0.001 VIZ каждому упомянутому в посте пользователю.');
+if (q === true) {
+	var active = sjcl.decrypt(user.login + '_activeKey', localStorage.getItem('ActiveKey'));
+	var memo= "Пользователь @" + author + " упомянул вас в посте " + post_url;
+if (active) {
+	let transfers_array = users.map(user => 
+		['transfer', {from:author, to: user.replace("@",""), amount: "0.001 VIZ", memo}])
+
+		try {
+viz.broadcast.send({
+extensions: [],
+operations: transfers_array}, 
+[active], function (err, result) {
+if (!err) {
+			window.alert('Вы успешно отправили уппоминания пользователям.');
+window.alert('Внимание: После обновления страницы кнопка вновь появится, но отправлять уведомления ещё раз не рекомендуется, дабы не раздражать упомянутых в посте множеством идентичных уведомлений.');
+$('#notify_users').css('display', 'none');
+}
+});
+}
+catch(err)
+{
+console.log(err);
+}
+} else {
+alert('Для использования данной функции необходимо авторизоваться в кошельке с сохранением активного ключа в браузере.');
+}
+} else {
+	$('#notify_users').css("display", "block");
+}
+}
+
 function Init()
 {
 	if(!isLoggedIn())
@@ -1425,25 +1537,6 @@ function Init()
 		jQuery('#login_div').hide();
 		jQuery('#hello').html('Привет, <a href="user.html?author=' + user.login + '" target="_blank">@' + user.login + '</a>');
 		getUserPower(user.login);
-
-viz.api.getAccounts([localStorage.getItem('login')], function(err, result){
-	var all_shares = parseFloat(result[0].vesting_shares) - parseFloat(result[0].delegated_vesting_shares) + parseFloat(result[0].received_vesting_shares);
-var vote_shares = all_shares * 1000000 *2000 / 10000 / 20;
-
-	viz.api.getChainProperties(function(err, result) {
-		if (!err) {
-var vote_accounting_min_rshares = result.vote_accounting_min_rshares * 5;
-var minPercent = 100/(vote_shares / vote_accounting_min_rshares);
-var min_percent = minPercent.toFixed();
-if (min_percent <=100) {
-$('input[name=power]').attr("min", min_percent);
-} else if (min_percent > 100) {
-	$('input[type=range]').attr("min", 100);
-}
-}
-		  else console.error(err);
-	  });
-	});
 
 		//check options
 		if(localStorage.getItem('open') == 'true')
@@ -1500,34 +1593,21 @@ function getUserPower(login)
         let last_vote_time=Date.parse(response[0].last_vote_time);
         let delta_time=parseInt((new Date().getTime() - last_vote_time+(new Date().getTimezoneOffset()*60000))/1000);
         let energy=response[0].energy;
-        let new_energy=parseInt(energy+(delta_time*10000/432000));//CHAIN_ENERGY_REGENERATION_SECONDS 5 days
+		let effective_shares= parseFloat(response[0].vesting_shares) - parseFloat(response[0].delegated_vesting_shares) + parseFloat(response[0].received_vesting_shares);
+		let energy_shares = effective_shares*1000000/5;
+		let awarded_rshares=response[0].awarded_rshares / energy_shares;
+let bonus_energy = parseInt(awarded_rshares*2000);
+		let new_energy=parseInt(energy+(delta_time*10000/432000));//CHAIN_ENERGY_REGENERATION_SECONDS 5 days
         if(new_energy>10000){
-          new_energy=10000;
-        }
-	jQuery('#battery').html( '<a href="#energyHelp" class="btn btn-primary" data-toggle="modal">твоя энергия</a>: ' + new_energy/100 + '%');
+          new_energy=10000 + bonus_energy;
+        } else {
+			new_energy=new_energy + bonus_energy;
+		}
+	jQuery('#battery').html( 'Ты можешь подарить <span id="ulybki">' + new_energy + '</span>' + wordForm(new_energy, [' улыбка', ' улыбки', ' улыбок']));
       }
     });
 }, 3000);
-	  jQuery('#avatar').append('<div id="energyHelp" class="modal fade">\
-	  <div class="modal-dialog">\
-		<div class="modal-content">\
-		  <div class="modal-header">\
-			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
-			<h4 class="modal-title">Справка: что такое энергия, и что означает её процент?</h4>\
-		  </div>\
-		  <div class="modal-body">\
-<ol><li>Энергия - показатель в блокчейне VIZ, который уменьшается при оценке постов, создании нового аккаунта и понижении доли (SHARES);</li>\
-<li>За сутки восстанавливается 20%;</li>\
-<li>На liveblogs.space оценка поста в 100% тратит 1% энергии, т.е. в сутки так, чтобы энергия на следующий день восстановилась, вы можете делать 20 оценок. Если же вы готовы ждать восстановления, например, 5 дней, можете проголосовать 100 раз;</li>\
-<li>Между кнопками "Поддержать автора на ...%" и флагом есть ещё одна: "Пост - огонь!" - она тратит 20% энергии, т.е. будет она восстанавливаться сутки до прежних значений.</li></ol>\
-		  </div>\
-		  <div class="modal-footer">\
-			<button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>\
-		  </div>\
-		</div>\
-	  </div>\
-	</div>\
-<nav class="navbar navbar-default">\
+	  jQuery('#avatar').append('<nav class="navbar navbar-default">\
 					<div class="container-fluid">\
 						<div class="navbar-header">\
 							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#collapse_navbar" aria-expanded="false">\
@@ -1540,7 +1620,7 @@ function getUserPower(login)
 <ul class="nav navbar-nav">\
 <li class="item-120 default current active" id="blog"><a href="blog.html" >Мой блог</a></li>\
 <li class="item-120 default current" id="feed"><a href="following-posts.html" >Посты друзей</a></li>\
-<li class="item-120 default current" id="feed"><a href="reblogs.html" >Рекомендации друзей</a></li>\
+<li class="item-120 default current" id="feed"><a href="recommendations.html" >Рекомендации друзей</a></li>\
 <li class="item-120 default current" id="post"><a href="post.html" >Новый пост</a></li>\
 <li class="item-120 default current" id="wallet"><a href="wallet.html" >Кошелёк</a></li>\
 <li class="item-120 default current" id="change_profile"><a href="profile.html" >Изменить профиль</a></li>\
@@ -1575,19 +1655,18 @@ function getUrlVars() {
     });
     return vars;
 }
-
 function unique(arr) {
-  var obj = {};
-
-  for (var i = 0; i < arr.length; i++) {
-    var str = arr[i];
-    obj[str] = true; // запомнить строку в виде свойства объекта
+	var obj = {};
+  
+	for (var i = 0; i < arr.length; i++) {
+	  var str = arr[i];
+	  obj[str] = true; // запомнить строку в виде свойства объекта
+	}
+  
+	return Object.keys(obj); // или собрать ключи перебором для IE8-
   }
 
-  return Object.keys(obj); // или собрать ключи перебором для IE8-
-}
-
-function isKyr(str) {
+  function isKyr(str) {
     return /[а-яё]/i.test(str);
 }
 
@@ -1652,11 +1731,11 @@ window.alert("пост с таким url уже есть. Пожалуйста, 
 	const benecs = [{account: user.login, weight:4000}];
 	if(user.login != "denis-skripnik") benecs.push({account: "denis-skripnik", weight:100});
 	var body = editor.getMarkdown().trim();
-	var post_users = body.match(/@([a-z0-9.-]+)/g);
-json_metadata.app = 'liveblogs.space';
+	var post_users = body.match(/@([a-z0-9.-]{3,})/g);
+	json_metadata.app = 'liveblogs.space';
 json_metadata.format = 'markdown';
 if (post_users) {
-json_metadata.users = [post_users];
+json_metadata.users = post_users;
 }
 viz.broadcast.content(key,
 			'',
@@ -1735,11 +1814,11 @@ function editPostBlog(author, permlink, title, tags)
 	
 	console.log(permlink, tags, user.login, title, editor.getMarkdown().trim());
 	var body = editor.getMarkdown().trim();
-	var post_users = body.match(/@([a-z0-9.-]+)/g);
-json_metadata.app = 'liveblogs.space';
+	var post_users = body.match(/@([a-z0-9.-]{3,})/g);
+	json_metadata.app = 'liveblogs.space';
 json_metadata.format = 'markdown';
 if (post_users) {
-json_metadata.users = [post_users];
+json_metadata.users = post_users;
 }
 	viz.broadcast.content(key,
 			'',
@@ -2165,20 +2244,73 @@ var get_time = Date.parse(item[1].timestamp);
 var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
 
         var op = item[1].op;
-var from = op[1].from;
+		if (op[1].from && op[1].to && op[1].amount) {
+		var from = op[1].from;
 var to = op[1].to;
 var amount = op[1].amount;
-var memo = op[1].memo;
-
-	   if (from && to && amount) {
+if (op[1].memo) {
+var memo = prepareContent(op[1].memo);
+} else if (op[0] === 'transfer_to_vesting') {
+	var memo = 'Перевод в SHARES.';
+} else {
+	var memo = '';
+}
   jQuery("#transfer_history_tbody").append('<tr class="filtered ' + from + '"><td>' + transfer_datetime + '</td>\
 <td><a href="user.html?author=' + from + '" target="_blank">@' + from + '</a></td>\
 <td><a href="user.html?author=' + to + '" target="_blank">@' + to + '</a></td>\
 <td>' + amount + '</td>\
 <td>' + memo + '</td>\
   </tr>');
+  } else if (op[0] === 'curation_reward') {
+  var content_author = op[1].content_author;
+var content_permlink = op[1].content_permlink;
+  var curator = op[1].curator;
+  var reward = op[1].reward;
+var memo = 'Награда за то, что вы подарили улыбки посту <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+jQuery("#transfer_history_tbody").append('<tr class="filtered_curation_reward"><td>' + transfer_datetime + '</td>\
+<td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
+<td><a href="user.html?author=' + curator + '" target="_blank">@' + curator + '</a></td>\
+<td>' + reward + '</td>\
+<td>' + memo + '</td>\
+  </tr>');  
+} else if (op[0] === 'author_reward') {
+	var from = 'пул Viz';
+	var content_author = op[1].author;
+  var content_permlink = op[1].permlink;
+	var token_payout = op[1].token_payout;
+var vesting_payout = op[1].vesting_payout;
+	var memo = 'Авторская награда от улыбнувшихся вам. Пост: <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+  jQuery("#transfer_history_tbody").append('<tr class="filtered_author_reward"><td>' + transfer_datetime + '</td>\
+  <td>' + from + '</td>\
+  <td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
+  <td>' + token_payout + ' и ' + vesting_payout + '</td>\
+  <td>' + memo + '</td>\
+	</tr>');  
+} else if (op[0] === 'content_benefactor_reward') {
+	var content_author = op[1].author;
+  var content_permlink = op[1].permlink;
+	var benefactor = op[1].benefactor;
+	var reward = op[1].reward;
+  var memo = 'Бенефициарская награда за пост <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+  jQuery("#transfer_history_tbody").append('<tr class="filtered_content_benefactor_reward"><td>' + transfer_datetime + '</td>\
+  <td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
+  <td><a href="user.html?author=' + benefactor + '" target="_blank">@' + benefactor + '</a></td>\
+  <td>' + reward + '</td>\
+  <td>' + memo + '</td>\
+	</tr>');  
+ } else if (op[0] === 'witness_reward') {
+var from = 'пул Viz';
+var witness = op[1].witness;
+var shares = op[1].shares;
+	var memo = 'Награда делегата.';
+  jQuery("#transfer_history_tbody").append('<tr class="filtered_witness_reward"><td>' + transfer_datetime + '</td>\
+  <td>' + from + '</td>\
+  <td><a href="user.html?author=' + witness + '" target="_blank">@' + witness + '</a></td>\
+  <td>' + shares + '</td>\
+  <td>' + memo + '</td>\
+	</tr>');
+}
 
-  }
   });
 
 	} else {
@@ -2232,10 +2364,6 @@ function loadOptions()
 	{
 		document.getElementById('open').checked = false;
 	}
-	if(localStorage.getItem('node'))
-	{
-		document.getElementById('node').value = localStorage.getItem('node');
-	}
 }
 
 function saveOptions()
@@ -2247,14 +2375,6 @@ function saveOptions()
 	else
 	{
 		localStorage.setItem('open', false);
-	}
-	if(document.getElementById('node').value != '')
-	{
-		localStorage.setItem('node', document.getElementById('node').value);
-	}
-	else
-	{
-		localStorage.setItem('node', 'wss://testnet.viz.world/');
 	}
 	alert('Настройки сохранены');
 }

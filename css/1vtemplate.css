@@ -101,7 +101,7 @@ table.text-right thead>tr>th:not([scope="row"]),table.text-right tfoot>tr>th:not
 /* End of Header */
 
 /* Main content */
-#items_collapsable_wrapper>#items_list_wrapper,#j_component #item_content_wrapper{max-height:100%;overflow-y:auto}
+#items_collapsable_wrapper>#items_list_wrapper,#j_component #item_content_wrapper{overflow-y:auto; max-height:800px;}
 @media(max-width:1199px){
 #items_collapsable_wrapper>#items_list_wrapper,#j_component #item_content_wrapper{max-height:300px}
 }

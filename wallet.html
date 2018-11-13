@@ -340,7 +340,10 @@
 
 <div id="wallet_transfer_history" style="display: none;">
 <h2>История переводов средств</h2>
-<div id="filtrs"><span id="all_transfers" align="left">Все</span> <span id="get_transfers" align="center">Входящие</span> <span id="send_transfers" align="right">Исходящие</span></div>
+<div id="filtrs"><p><span id="all_transfers" align="left">Все</span> <span id="get_transfers" align="center">Входящие</span> <span id="send_transfers" align="right">Исходящие</span></p>
+	<p><span id="author_reward" align="left">Авторские награды</span> <span id="curator_reward" align="right">Кураторские награды</span></p>
+<p><span id="witness_reward" align="left">Награды делегату</span> <span id="benefactor_reward" align="right">Бенефициарские награды</span></p>
+</div>
   <table><thead><th>Дата и время платежа</th>
 <th>От кого</th>
 <th>Кому</th>
@@ -359,7 +362,7 @@
 					<footer id="footer_wrapper">
 						<div id="footer" class="padding_tb20 row">
 							<div class="col-sm-12">
-								<div class="footer2">Разработка и дизайн клиента - <a href="user.html?author=captain">@captain</a></div>
+								<div class="footer2">LiveBlogs.Space - <a href="show.html?author=liveblogs&permlink=o-proekte-liveblogsspace-opisanie-czelevaya-auditoriya-obosnovanie-yekonomiki-prilozheniya-1538924510">О проекте</a></div>
 							</div>
 						</div>
 					</footer>
@@ -415,6 +418,31 @@ $("#send_transfers").click(function ()
     {
         $("#transfer_history_tbody ." + user.login).css("display", "table-row");
     }
+});
+
+$("#author_reward").click(function ()
+{
+    $("#transfer_history_tbody tr").css("display", "none");
+    $("#transfer_history_tbody .filtered_author_reward").css("display", "table-row");
+});
+
+
+$("#curator_reward").click(function ()
+{
+    $("#transfer_history_tbody tr").css("display", "none");
+    $("#transfer_history_tbody .filtered_curation_reward").css("display", "table-row");
+});
+
+$("#benefactor_reward").click(function ()
+{
+    $("#transfer_history_tbody tr").css("display", "none");
+    $("#transfer_history_tbody .filtered_content_benefactor_reward").css("display", "table-row");
+});
+
+$("#witness_reward").click(function ()
+{
+    $("#transfer_history_tbody tr").css("display", "none");
+    $("#transfer_history_tbody .filtered_witness_reward").css("display", "table-row");
 });
 										</script>
 	</body>

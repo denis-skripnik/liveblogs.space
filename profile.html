@@ -8,7 +8,7 @@
 		<meta name="rights" content="(с) Joopiter.ru и denis-skripnik.name" />
 		<meta name="description" content="Live blogs space - web-клиент для блокчейна VIZ, платформы для блоггеров. Его главным преимуществом является то, что он локальный, а также имеет свою экономику распределения вознаграждений (СМ. about.html)" />
 		
-		<title>Изменить профиль | Live blogs space</title>
+		<title>Мой профиль | Live blogs space</title>
 		
 		<link href="favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
 		<link href="css/view.css" rel="stylesheet" type="text/css" />
@@ -107,13 +107,20 @@
 									</li>	
 									<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="active">
 										<span itemprop="name">
-											Изменение профиля				
+											Мой профиля				
 										</span>
 										<meta itemprop="position" content="1">
 									</li>
 								</ol>
 								<div id="j_component">									
-<h1>Изменение публичного профиля</h1>
+									<ul class="nav nav-tabs">
+										<li class="active"><a data-toggle="tab" href="#profile_info">Информация о пользователе</a></li>
+										<li><a data-toggle="tab" href="#followings_list">Те, на кого вы подписались</a></li>
+									</ul>
+
+									<div class="tab-content">
+										<div id="profile_info" class="tab-pane fade in active">
+										<h1>Изменение публичного профиля</h1>
 									<form class="profile-update" action="" name="postForm" method="POST" id="postForm" onsubmit="return false">
 <h2>Основное:</h2>
 										<div class="form-group1">
@@ -180,7 +187,18 @@
 											<br>
 											<input type="button" onclick="	profile_save();" value="Сохранить профиль">
 										</div>										
-								</div>
+</form>
+</div>
+<div id="followings_list" class="tab-pane fade">
+<h1>Список подписок с возможностью отписаться</h1>
+<table id="following_table">
+<tr><th>Логин</th>
+<th>Действие</th>
+</tr>
+</table>
+</div>
+</div>
+									</div>
 							</div>										
 						</div>
 					</section>
@@ -190,7 +208,7 @@
 					<footer id="footer_wrapper">
 						<div id="footer" class="padding_tb20 row">
 							<div class="col-sm-12">
-								<div class="footer2">Разработка и дизайн клиента - <a href="user.html?author=captain">@captain</a></div>
+								<div class="footer2">LiveBlogs.Space - <a href="show.html?author=liveblogs&permlink=o-proekte-liveblogsspace-opisanie-czelevaya-auditoriya-obosnovanie-yekonomiki-prilozheniya-1538924510">О проекте</a></div>
 							</div>
 						</div>
 					</footer>
@@ -199,7 +217,15 @@
 		</div>
 		<div class="clearfix"></div>
 		<script type="text/javascript">
-Init();
+window.onFollowingLoaded = function(following) {
+	following.forEach(function (data){
+		$("#following_table").append('<tr><td><a href="user.html?author=' + data + '" target="_blank">@' + data + '</a></td>\
+<td><button class="btn btn-warning" onclick="follow(\''+data+'\', \'\'); style.display=\'none\'; window.alert(\'Вы отписались от пользователя.\')">Отписаться</button></td>\
+		</tr>');
+	});
+	}
+
+	Init();
 			mainMenu();
 
 	if(0<$('.profile-update').length){
@@ -332,7 +358,6 @@ $('input[name=avatar]').val(imgurl);
    
        xhr.send(fd);
    }
-
 		</script>
 	</body>
 </html>

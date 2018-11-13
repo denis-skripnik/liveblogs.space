@@ -137,7 +137,7 @@
 											<input type="text" class="form-control required" id="tags" name="tags" required="required"> 
 										</div>	
 										<div class="form-group1">
-											<a href="https://postimages.org/" target="_blank">Загрузка картинок...</a> 
+											<div class="drdrop"><input type="button" id="addimg" data-storage="false" value="Загрузить фото в пост" onclick="document.querySelector(&#39;#loadinp&#39;).click()" ></div><input id="loadinp" style="visibility: collapse; width: 0px;" type="file" onchange="upload(this.files[0])"><p></p>
 										</div>											
 										<div class="form-group1">
 											<br>
@@ -155,7 +155,7 @@
 					<footer id="footer_wrapper">
 						<div id="footer" class="padding_tb20 row">
 							<div class="col-sm-12">
-								<div class="footer2">Разработка и дизайн клиента - <a href="user.html?author=captain">@captain</a></div>
+								<div class="footer2">LiveBlogs.Space - <a href="show.html?author=liveblogs&permlink=o-proekte-liveblogsspace-opisanie-czelevaya-auditoriya-obosnovanie-yekonomiki-prilozheniya-1538924510">О проекте</a></div>
 							</div>
 						</div>
 					</footer>
@@ -272,7 +272,33 @@
 					}
 				});
 			//});
-			Init();
+
+   var featuredImage = [];
+       window.ondragover = function(e) {e.preventDefault()}
+       window.ondrop = function(e) {e.preventDefault(); upload(e.dataTransfer.files[0]); }
+   function upload(file) {
+       if (!file || !file.type.match(/image.*/)) return;
+       document.getElementById("addimg").classList.add('Загрузка');
+       var fd = new FormData();
+       fd.append("image", file);
+       var xhr = new XMLHttpRequest();
+       xhr.open("POST", "https://api.imgur.com/3/image.json");
+       xhr.onload = function() {
+           var imgurl = JSON.parse(xhr.responseText).data.link;
+   
+           editor.setValue(editor.getValue() + "\
+   ![](" + imgurl + ")");
+           featuredImage.push(imgurl);
+           document.getElementById("addimg").classList.add('hasload');
+   
+   
+       }
+       xhr.setRequestHeader('Authorization', 'Client-ID 372d5f766d47d1d');
+   
+       xhr.send(fd);
+   }
+
+   Init();
 			mainMenu();
 		</script>
 	</body>

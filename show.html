@@ -120,18 +120,18 @@
 
 												<form action="" id="vote_form" style="display: none;">
 													<div style="float:left;">
-														<input type="range" name="power" max="100" step="1" value="100" style="width: 240px; margin-top: 10px; margin-right: 10px;" onchange="document.getElementById('vpower').innerHTML = this.value"> 
+														<input type="range" name="power" min="1" max="100" step="1" value="100" style="width: 240px; margin-top: 10px; margin-right: 10px;" onchange="document.getElementById('vpower').innerHTML = this.value"> 
 													</div>			
 													<div style="float:left;">
-														<button type="button" onClick="votePost(this.form.power.value, this.form.permlink.value, this.form.author.value); return false;">Поддержать автора на <span id="vpower">100</span>%</button>
+														<button type="button" onClick="votePost(document.getElementById('vpower').innerHTML, this.form.permlink.value, this.form.author.value); return false;">Подарить <span id="vpower">100</span> улыбок</button>
 													</div>
 													<input type="hidden" name="permlink" value="">
 													<input type="hidden" name="author" value="">
 													<div style="float:center;">
-														<button type="button" onClick="maximumVote(this.form.permlink.value, this.form.author.value); return false;">Пост - огонь!</button>
+														<input type="button" value="←_x 1" onclick="var t = this.value.split (' '); ++t[1]; if (t[1] <=20) { this.value = t.join (' '); document.getElementById('vpower').innerHTML = this.form.power.value*t[1]; }">
 													</div>
 													<div style="float:right;">
-														<button type="button" class="btn btn-link" title="Это действие влияет на видимость поста. Вплоть до его скрытия." onClick="votePost(-this.form.power.value, this.form.permlink.value, this.form.author.value); return false;"><img src="images/flag.png"></button>
+														<button type="button" onClick="maximumVote(this.form.permlink.value, this.form.author.value); return false;"><strong>подарить 2000 улыбок</strong></button>
 													</div>			
 												</form>
 												<br>
@@ -173,7 +173,7 @@
 					<footer id="footer_wrapper">
 						<div id="footer" class="padding_tb20 row">
 							<div class="col-sm-12">
-								<div class="footer2">Разработка и дизайн клиента - <a href="user.html?author=captain">@captain</a></div>
+								<div class="footer2">LiveBlogs.Space - <a href="show.html?author=liveblogs&permlink=o-proekte-liveblogsspace-opisanie-czelevaya-auditoriya-obosnovanie-yekonomiki-prilozheniya-1538924510">О проекте</a></div>
 							</div>
 						</div>
 					</footer>
