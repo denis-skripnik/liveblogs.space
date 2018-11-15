@@ -158,6 +158,20 @@ function getFollowers(login, start, me)
 	});
 }
 
+window.onFollowingLoaded = function(following) {
+  following.forEach(function (data){
+    $("#following_table").append('<tr><td><a href="user.html?author=' + data + '" target="_blank">@' + data + '</a></td>\
+<td><button class="btn btn-warning" onclick="follow(\''+data+'\', \'\'); style.display=\'none\'; window.alert(\'Вы отписались от пользователя.\')">Отписаться</button></td>\
+		</tr>');
+  });
+};
+
+window.onFollowersLoaded = function(followers) {
+  followers.forEach(function (data){
+    $("#followers_data").append('<li><a href="user.html?author=' + data + '" target="_blank">@' + data + '</a></li>');
+  });
+};
+
 function getFollowersMe()
 {
 	var login = localStorage.getItem('login');
