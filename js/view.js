@@ -178,6 +178,7 @@ function getFollowersMe()
 				getFollowers(login, latest, true);
 			}
 			
+			window.onFollowersLoaded(user.followers)
 		}else{
 			console.log(err);
 		}
@@ -1204,7 +1205,7 @@ del: []
 	{
 		actions.innerHTML = '<a href="javascript:void(0);" onClick="document.getElementById(\'id_'+operation.permlink+'\').style.display = \'block\'; this.style.display = \'none\';" class="reply">Ответить</a>';
 		var send = document.createElement("div");
-		send.innerHTML = "<textarea id='tx_"+operation.permlink+"' style='width: 92%; height: 100px; margin: 5px;'></textarea><button onClick=\"sendComment('"+operation.permlink+"', '"+operation.author+"', 'tx_"+operation.permlink+"', this, true);\">Отправить</button>";
+		send.innerHTML = "<textarea id='tx_"+operation.permlink+"' style='width: 92%; height: 100px; margin: 5px;'></textarea><button onClick=\"sendComment('"+operation.permlink+"', '"+operation.author+"', 'tx_"+operation.permlink+"', this, true, 1);\">Отправить</button>";
 		send.style.display = 'none';
 		send.margin = '8px';
 		send.id = 'id_' + operation.permlink.trim();
@@ -1290,7 +1291,7 @@ function getCommentDate(adate)
 	return moment(date, "YYYYMMDD").fromNow();
 }
 
-function sendComment(permlink, author, txt_id, button, hide)
+function sendComment(permlink, author, txt_id, button, hide, showReplies)
 {
 	var login = localStorage.getItem('login');
 	var text = document.getElementById(txt_id).value;
@@ -1348,6 +1349,7 @@ JSON.stringify(json_metadata),
 						document.getElementById(txt_id).style = 'display:none';
 						button.style = 'display:none';
 					}					
+if (showReplies === 1) {
 					viz.api.getContentReplies(article.author, article.permlink, 0, function(err, data){
 						if(data.length > 0)
 						{
@@ -1359,7 +1361,8 @@ JSON.stringify(json_metadata),
 								});
 							}
 						});
-				}
+					}
+					}
 				if(err)
 				{
 					console.log( err.payload.error.message);
@@ -1445,7 +1448,7 @@ function editComment(parent_author, parent_permlink, permlink, author, txt_id, b
 
 	function sendMainComment(button)
 {
-	sendComment(article.permlink, article.author, 'editor', button, false); 
+	sendComment(article.permlink, article.author, 'editor', button, false, 1); 
 }
 
 function loadUserCard(login)
@@ -1624,7 +1627,7 @@ let bonus_energy = parseInt(awarded_rshares*2000);
 <li class="item-120 default current" id="post"><a href="post.html" >Новый пост</a></li>\
 <li class="item-120 default current" id="wallet"><a href="wallet.html" >Кошелёк</a></li>\
 <li class="item-120 default current" id="change_profile"><a href="profile.html" >Изменить профиль</a></li>\
-<li class="item-120 default current" id="options" ><a href="options.html">Настройки</a></li><li class="item-120 default current" id="exit" ><a href="#" onClick="localStorage.clear(); location.reload();">Выход</a></li>\
+<li class="item-120 default current" id="notify" ><a href="notify.html">Уведомления</a></li><li class="item-120 default current" id="exit" ><a href="#" onClick="localStorage.clear(); location.reload();">Выход</a></li>\
 </ul>\
 </div>\
 						</div>\
@@ -2353,6 +2356,219 @@ walletData();
 }
 
 			} // end walletAuth
+
+			function addReplyX(operation)
+			{
+				var main_div = document.createElement("div");
+				main_div.classList.add("panel");
+				main_div.classList.add("panel-default");
+				var header = document.createElement("div");
+				header.classList.add("panel-heading");
+				var actions = document.createElement("div");
+				actions.style.textAlign = 'right';
+				actions.style.marginBottom = '5px';
+				
+				var action_edit = document.createElement("div");
+				action_edit.style.textAlign = 'left';
+				action_edit.style.marginBottom = '5px';
+			
+				var dt = getCommentDate(operation.created);
+				var ava = document.createElement("div");
+				ava.style.float = 'left';
+					
+				header.innerHTML = "<div><h3>"+operation.title+" <small>"+dt+" <a href='user.html?author="+operation.author+"' title='Все посты пользователя'>@"+operation.author+'</a></small></h3></div>';
+				main_div.appendChild(header);
+				header.appendChild(ava);
+					
+					marked.setOptions({
+					  renderer: new marked.Renderer(),
+					  gfm: true,
+					  tables: true,
+					  breaks: true,
+					  pedantic: false,
+					  sanitize: false,
+					  smartLists: true,
+					  smartypants: false,
+					});
+					/*var re = /https:\/\/golos.io/gi;
+					var newbody = operation.body.replace(re, 'https://liveblogs.space');
+					var re = /https:\/\/golos.blog/gi;
+					var newbody = newbody.replace(re, 'https://liveblogs.space');
+					var re = /https:\/\/goldvoice.club/gi;
+					var newbody = newbody.replace(re, 'https://liveblogs.space');*/
+					var newbody = marked(operation.body);
+					newbody = prepareContent(newbody);
+					
+			var options = {
+			 whiteList: {
+				iframe: ['width', 'height', 'src', 'frameborder', 'allow', 'allowfullscreen'],
+						  a: ['href', 'title', 'target'],
+						  table: [],
+						  img: ['width', 'height', 'src', 'title', 'alt'],
+						  td: [],
+			th: [],
+			tr: [],
+			h1: [],
+			h2: [],
+			h3: [],
+			h4: [],
+			h5: [],
+			h6: [],
+			br: [],
+			hr: [],
+			blockquote: [],
+			p: [],
+			em: [],
+			small: [],
+			b: [],
+			strong: [],
+			ul: [],
+			ol: [],
+			li: [],
+			center: [],
+			code: [],
+			del: []
+			}, onTagAttr: (tag, name, value, isWhite) => {if(tag == "a" && name== "href" && value.match(/^user.html/)) {return 'href="'+value+'"';}}
+			};
+			
+					var answer = document.createElement("div");
+				answer.classList.add("panel-body");
+				answer.id = 'body_' + operation.permlink.trim();
+					answer.innerHTML = filterXSS(newbody, options);
+				if(isLoggedIn())
+				{
+					actions.innerHTML = '<a href="javascript:void(0);" onClick="document.getElementById(\'id_'+operation.permlink+'\').style.display = \'block\'; this.style.display = \'none\';" class="reply">Ответить</a>';
+					var send = document.createElement("div");
+					send.innerHTML = "<textarea id='tx_"+operation.permlink+"' style='width: 92%; height: 100px; margin: 5px;'></textarea><button onClick=\"sendComment('"+operation.permlink+"', '"+operation.author+"', 'tx_"+operation.permlink+"', this, true, 0);\">Отправить</button>";
+					send.style.display = 'none';
+					send.margin = '8px';
+					send.id = 'id_' + operation.permlink.trim();
+					actions.appendChild(send);
+			if (user.login === operation.author) {
+					action_edit.innerHTML = '<a href="javascript:void(0);" onClick="document.getElementById(\'edit_'+operation.permlink+'\').style.display = \'block\'; this.style.display = \'inline\';" class="edit">редактировать</a>';
+					var send_edit = document.createElement("div");
+					send_edit.innerHTML = "<textarea id='editarea_"+operation.permlink+"' style='width: 92%; height: 100px; margin: 5px;'>" + operation.body + "</textarea><button onClick=\"editComment('"+operation.parent_author+"', '"+operation.parent_permlink+"', '"+operation.permlink+"', '"+operation.author+"', 'editarea_"+operation.permlink+"', this, true);\">Изменить</button>";
+					send_edit.style.display = 'none';
+					send_edit.margin = '8px';
+					send_edit.id = 'edit_' + operation.permlink.trim();
+					action_edit.appendChild(send_edit);
+				}
+				}
+				main_div.appendChild(answer);
+				main_div.appendChild(actions);
+				main_div.appendChild(action_edit);
+				if(isLoggedIn())
+				{
+					document.getElementById('answer').style = 'display: block';
+				}
+				
+				viz.api.getAccounts([operation.author], function(err, response){
+					//console.log(err, response);
+					if(response)
+					{
+						if(response[0].json_metadata != undefined && response[0].json_metadata != '{}' && response[0].json_metadata != '')
+						{
+							var metadata = JSON.parse(response[0].json_metadata);
+							console.log(metadata.profile.profile_image);
+							if(metadata.profile != undefined && metadata.profile != null)
+							{
+								if(metadata.profile.profile_image != undefined && metadata.profile.profile_image != null)
+								{
+									//var ava = document.getElementById("ava");
+									ava.style.backgroundImage = "url('https://imgp.golos.io/256x256/"+metadata.profile.profile_image+"')";
+									ava.classList.add('ava_div');
+								}else{
+									ava.style.backgroundImage = "url('images/ninja.png')";
+									ava.classList.add('ava_div');
+								}
+							}else{
+								ava.style.backgroundImage = "url('images/ninja.png')";
+								ava.classList.add('ava_div');
+							}					
+						}else{
+							ava.style.backgroundImage = "url('images/ninja.png')";
+							ava.classList.add('ava_div');
+						}				
+					}
+				});
+				return main_div;
+			}
+
+function notifyPage(param) {
+if (param === 'replies') {
+	$('#answers_list').append('<h1>Ответы</h1>');
+	viz.api.getRepliesByLastUpdate(user.login, '', 100, 0, function(err, result) {
+		if (!err) {
+	result.forEach(function (operation){
+var post = '<div align="center">Пост или комментарий: <a href="show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '" target="_blank">show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '</a></div>';
+var div = addReplyX(operation);
+$('#answers_list').append(post);
+$('#answers_list').append(div);
+	});
+}
+	  }); // End getRepliesByLastUpdate
+} // End type=replies
+else if (param === 'mentions') {
+	$('#answers_list').append('<h1>Упоминания</h1>');
+	viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
+if (!err) {
+	$('#answers_list').append('<ul>');
+	result.sort(accountHistoryCompareDate);
+	result.forEach(function(item) {
+		var op = item[1].op;
+		if (op[1].memo && op[1].memo.indexOf("упомянул") && op[1].to === user.login) {
+			console.log(op[1].memo.indexOf("упомянул"));
+			var get_time = Date.parse(item[1].timestamp);
+	var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
+			var from = op[1].from;
+	var memo = prepareContent(op[1].memo);
+
+	$('#answers_list').append('<li>' + transfer_datetime + ' ' + memo + '</li>');
+   }
+});
+$('#answers_list').append('</ul>');
+}
+  });
+} // end mentions.
+else if (!param) {
+	$('#answers_list').append('<h1>Все уведомления</h1>\
+<div id="replies_list">\
+	<h2>Ответы</h2>');
+	viz.api.getRepliesByLastUpdate(user.login, '', 100, 0, function(err, result) {
+		if (!err) {
+	result.forEach(function (operation){
+var post = '<div align="center">Пост или комментарий: <a href="show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '" target="_blank">show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '</a></div>';
+var div = addReplyX(operation);
+$('#replies_list').append(post);
+$('#replies_list').append(div);
+	});
+}
+	  }); // End getRepliesByLastUpdate
+
+	  $('#answers_list').append('</div>\
+<div id="mentions_list">\
+	  <h2>Упоминания</h2>');
+	  viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
+  if (!err) {
+	  $('#mentions_list').append('<ul>');
+	  result.sort(accountHistoryCompareDate);
+	  result.forEach(function(item) {
+		  var op = item[1].op;
+		  if (op[1].memo && op[1].memo.indexOf("упомянул") && op[1].to === user.login) {
+			  var get_time = Date.parse(item[1].timestamp);
+	  var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
+			  var from = op[1].from;
+	  var memo = prepareContent(op[1].memo);
+  
+	  $('#mentions_list').append('<li>' + transfer_datetime + ' ' + memo + '</li>');
+	 }
+  });
+  $('#mentions_list').append('</ul>');
+  }
+	});
+	$('#mentions_list').append('</div>');
+} // end no param
+}
 
 function loadOptions()
 {
