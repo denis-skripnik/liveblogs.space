@@ -111,6 +111,7 @@
 												<div class="collapse navbar-collapse" id="items_collapsable_wrapper">
 													<div id="items_list_wrapper" class="row">
 													</div>
+													<button id="discussions-by-tags-button" onclick="getDiscussionsByTags(tags)">Ещё</button>
 												</div>
 											</nav>
 										</div>
@@ -207,7 +208,8 @@
 										jQuery('#atag').html(tag);
 										console.log(tag);
 										$('title').html('Теги: ' + tag + ' | live blogs space');
-										getDiscussionsByTags(tag.split(','));										
+										const tags = tag.split(',');
+										getDiscussionsByTags(tags);
 			</script>
 	</body>
 </html>

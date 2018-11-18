@@ -493,35 +493,112 @@ function getDiscussionsByAuthor(author)
 	 });
 }
 
-function getDiscussionsByBlog(author)
+
+const promiseHelper = (apiFuncName, params) => {
+	return new Promise((resolve, reject) => {
+		viz.api[apiFuncName](params, (err, data) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(data);
+			}
+		});
+	});
+};
+
+
+const getDiscussionsByBlogData = {
+  limit: 30,
+  limit_max: 100,
+  start_author: null,
+  start_permlink: null,
+  isFirstRequest: true,
+  buttonId: 'discussions-by-blog-button',
+};
+
+async function getDiscussionsByBlog(author)
 {
+	const {limit, limit_max} = getDiscussionsByBlogData;
+
 	document.getElementById('loader').style = 'display:block';
-	 var params = 
-	 {
-		 'limit': 100,
-		 "select_authors": [author],
-'truncate_body': 40,
-		 'select_tags': ['liveblogs']
-		 }
-	 viz.api.getDiscussionsByBlog(params, function(err, data){
-		if(err)
-		{
-			console.log(err);
-		}			
-		if(data.length > 0)
-		{	
-			data.sort(compareDate);
-			for(operation of data)
-			{
-				if(operation.author === author) {
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
-				AddBlockX(operation);
-}
-				}
-			}//);
+	let {start_author, start_permlink} = getDiscussionsByBlogData;
+	const result = [];
+	let isCompleted = false;
+	let isEnd = false;
+	let isValidElement;
+
+	while (! isCompleted && ! isEnd) {
+    const params = {
+        'limit': limit_max,
+        "select_authors": [author],
+        'truncate_body': 40,
+        'select_tags': ['liveblogs']
+      };
+
+    if (! getDiscussionsByBlogData.isFirstRequest) {
+      Object.assign(params, {
+        start_author,
+        start_permlink,
+      });
+    } else {
+      getDiscussionsByBlogData.isFirstRequest = false;
 		}
-		document.getElementById('loader').style = 'display:none';
-	 });
+
+    const data = await promiseHelper('getDiscussionsByBlog', params);
+
+    data.sort(compareDate);
+
+    for (const operation of data) {
+    	isValidElement = operation.author === author &&
+        operation.curation_percent === 5000 &&
+        Array.isArray(operation.beneficiaries) &&
+        operation.beneficiaries.some(b => b.account === operation.author);
+    	if (isValidElement) {
+    		result.push(operation);
+
+    		if (result.length === limit + 1) {
+    			isCompleted = true;
+    			break;
+        }
+			}
+		}
+
+		if (! isCompleted) {
+      if (result.length < limit_max) {
+        isEnd = true;
+      } else {
+      	const lastElement = data[data.length - 1];
+
+      	start_author = lastElement.author;
+      	start_permlink = lastElement.permlink;
+
+      	if (isValidElement) {
+      		result.pop();
+				}
+			}
+		}
+
+	}
+
+	if (isEnd) {
+    const button = document.getElementById(getDiscussionsByBlogData.buttonId);
+    if (button) {
+      button.remove();
+    }
+	} else {
+		const lastElement = result.pop();
+
+		getDiscussionsByBlogData.start_author = lastElement.author;
+		getDiscussionsByBlogData.start_permlink = lastElement.permlink;
+	}
+
+	console.dir(result);
+
+  for (const operation of result) {
+    AddBlockX(operation);
+  }
+
+  document.getElementById('loader').style = 'display:none';
 }
 
 function getDiscussionsTrending() 
@@ -571,35 +648,96 @@ function compareDate(a, b)
 	}
 }
 
-function getDiscussionsByTags(tags)
+const getDiscussionsByTagsData = {
+  limit: 30,
+  limit_max: 100,
+  start_author: null,
+  start_permlink: null,
+  isFirstRequest: true,
+  buttonId: 'discussions-by-tags-button',
+};
+
+async function getDiscussionsByTags(tags)
 {
-	document.getElementById('loader').style = 'display:block';
-	 var params = 
-	 {
-		 'limit': 100,
-		 'select_tags': tags,
-		 'truncate_body': 20
-	 }
-	 //console.log(params);
-	 viz.api.getDiscussionsByCreated(params, function(err, data){
-		if(err)
-		{
-			console.log(err);
-		}
-		if(data)
-		{
-			data.sort(compareDate);
-			if(data.length > 0)
-			{			
-				data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
-				AddBlockX(operation);
-}
-				});
-			}
-		}		
-		document.getElementById('loader').style = 'display:none'; 
-	 });
+  const {limit, limit_max} = getDiscussionsByTagsData;
+
+  document.getElementById('loader').style = 'display:block';
+  let {start_author, start_permlink} = getDiscussionsByTagsData;
+  const result = [];
+  let isCompleted = false;
+  let isEnd = false;
+  let isValidElement;
+
+  while (! isCompleted && ! isEnd) {
+    const params = {
+      'limit': limit_max,
+      'select_tags': tags,
+      'truncate_body': 20
+    };
+
+    if (! getDiscussionsByTagsData.isFirstRequest) {
+      Object.assign(params, {
+        start_author,
+        start_permlink,
+      });
+    } else {
+      getDiscussionsByTagsData.isFirstRequest = false;
+    }
+
+    const data = await promiseHelper('getDiscussionsByCreated', params);
+
+    data.sort(compareDate);
+
+    for (const operation of data) {
+      isValidElement = operation.curation_percent === 5000 &&
+        Array.isArray(operation.beneficiaries) &&
+        operation.beneficiaries.some(b => b.account === operation.author);
+      if (isValidElement) {
+        result.push(operation);
+
+        if (result.length === limit + 1) {
+          isCompleted = true;
+          break;
+        }
+      }
+    }
+
+    if (! isCompleted) {
+      if (result.length < limit_max) {
+        isEnd = true;
+      } else {
+        const lastElement = data[data.length - 1];
+
+        start_author = lastElement.author;
+        start_permlink = lastElement.permlink;
+
+        if (isValidElement) {
+          result.pop();
+        }
+      }
+    }
+
+  }
+
+  if (isEnd) {
+    const button = document.getElementById(getDiscussionsByTagsData.buttonId);
+    if (button) {
+      button.remove();
+    }
+  } else {
+    const lastElement = result.pop();
+
+    getDiscussionsByTagsData.start_author = lastElement.author;
+    getDiscussionsByTagsData.start_permlink = lastElement.permlink;
+  }
+
+  console.dir(result);
+
+  for (const operation of result) {
+    AddBlockX(operation);
+  }
+
+  document.getElementById('loader').style = 'display:none';
 }
 
 function getDiscussions(start_author, start_permlink)
@@ -642,50 +780,98 @@ function getDiscussions(start_author, start_permlink)
      });
 }
 
-function getDiscussionsByFeed(login, start_author, start_permlink)
+const getDiscussionsByFeedData = {
+  limit: 30,
+  limit_max: 100,
+  start_author: null,
+  start_permlink: null,
+  isFirstRequest: true,
+  buttonId: 'discussions-by-feed-button',
+};
+
+async function getDiscussionsByFeed(login)
 {
-	document.getElementById('loader').style = 'display:block';
-	 start_author = typeof start_author !== 'undefined' ?  start_author : '';
-     start_permlink = typeof start_permlink !== 'undefined' ?  start_permlink : '';
-	 //console.log(start_author, start_permlink);
-     if(start_permlink && start_author)
-     {
-         var params = 
-         {
-             'limit': 100,
-             'truncate_body': 240,
-'select_tags': ['liveblogs'],
-			 "select_authors": [login],
-             'start_author': start_author,
-             'start_permlink': start_permlink
-         }     
-     }
-     else
-     {
-         var params = 
-         {
-			 "tag": "",
-			 "select_authors": [login],
-             'limit': 100,
-             'truncate_body': 240,
-'select_tags': ['liveblogs']
-         }
-     }
-			viz.api.getDiscussionsByFeed(params, function(err, data){
-		//console.log(err,data);
-		data.sort(compareDate);
-		if(data.length > 0)
-		{			
-			data.forEach(function (operation){
-				if (user.following.includes(operation.author)) {
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
-	AddBlockX(operation);
-				}
-}
-		});
-	}
-		document.getElementById('loader').style = 'display:none'; 
-	});
+  const {limit, limit_max} = getDiscussionsByFeedData;
+
+  document.getElementById('loader').style = 'display:block';
+  let {start_author, start_permlink} = getDiscussionsByFeedData;
+  const result = [];
+  let isCompleted = false;
+  let isEnd = false;
+  let isValidElement;
+
+  while (! isCompleted && ! isEnd) {
+    const params = {
+      "select_authors": [login],
+      'limit': limit_max,
+      'truncate_body': 240,
+      'select_tags': ['liveblogs']
+    };
+
+    if (! getDiscussionsByFeedData.isFirstRequest) {
+      Object.assign(params, {
+        start_author,
+        start_permlink,
+      });
+    } else {
+      getDiscussionsByFeedData.isFirstRequest = false;
+    }
+
+    const data = await promiseHelper('getDiscussionsByFeed', params);
+
+    data.sort(compareDate);
+
+    for (const operation of data) {
+      isValidElement = user.following.includes(operation.author) &&
+        operation.curation_percent === 5000 &&
+        Array.isArray(operation.beneficiaries) &&
+        operation.beneficiaries.some(b => b.account === operation.author);
+      if (isValidElement) {
+        result.push(operation);
+
+        if (result.length === limit + 1) {
+          isCompleted = true;
+          break;
+        }
+      }
+    }
+
+    if (! isCompleted) {
+      if (result.length < limit_max) {
+        isEnd = true;
+      } else {
+        const lastElement = data[data.length - 1];
+
+        start_author = lastElement.author;
+        start_permlink = lastElement.permlink;
+
+        if (isValidElement) {
+          result.pop();
+        }
+      }
+    }
+
+  }
+
+  if (isEnd) {
+    const button = document.getElementById(getDiscussionsByFeedData.buttonId);
+    if (button) {
+      button.remove();
+    }
+  } else {
+    const lastElement = result.pop();
+
+    getDiscussionsByFeedData.start_author = lastElement.author;
+    getDiscussionsByFeedData.start_permlink = lastElement.permlink;
+  }
+
+  console.dir(result);
+
+  for (const operation of result) {
+    AddBlockX(operation);
+  }
+
+  document.getElementById('loader').style = 'display:none';
 }
 
   function getRecomendationPosts(login, start_author, start_permlink)
