@@ -564,7 +564,7 @@ async function getDiscussionsByBlog(author)
 		}
 
 		if (! isCompleted) {
-      if (result.length < limit_max) {
+      if (data.length < limit_max) {
         isEnd = true;
       } else {
       	const lastElement = data[data.length - 1];
@@ -703,7 +703,7 @@ async function getDiscussionsByTags(tags)
     }
 
     if (! isCompleted) {
-      if (result.length < limit_max) {
+      if (data.length < limit_max) {
         isEnd = true;
       } else {
         const lastElement = data[data.length - 1];
@@ -837,7 +837,7 @@ async function getDiscussionsByFeed(login)
     }
 
     if (! isCompleted) {
-      if (result.length < limit_max) {
+      if (data.length < limit_max) {
         isEnd = true;
       } else {
         const lastElement = data[data.length - 1];
