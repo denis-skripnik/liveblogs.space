@@ -494,9 +494,9 @@ function getDiscussionsByAuthor(author)
 }
 
 
-const promiseHelper = (apiFuncName, params) => {
+const promiseHelper = (apiFuncName, ...params) => {
 	return new Promise((resolve, reject) => {
-		viz.api[apiFuncName](params, (err, data) => {
+		viz.api[apiFuncName](...params, (err, data) => {
 			if (err) {
 				reject(err);
 			} else {
@@ -2426,102 +2426,171 @@ $('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', tr
     });
 }
 
-function walletData() {
-	if (localStorage.getItem('ActiveKey')) {
-		var active_key = sjcl.decrypt(user.login + '_activeKey', localStorage.getItem('ActiveKey'));
-} else {
-var active_key = $('#this_active').val();
+const walletDataSettings = {
+	limit: 500,
+	limit_max: 1000,
+	from: -1,
+  get isFirstRequest() {
+		return this.from === -1;
+	},
+  buttonId: 'wallet-data-button',
+};
+
+async function walletData() {
+	const activeKey = localStorage.getItem('ActiveKey');
+	const active_key = activeKey ? sjcl.decrypt(user.login + '_activeKey', activeKey) : $('#this_active').val();
+
+  $('#unblock_form').css("display", "none");
+  jQuery("#main_wallet_info").css("display", "block");
+  load_balance(user.login, active_key);
+
+  // История переводов:
+  jQuery("#wallet_transfer_history").css("display", "block");
+
+  const result = [];
+  let isCompleted = false;
+  let isEnd = false;
+  let isValidElement;
+
+  const {limit, limit_max, buttonId} = walletDataSettings;
+
+  while (! isCompleted && ! isEnd) {
+    const {from, isFirstRequest} = walletDataSettings;
+
+    const limitReal = (isFirstRequest || limit_max <= from) ? limit_max : from;
+
+    const data = await promiseHelper('getAccountHistory', user.login, from, limitReal);
+
+    data.sort(accountHistoryCompareDate);
+
+    for (const operation of data) {
+      const op = operation[1].op;
+      isValidElement = (op[1].from && op[1].to && op[1].amount) ||
+        op[0] === 'curation_reward' ||
+        op[0] === 'author_reward' ||
+        op[0] === 'content_benefactor_reward' ||
+        op[0] === 'witness_reward';
+
+      if (isValidElement) {
+        result.push(operation);
+
+        if (result.length === limit + 1) {
+          isCompleted = true;
+          break;
+        }
+      }
+    }
+
+    if (! isCompleted) {
+      if (data.length < limitReal + 1) {
+        isEnd = true;
+      } else {
+        const lastElement = data[data.length - 1];
+
+        walletDataSettings.from = lastElement[0];
+
+        if (isValidElement) {
+          result.pop();
+        }
+      }
+    }
+  }
+
+  if (isEnd) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      button.remove();
+    }
+  } else {
+    const lastElement = result.pop();
+
+    walletDataSettings.from = lastElement[0];
+  }
+
+  console.dir(result);
+
+  appendWalletData(result);
+
 }
 
-		$('#unblock_form').css("display", "none");
-jQuery("#main_wallet_info").css("display", "block");
-load_balance(user.login, active_key);
+function appendWalletData(items) {
+	const timezoneOffset = (new Date()).getTimezoneOffset() * 60000;
 
- // История переводов:
-jQuery("#wallet_transfer_history").css("display", "block");
- viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
- if (!err) {
-			result.sort(accountHistoryCompareDate);
- result.forEach(function(item) {
-var get_time = Date.parse(item[1].timestamp);
-var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
+	items.forEach(item => {
 
-        var op = item[1].op;
-		if (op[1].from && op[1].to && op[1].amount) {
-		var from = op[1].from;
-var to = op[1].to;
-var amount = op[1].amount;
-if (op[1].memo) {
-var memo = prepareContent(op[1].memo);
-} else if (op[0] === 'transfer_to_vesting') {
-	var memo = 'Перевод в SHARES.';
-} else {
-	var memo = '';
-}
-  jQuery("#transfer_history_tbody").append('<tr class="filtered ' + from + '"><td>' + transfer_datetime + '</td>\
+    var get_time = Date.parse(item[1].timestamp);
+    var transfer_datetime = date_str(get_time - timezoneOffset, true, false, true);
+
+    var op = item[1].op;
+    if (op[1].from && op[1].to && op[1].amount) {
+      var from = op[1].from;
+      var to = op[1].to;
+      var amount = op[1].amount;
+      if (op[1].memo) {
+        var memo = prepareContent(op[1].memo);
+      } else if (op[0] === 'transfer_to_vesting') {
+        var memo = 'Перевод в SHARES.';
+      } else {
+        var memo = '';
+      }
+      jQuery("#transfer_history_tbody").append('<tr class="filtered ' + from + '"><td>' + transfer_datetime + '</td>\
 <td><a href="user.html?author=' + from + '" target="_blank">@' + from + '</a></td>\
 <td><a href="user.html?author=' + to + '" target="_blank">@' + to + '</a></td>\
 <td>' + amount + '</td>\
 <td>' + memo + '</td>\
   </tr>');
-  } else if (op[0] === 'curation_reward') {
-  var content_author = op[1].content_author;
-var content_permlink = op[1].content_permlink;
-  var curator = op[1].curator;
-  var reward = op[1].reward;
-var memo = 'Награда за то, что вы подарили улыбки посту <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
-jQuery("#transfer_history_tbody").append('<tr class="filtered_curation_reward"><td>' + transfer_datetime + '</td>\
+    } else if (op[0] === 'curation_reward') {
+      var content_author = op[1].content_author;
+      var content_permlink = op[1].content_permlink;
+      var curator = op[1].curator;
+      var reward = op[1].reward;
+      var memo = 'Награда за то, что вы подарили улыбки посту <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+      jQuery("#transfer_history_tbody").append('<tr class="filtered_curation_reward"><td>' + transfer_datetime + '</td>\
 <td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
 <td><a href="user.html?author=' + curator + '" target="_blank">@' + curator + '</a></td>\
 <td>' + reward + '</td>\
 <td>' + memo + '</td>\
-  </tr>');  
-} else if (op[0] === 'author_reward') {
-	var from = 'пул Viz';
-	var content_author = op[1].author;
-  var content_permlink = op[1].permlink;
-	var token_payout = op[1].token_payout;
-var vesting_payout = op[1].vesting_payout;
-	var memo = 'Авторская награда от улыбнувшихся вам. Пост: <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
-  jQuery("#transfer_history_tbody").append('<tr class="filtered_author_reward"><td>' + transfer_datetime + '</td>\
+  </tr>');
+    } else if (op[0] === 'author_reward') {
+      var from = 'пул Viz';
+      var content_author = op[1].author;
+      var content_permlink = op[1].permlink;
+      var token_payout = op[1].token_payout;
+      var vesting_payout = op[1].vesting_payout;
+      var memo = 'Авторская награда от улыбнувшихся вам. Пост: <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+      jQuery("#transfer_history_tbody").append('<tr class="filtered_author_reward"><td>' + transfer_datetime + '</td>\
   <td>' + from + '</td>\
   <td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
   <td>' + token_payout + ' и ' + vesting_payout + '</td>\
   <td>' + memo + '</td>\
-	</tr>');  
-} else if (op[0] === 'content_benefactor_reward') {
-	var content_author = op[1].author;
-  var content_permlink = op[1].permlink;
-	var benefactor = op[1].benefactor;
-	var reward = op[1].reward;
-  var memo = 'Бенефициарская награда за пост <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
-  jQuery("#transfer_history_tbody").append('<tr class="filtered_content_benefactor_reward"><td>' + transfer_datetime + '</td>\
+	</tr>');
+    } else if (op[0] === 'content_benefactor_reward') {
+      var content_author = op[1].author;
+      var content_permlink = op[1].permlink;
+      var benefactor = op[1].benefactor;
+      var reward = op[1].reward;
+      var memo = 'Бенефициарская награда за пост <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+      jQuery("#transfer_history_tbody").append('<tr class="filtered_content_benefactor_reward"><td>' + transfer_datetime + '</td>\
   <td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
   <td><a href="user.html?author=' + benefactor + '" target="_blank">@' + benefactor + '</a></td>\
   <td>' + reward + '</td>\
   <td>' + memo + '</td>\
-	</tr>');  
- } else if (op[0] === 'witness_reward') {
-var from = 'пул Viz';
-var witness = op[1].witness;
-var shares = op[1].shares;
-	var memo = 'Награда делегата.';
-  jQuery("#transfer_history_tbody").append('<tr class="filtered_witness_reward"><td>' + transfer_datetime + '</td>\
+	</tr>');
+    } else if (op[0] === 'witness_reward') {
+      var from = 'пул Viz';
+      var witness = op[1].witness;
+      var shares = op[1].shares;
+      var memo = 'Награда делегата.';
+      jQuery("#transfer_history_tbody").append('<tr class="filtered_witness_reward"><td>' + transfer_datetime + '</td>\
   <td>' + from + '</td>\
   <td><a href="user.html?author=' + witness + '" target="_blank">@' + witness + '</a></td>\
   <td>' + shares + '</td>\
   <td>' + memo + '</td>\
 	</tr>');
-}
+    }
 
   });
-
-	} else {
-window.alert('Ошибка: ' + err);
 }
- });
-
- }
 
 			function walletAuth() {
 			let active = $('#this_active').val();
