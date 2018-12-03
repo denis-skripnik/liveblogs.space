@@ -2763,80 +2763,116 @@ walletData();
 				return main_div;
 			}
 
-function notifyPage(param) {
-if (param === 'replies') {
-	$('#answers_list').append('<h1>Ответы</h1>');
-	viz.api.getRepliesByLastUpdate(user.login, '', 100, 0, function(err, result) {
-		if (!err) {
-	result.forEach(function (operation){
-var post = '<div align="center">Пост или комментарий: <a href="show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '" target="_blank">show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '</a></div>';
-var div = addReplyX(operation);
-$('#answers_list').append(post);
-$('#answers_list').append(div);
-	});
-}
-	  }); // End getRepliesByLastUpdate
-} // End type=replies
-else if (param === 'mentions') {
-	$('#answers_list').append('<h1>Упоминания</h1>');
-	viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
-if (!err) {
-	$('#answers_list').append('<ul>');
-	result.sort(accountHistoryCompareDate);
-	result.forEach(function(item) {
-		var op = item[1].op;
-		if (op[1].memo && op[1].memo.indexOf("упомянул") && op[1].to === user.login) {
-			console.log(op[1].memo.indexOf("упомянул"));
-			var get_time = Date.parse(item[1].timestamp);
-	var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
-			var from = op[1].from;
-	var memo = prepareContent(op[1].memo);
+const notifyPageRepliesData = {
+	limit: 30,
+	start_author: user.login,
+	start_permlink: null,
+	buttonId: 'notify-page-replies-button',
+};
 
-	$('#answers_list').append('<li>' + transfer_datetime + ' ' + memo + '</li>');
-   }
-});
-$('#answers_list').append('</ul>');
-}
-  });
-} // end mentions.
-else if (!param) {
-	$('#answers_list').append('<h1>Все уведомления</h1>\
-<div id="replies_list">\
-	<h2>Ответы</h2>');
-	viz.api.getRepliesByLastUpdate(user.login, '', 100, 0, function(err, result) {
-		if (!err) {
-	result.forEach(function (operation){
-var post = '<div align="center">Пост или комментарий: <a href="show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '" target="_blank">show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '</a></div>';
-var div = addReplyX(operation);
-$('#replies_list').append(post);
-$('#replies_list').append(div);
-	});
-}
-	  }); // End getRepliesByLastUpdate
+const notifyPageMentionsData = {
+  limit: 500,
+  limit_max: 1000,
+  from: -1,
+  get isFirstRequest() {
+    return this.from === -1;
+  },
+  buttonId: 'notify-page-mentions-button',
+};
 
-	  $('#answers_list').append('</div>\
-<div id="mentions_list">\
-	  <h2>Упоминания</h2>');
-	  viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
-  if (!err) {
-	  $('#mentions_list').append('<ul>');
-	  result.sort(accountHistoryCompareDate);
-	  result.forEach(function(item) {
-		  var op = item[1].op;
-		  if (op[1].memo && op[1].memo.indexOf("упомянул") && op[1].to === user.login) {
-			  var get_time = Date.parse(item[1].timestamp);
-	  var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
-			  var from = op[1].from;
-	  var memo = prepareContent(op[1].memo);
-  
-	  $('#mentions_list').append('<li>' + transfer_datetime + ' ' + memo + '</li>');
-	 }
-  });
-  $('#mentions_list').append('</ul>');
+async function notifyPage(params) {
+  if (params.includes('replies')) {
+  	const {limit, start_author, start_permlink, buttonId} = notifyPageRepliesData;
+
+  	const result = await viz.api.getRepliesByLastUpdate(start_author, start_permlink, limit + 1, 0);
+
+    if (result.length < limit + 1) {
+      document.getElementById(buttonId).style.display = 'none';
+    } else {
+      const lastElement = result.pop();
+
+      notifyPageRepliesData.start_author = lastElement.author;
+      notifyPageRepliesData.start_permlink = lastElement.permlink;
+    }
+
+    result.forEach(function (operation) {
+      var post = '<div align="center">Пост или комментарий: <a href="show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '" target="_blank">show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '</a></div>';
+      var div = addReplyX(operation);
+      $('#replies_list').append(post);
+      $('#replies_list').append(div);
+    });
+
   }
-	});
-	$('#mentions_list').append('</div>');
-} // end no param
+  if (params.includes('mentions')) {
+  	const timezoneOffset = (new Date()).getTimezoneOffset() * 60000;
+
+    const result = [];
+    let isCompleted = false;
+    let isEnd = false;
+    let isValidElement;
+
+    const {limit, limit_max, buttonId} = notifyPageMentionsData;
+
+    while (! isCompleted && ! isEnd) {
+      const {from, isFirstRequest} = notifyPageMentionsData;
+
+      const limitReal = (isFirstRequest || limit_max <= from) ? limit_max : from;
+
+      const data = await viz.api.getAccountHistory(user.login, from, limitReal);
+
+      data.sort(accountHistoryCompareDate);
+
+      for (const operation of data) {
+        const op = operation[1].op;
+        isValidElement = op[1].memo && op[1].memo.indexOf("упомянул") && op[1].to === user.login;
+
+        if (isValidElement) {
+          result.push(operation);
+
+          if (result.length === limit + 1) {
+            isCompleted = true;
+            break;
+          }
+        }
+      }
+
+      if (! isCompleted) {
+        if (data.length < limitReal + 1) {
+          isEnd = true;
+        } else {
+          const lastElement = data[data.length - 1];
+
+          notifyPageMentionsData.from = lastElement[0];
+
+          if (isValidElement) {
+            result.pop();
+          }
+        }
+      }
+    }
+
+    if (isEnd) {
+      const button = document.getElementById(buttonId);
+      if (button) {
+        button.remove();
+      }
+    } else {
+      const lastElement = result.pop();
+
+      walletDataSettings.from = lastElement[0];
+    }
+
+    console.dir(result);
+
+    result.forEach(function (item) {
+      var op = item[1].op;
+      var get_time = Date.parse(item[1].timestamp);
+      var transfer_datetime = date_str(get_time - timezoneOffset, true, false, true);
+      var memo = prepareContent(op[1].memo);
+
+      $('#mentions_ul').append('<li>' + transfer_datetime + ' ' + memo + '</li>');
+    });
+  }
 }
 
 function loadOptions()
