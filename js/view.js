@@ -493,20 +493,6 @@ function getDiscussionsByAuthor(author)
 	 });
 }
 
-
-const promiseHelper = (apiFuncName, ...params) => {
-	return new Promise((resolve, reject) => {
-		viz.api[apiFuncName](...params, (err, data) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(data);
-			}
-		});
-	});
-};
-
-
 const getDiscussionsByBlogData = {
   limit: 30,
   limit_max: 100,
@@ -544,7 +530,7 @@ async function getDiscussionsByBlog(author)
       getDiscussionsByBlogData.isFirstRequest = false;
 		}
 
-    const data = await promiseHelper('getDiscussionsByBlog', params);
+    const data = await viz.api.getDiscussionsByBlog(params);
 
     data.sort(compareDate);
 
@@ -684,7 +670,7 @@ async function getDiscussionsByTags(tags)
       getDiscussionsByTagsData.isFirstRequest = false;
     }
 
-    const data = await promiseHelper('getDiscussionsByCreated', params);
+    const data = await viz.api.getDiscussionsByCreated(params);
 
     data.sort(compareDate);
 
@@ -817,7 +803,7 @@ async function getDiscussionsByFeed(login)
       getDiscussionsByFeedData.isFirstRequest = false;
     }
 
-    const data = await promiseHelper('getDiscussionsByFeed', params);
+    const data = await viz.api.getDiscussionsByFeed(params);
 
     data.sort(compareDate);
 
@@ -2459,7 +2445,7 @@ async function walletData() {
 
     const limitReal = (isFirstRequest || limit_max <= from) ? limit_max : from;
 
-    const data = await promiseHelper('getAccountHistory', user.login, from, limitReal);
+    const data = await viz.api.getAccountHistory(user.login, from, limitReal);
 
     data.sort(accountHistoryCompareDate);
 
