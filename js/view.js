@@ -2751,7 +2751,7 @@ walletData();
 
 const notifyPageRepliesData = {
 	limit: 30,
-	start_author: user.login,
+	start_author: null,
 	start_permlink: null,
 	buttonId: 'notify-page-replies-button',
 };
@@ -2766,9 +2766,13 @@ const notifyPageMentionsData = {
   buttonId: 'notify-page-mentions-button',
 };
 
-async function notifyPage(params) {
-  if (params.includes('replies')) {
-  	const {limit, start_author, start_permlink, buttonId} = notifyPageRepliesData;
+async function notifyPage(types) {
+  if (types.includes('replies')) {
+  	const {limit, start_permlink, buttonId} = notifyPageRepliesData;
+  	let {start_author} = notifyPageRepliesData;
+  	if (start_author === null) {
+  		start_author = user.login;
+		}
 
   	const result = await viz.api.getRepliesByLastUpdate(start_author, start_permlink, limit + 1, 0);
 
@@ -2789,7 +2793,7 @@ async function notifyPage(params) {
     });
 
   }
-  if (params.includes('mentions')) {
+  if (types.includes('mentions')) {
   	const timezoneOffset = (new Date()).getTimezoneOffset() * 60000;
 
     const result = [];

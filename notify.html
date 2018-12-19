@@ -115,18 +115,26 @@
 								</ol>
 								<div id="j_component">
 									<div id="tabs_links">
-									<a align="left" href="notify.html">Все</a>
-									<a align="center" href="notify.html?type=replies">Ответы</a>
-									<a align="right" href="notify.html?type=mentions">Упоминания</a>
+                    <a align="left" href="notify.html">Все</a>
+                    <a align="center" href="notify.html?type=replies">Ответы</a>
+                    <a align="right" href="notify.html?type=mentions">Упоминания</a>
 									</div>
-									<div id="answers_list">
-										<h2 id="replies_header" style="display: none">Ответы</h2>
-										<div id="replies_list"></div>
+									<div id="answers_list" style="display: none">
+                    <div id="replies">
+                      <h2 id="replies_header">Ответы</h2>
+                      <div id="replies_list"></div>
+                      <button id="notify-page-replies-button" onclick="notifyPage(['replies'])">Ещё</button>
+                    </div>
 
-										<h2 id="mentions_header" style="display: none">Упоминания</h2>
-										<div id="mentions_list">
-											<ul id="mentions_ul"></ul>
-										</div>
+
+                    <div id="mentions" style="display: none">
+                      <h2 id="mentions_header">Упоминания</h2>
+                      <div id="mentions_list">
+                        <ul id="mentions_ul"></ul>
+                      </div>
+                      <button id="notify-page-mentions-button" onclick="notifyPage(['mentions'])">Ещё</button>
+                    </div>
+
 									</div>
 									<div id="answer"></div>
 								</div>
