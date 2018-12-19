@@ -158,6 +158,20 @@ function getFollowers(login, start, me)
 	});
 }
 
+window.onFollowingLoaded = function(following) {
+  following.forEach(function (data){
+    $("#following_table").append('<tr><td><a href="user.html?author=' + data + '" target="_blank">@' + data + '</a></td>\
+<td><button class="btn btn-warning" onclick="follow(\''+data+'\', \'\'); style.display=\'none\'; window.alert(\'Вы отписались от пользователя.\')">Отписаться</button></td>\
+		</tr>');
+  });
+};
+
+window.onFollowersLoaded = function(followers) {
+  followers.forEach(function (data){
+    $("#followers_data").append('<li><a href="user.html?author=' + data + '" target="_blank">@' + data + '</a></li>');
+  });
+};
+
 function getFollowersMe()
 {
 	var login = localStorage.getItem('login');
@@ -479,35 +493,98 @@ function getDiscussionsByAuthor(author)
 	 });
 }
 
-function getDiscussionsByBlog(author)
+const getDiscussionsByBlogData = {
+  limit: 30,
+  limit_max: 100,
+  start_author: null,
+  start_permlink: null,
+  isFirstRequest: true,
+  buttonId: 'discussions-by-blog-button',
+};
+
+async function getDiscussionsByBlog(author)
 {
+	const {limit, limit_max} = getDiscussionsByBlogData;
+
 	document.getElementById('loader').style = 'display:block';
-	 var params = 
-	 {
-		 'limit': 100,
-		 "select_authors": [author],
-'truncate_body': 40,
-		 'select_tags': ['liveblogs']
-		 }
-	 viz.api.getDiscussionsByBlog(params, function(err, data){
-		if(err)
-		{
-			console.log(err);
-		}			
-		if(data.length > 0)
-		{	
-			data.sort(compareDate);
-			for(operation of data)
-			{
-				if(operation.author === author) {
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
-				AddBlockX(operation);
-}
-				}
-			}//);
+	let {start_author, start_permlink} = getDiscussionsByBlogData;
+	const result = [];
+	let isCompleted = false;
+	let isEnd = false;
+	let isValidElement;
+
+	while (! isCompleted && ! isEnd) {
+    const params = {
+        'limit': limit_max,
+        "select_authors": [author],
+        'truncate_body': 40,
+        'select_tags': ['liveblogs']
+      };
+
+    if (! getDiscussionsByBlogData.isFirstRequest) {
+      Object.assign(params, {
+        start_author,
+        start_permlink,
+      });
+    } else {
+      getDiscussionsByBlogData.isFirstRequest = false;
 		}
-		document.getElementById('loader').style = 'display:none';
-	 });
+
+    const data = await viz.api.getDiscussionsByBlog(params);
+
+    data.sort(compareDate);
+
+    for (const operation of data) {
+    	isValidElement = operation.author === author &&
+        operation.curation_percent === 5000 &&
+        Array.isArray(operation.beneficiaries) &&
+        operation.beneficiaries.some(b => b.account === operation.author);
+    	if (isValidElement) {
+    		result.push(operation);
+
+    		if (result.length === limit + 1) {
+    			isCompleted = true;
+    			break;
+        }
+			}
+		}
+
+		if (! isCompleted) {
+      if (data.length < limit_max) {
+        isEnd = true;
+      } else {
+      	const lastElement = data[data.length - 1];
+
+      	start_author = lastElement.author;
+      	start_permlink = lastElement.permlink;
+
+      	if (isValidElement) {
+      		result.pop();
+				}
+			}
+		}
+
+	}
+
+	if (isEnd) {
+    const button = document.getElementById(getDiscussionsByBlogData.buttonId);
+    if (button) {
+      button.remove();
+    }
+	} else {
+		const lastElement = result.pop();
+
+		getDiscussionsByBlogData.start_author = lastElement.author;
+		getDiscussionsByBlogData.start_permlink = lastElement.permlink;
+	}
+
+	console.dir(result);
+
+  for (const operation of result) {
+    AddBlockX(operation);
+  }
+
+  document.getElementById('loader').style = 'display:none';
 }
 
 function getDiscussionsTrending() 
@@ -557,35 +634,96 @@ function compareDate(a, b)
 	}
 }
 
-function getDiscussionsByTags(tags)
+const getDiscussionsByTagsData = {
+  limit: 30,
+  limit_max: 100,
+  start_author: null,
+  start_permlink: null,
+  isFirstRequest: true,
+  buttonId: 'discussions-by-tags-button',
+};
+
+async function getDiscussionsByTags(tags)
 {
-	document.getElementById('loader').style = 'display:block';
-	 var params = 
-	 {
-		 'limit': 100,
-		 'select_tags': tags,
-		 'truncate_body': 20
-	 }
-	 //console.log(params);
-	 viz.api.getDiscussionsByCreated(params, function(err, data){
-		if(err)
-		{
-			console.log(err);
-		}
-		if(data)
-		{
-			data.sort(compareDate);
-			if(data.length > 0)
-			{			
-				data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
-				AddBlockX(operation);
-}
-				});
-			}
-		}		
-		document.getElementById('loader').style = 'display:none'; 
-	 });
+  const {limit, limit_max} = getDiscussionsByTagsData;
+
+  document.getElementById('loader').style = 'display:block';
+  let {start_author, start_permlink} = getDiscussionsByTagsData;
+  const result = [];
+  let isCompleted = false;
+  let isEnd = false;
+  let isValidElement;
+
+  while (! isCompleted && ! isEnd) {
+    const params = {
+      'limit': limit_max,
+      'select_tags': tags,
+      'truncate_body': 20
+    };
+
+    if (! getDiscussionsByTagsData.isFirstRequest) {
+      Object.assign(params, {
+        start_author,
+        start_permlink,
+      });
+    } else {
+      getDiscussionsByTagsData.isFirstRequest = false;
+    }
+
+    const data = await viz.api.getDiscussionsByCreated(params);
+
+    data.sort(compareDate);
+
+    for (const operation of data) {
+      isValidElement = operation.curation_percent === 5000 &&
+        Array.isArray(operation.beneficiaries) &&
+        operation.beneficiaries.some(b => b.account === operation.author);
+      if (isValidElement) {
+        result.push(operation);
+
+        if (result.length === limit + 1) {
+          isCompleted = true;
+          break;
+        }
+      }
+    }
+
+    if (! isCompleted) {
+      if (data.length < limit_max) {
+        isEnd = true;
+      } else {
+        const lastElement = data[data.length - 1];
+
+        start_author = lastElement.author;
+        start_permlink = lastElement.permlink;
+
+        if (isValidElement) {
+          result.pop();
+        }
+      }
+    }
+
+  }
+
+  if (isEnd) {
+    const button = document.getElementById(getDiscussionsByTagsData.buttonId);
+    if (button) {
+      button.remove();
+    }
+  } else {
+    const lastElement = result.pop();
+
+    getDiscussionsByTagsData.start_author = lastElement.author;
+    getDiscussionsByTagsData.start_permlink = lastElement.permlink;
+  }
+
+  console.dir(result);
+
+  for (const operation of result) {
+    AddBlockX(operation);
+  }
+
+  document.getElementById('loader').style = 'display:none';
 }
 
 function getDiscussions(start_author, start_permlink)
@@ -628,50 +766,98 @@ function getDiscussions(start_author, start_permlink)
      });
 }
 
-function getDiscussionsByFeed(login, start_author, start_permlink)
+const getDiscussionsByFeedData = {
+  limit: 30,
+  limit_max: 100,
+  start_author: null,
+  start_permlink: null,
+  isFirstRequest: true,
+  buttonId: 'discussions-by-feed-button',
+};
+
+async function getDiscussionsByFeed(login)
 {
-	document.getElementById('loader').style = 'display:block';
-	 start_author = typeof start_author !== 'undefined' ?  start_author : '';
-     start_permlink = typeof start_permlink !== 'undefined' ?  start_permlink : '';
-	 //console.log(start_author, start_permlink);
-     if(start_permlink && start_author)
-     {
-         var params = 
-         {
-             'limit': 100,
-             'truncate_body': 240,
-'select_tags': ['liveblogs'],
-			 "select_authors": [login],
-             'start_author': start_author,
-             'start_permlink': start_permlink
-         }     
-     }
-     else
-     {
-         var params = 
-         {
-			 "tag": "",
-			 "select_authors": [login],
-             'limit': 100,
-             'truncate_body': 240,
-'select_tags': ['liveblogs']
-         }
-     }
-			viz.api.getDiscussionsByFeed(params, function(err, data){
-		//console.log(err,data);
-		data.sort(compareDate);
-		if(data.length > 0)
-		{			
-			data.forEach(function (operation){
-				if (user.following.includes(operation.author)) {
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
-	AddBlockX(operation);
-				}
-}
-		});
-	}
-		document.getElementById('loader').style = 'display:none'; 
-	});
+  const {limit, limit_max} = getDiscussionsByFeedData;
+
+  document.getElementById('loader').style = 'display:block';
+  let {start_author, start_permlink} = getDiscussionsByFeedData;
+  const result = [];
+  let isCompleted = false;
+  let isEnd = false;
+  let isValidElement;
+
+  while (! isCompleted && ! isEnd) {
+    const params = {
+      "select_authors": [login],
+      'limit': limit_max,
+      'truncate_body': 240,
+      'select_tags': ['liveblogs']
+    };
+
+    if (! getDiscussionsByFeedData.isFirstRequest) {
+      Object.assign(params, {
+        start_author,
+        start_permlink,
+      });
+    } else {
+      getDiscussionsByFeedData.isFirstRequest = false;
+    }
+
+    const data = await viz.api.getDiscussionsByFeed(params);
+
+    data.sort(compareDate);
+
+    for (const operation of data) {
+      isValidElement = user.following.includes(operation.author) &&
+        operation.curation_percent === 5000 &&
+        Array.isArray(operation.beneficiaries) &&
+        operation.beneficiaries.some(b => b.account === operation.author);
+      if (isValidElement) {
+        result.push(operation);
+
+        if (result.length === limit + 1) {
+          isCompleted = true;
+          break;
+        }
+      }
+    }
+
+    if (! isCompleted) {
+      if (data.length < limit_max) {
+        isEnd = true;
+      } else {
+        const lastElement = data[data.length - 1];
+
+        start_author = lastElement.author;
+        start_permlink = lastElement.permlink;
+
+        if (isValidElement) {
+          result.pop();
+        }
+      }
+    }
+
+  }
+
+  if (isEnd) {
+    const button = document.getElementById(getDiscussionsByFeedData.buttonId);
+    if (button) {
+      button.remove();
+    }
+  } else {
+    const lastElement = result.pop();
+
+    getDiscussionsByFeedData.start_author = lastElement.author;
+    getDiscussionsByFeedData.start_permlink = lastElement.permlink;
+  }
+
+  console.dir(result);
+
+  for (const operation of result) {
+    AddBlockX(operation);
+  }
+
+  document.getElementById('loader').style = 'display:none';
 }
 
   function getRecomendationPosts(login, start_author, start_permlink)
@@ -2226,102 +2412,171 @@ $('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', tr
     });
 }
 
-function walletData() {
-	if (localStorage.getItem('ActiveKey')) {
-		var active_key = sjcl.decrypt(user.login + '_activeKey', localStorage.getItem('ActiveKey'));
-} else {
-var active_key = $('#this_active').val();
+const walletDataSettings = {
+	limit: 500,
+	limit_max: 1000,
+	from: -1,
+  get isFirstRequest() {
+		return this.from === -1;
+	},
+  buttonId: 'wallet-data-button',
+};
+
+async function walletData() {
+	const activeKey = localStorage.getItem('ActiveKey');
+	const active_key = activeKey ? sjcl.decrypt(user.login + '_activeKey', activeKey) : $('#this_active').val();
+
+  $('#unblock_form').css("display", "none");
+  jQuery("#main_wallet_info").css("display", "block");
+  load_balance(user.login, active_key);
+
+  // История переводов:
+  jQuery("#wallet_transfer_history").css("display", "block");
+
+  const result = [];
+  let isCompleted = false;
+  let isEnd = false;
+  let isValidElement;
+
+  const {limit, limit_max, buttonId} = walletDataSettings;
+
+  while (! isCompleted && ! isEnd) {
+    const {from, isFirstRequest} = walletDataSettings;
+
+    const limitReal = (isFirstRequest || limit_max <= from) ? limit_max : from;
+
+    const data = await viz.api.getAccountHistory(user.login, from, limitReal);
+
+    data.sort(accountHistoryCompareDate);
+
+    for (const operation of data) {
+      const op = operation[1].op;
+      isValidElement = (op[1].from && op[1].to && op[1].amount) ||
+        op[0] === 'curation_reward' ||
+        op[0] === 'author_reward' ||
+        op[0] === 'content_benefactor_reward' ||
+        op[0] === 'witness_reward';
+
+      if (isValidElement) {
+        result.push(operation);
+
+        if (result.length === limit + 1) {
+          isCompleted = true;
+          break;
+        }
+      }
+    }
+
+    if (! isCompleted) {
+      if (data.length < limitReal + 1) {
+        isEnd = true;
+      } else {
+        const lastElement = data[data.length - 1];
+
+        walletDataSettings.from = lastElement[0];
+
+        if (isValidElement) {
+          result.pop();
+        }
+      }
+    }
+  }
+
+  if (isEnd) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+      button.remove();
+    }
+  } else {
+    const lastElement = result.pop();
+
+    walletDataSettings.from = lastElement[0];
+  }
+
+  console.dir(result);
+
+  appendWalletData(result);
+
 }
 
-		$('#unblock_form').css("display", "none");
-jQuery("#main_wallet_info").css("display", "block");
-load_balance(user.login, active_key);
+function appendWalletData(items) {
+	const timezoneOffset = (new Date()).getTimezoneOffset() * 60000;
 
- // История переводов:
-jQuery("#wallet_transfer_history").css("display", "block");
- viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
- if (!err) {
-			result.sort(accountHistoryCompareDate);
- result.forEach(function(item) {
-var get_time = Date.parse(item[1].timestamp);
-var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
+	items.forEach(item => {
 
-        var op = item[1].op;
-		if (op[1].from && op[1].to && op[1].amount) {
-		var from = op[1].from;
-var to = op[1].to;
-var amount = op[1].amount;
-if (op[1].memo) {
-var memo = prepareContent(op[1].memo);
-} else if (op[0] === 'transfer_to_vesting') {
-	var memo = 'Перевод в SHARES.';
-} else {
-	var memo = '';
-}
-  jQuery("#transfer_history_tbody").append('<tr class="filtered ' + from + '"><td>' + transfer_datetime + '</td>\
+    var get_time = Date.parse(item[1].timestamp);
+    var transfer_datetime = date_str(get_time - timezoneOffset, true, false, true);
+
+    var op = item[1].op;
+    if (op[1].from && op[1].to && op[1].amount) {
+      var from = op[1].from;
+      var to = op[1].to;
+      var amount = op[1].amount;
+      if (op[1].memo) {
+        var memo = prepareContent(op[1].memo);
+      } else if (op[0] === 'transfer_to_vesting') {
+        var memo = 'Перевод в SHARES.';
+      } else {
+        var memo = '';
+      }
+      jQuery("#transfer_history_tbody").append('<tr class="filtered ' + from + '"><td>' + transfer_datetime + '</td>\
 <td><a href="user.html?author=' + from + '" target="_blank">@' + from + '</a></td>\
 <td><a href="user.html?author=' + to + '" target="_blank">@' + to + '</a></td>\
 <td>' + amount + '</td>\
 <td>' + memo + '</td>\
   </tr>');
-  } else if (op[0] === 'curation_reward') {
-  var content_author = op[1].content_author;
-var content_permlink = op[1].content_permlink;
-  var curator = op[1].curator;
-  var reward = op[1].reward;
-var memo = 'Награда за то, что вы подарили улыбки посту <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
-jQuery("#transfer_history_tbody").append('<tr class="filtered_curation_reward"><td>' + transfer_datetime + '</td>\
+    } else if (op[0] === 'curation_reward') {
+      var content_author = op[1].content_author;
+      var content_permlink = op[1].content_permlink;
+      var curator = op[1].curator;
+      var reward = op[1].reward;
+      var memo = 'Награда за то, что вы подарили улыбки посту <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+      jQuery("#transfer_history_tbody").append('<tr class="filtered_curation_reward"><td>' + transfer_datetime + '</td>\
 <td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
 <td><a href="user.html?author=' + curator + '" target="_blank">@' + curator + '</a></td>\
 <td>' + reward + '</td>\
 <td>' + memo + '</td>\
-  </tr>');  
-} else if (op[0] === 'author_reward') {
-	var from = 'пул Viz';
-	var content_author = op[1].author;
-  var content_permlink = op[1].permlink;
-	var token_payout = op[1].token_payout;
-var vesting_payout = op[1].vesting_payout;
-	var memo = 'Авторская награда от улыбнувшихся вам. Пост: <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
-  jQuery("#transfer_history_tbody").append('<tr class="filtered_author_reward"><td>' + transfer_datetime + '</td>\
+  </tr>');
+    } else if (op[0] === 'author_reward') {
+      var from = 'пул Viz';
+      var content_author = op[1].author;
+      var content_permlink = op[1].permlink;
+      var token_payout = op[1].token_payout;
+      var vesting_payout = op[1].vesting_payout;
+      var memo = 'Авторская награда от улыбнувшихся вам. Пост: <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+      jQuery("#transfer_history_tbody").append('<tr class="filtered_author_reward"><td>' + transfer_datetime + '</td>\
   <td>' + from + '</td>\
   <td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
   <td>' + token_payout + ' и ' + vesting_payout + '</td>\
   <td>' + memo + '</td>\
-	</tr>');  
-} else if (op[0] === 'content_benefactor_reward') {
-	var content_author = op[1].author;
-  var content_permlink = op[1].permlink;
-	var benefactor = op[1].benefactor;
-	var reward = op[1].reward;
-  var memo = 'Бенефициарская награда за пост <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
-  jQuery("#transfer_history_tbody").append('<tr class="filtered_content_benefactor_reward"><td>' + transfer_datetime + '</td>\
+	</tr>');
+    } else if (op[0] === 'content_benefactor_reward') {
+      var content_author = op[1].author;
+      var content_permlink = op[1].permlink;
+      var benefactor = op[1].benefactor;
+      var reward = op[1].reward;
+      var memo = 'Бенефициарская награда за пост <a href="https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '" target="_blank">https://liveblogs.space/show.html?author=' + content_author + '&permlink=' + content_permlink + '</a>';
+      jQuery("#transfer_history_tbody").append('<tr class="filtered_content_benefactor_reward"><td>' + transfer_datetime + '</td>\
   <td><a href="user.html?author=' + content_author + '" target="_blank">@' + content_author + '</a></td>\
   <td><a href="user.html?author=' + benefactor + '" target="_blank">@' + benefactor + '</a></td>\
   <td>' + reward + '</td>\
   <td>' + memo + '</td>\
-	</tr>');  
- } else if (op[0] === 'witness_reward') {
-var from = 'пул Viz';
-var witness = op[1].witness;
-var shares = op[1].shares;
-	var memo = 'Награда делегата.';
-  jQuery("#transfer_history_tbody").append('<tr class="filtered_witness_reward"><td>' + transfer_datetime + '</td>\
+	</tr>');
+    } else if (op[0] === 'witness_reward') {
+      var from = 'пул Viz';
+      var witness = op[1].witness;
+      var shares = op[1].shares;
+      var memo = 'Награда делегата.';
+      jQuery("#transfer_history_tbody").append('<tr class="filtered_witness_reward"><td>' + transfer_datetime + '</td>\
   <td>' + from + '</td>\
   <td><a href="user.html?author=' + witness + '" target="_blank">@' + witness + '</a></td>\
   <td>' + shares + '</td>\
   <td>' + memo + '</td>\
 	</tr>');
-}
+    }
 
   });
-
-	} else {
-window.alert('Ошибка: ' + err);
 }
- });
-
- }
 
 			function walletAuth() {
 			let active = $('#this_active').val();
@@ -2494,80 +2749,120 @@ walletData();
 				return main_div;
 			}
 
-function notifyPage(param) {
-if (param === 'replies') {
-	$('#answers_list').append('<h1>Ответы</h1>');
-	viz.api.getRepliesByLastUpdate(user.login, '', 100, 0, function(err, result) {
-		if (!err) {
-	result.forEach(function (operation){
-var post = '<div align="center">Пост или комментарий: <a href="show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '" target="_blank">show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '</a></div>';
-var div = addReplyX(operation);
-$('#answers_list').append(post);
-$('#answers_list').append(div);
-	});
-}
-	  }); // End getRepliesByLastUpdate
-} // End type=replies
-else if (param === 'mentions') {
-	$('#answers_list').append('<h1>Упоминания</h1>');
-	viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
-if (!err) {
-	$('#answers_list').append('<ul>');
-	result.sort(accountHistoryCompareDate);
-	result.forEach(function(item) {
-		var op = item[1].op;
-		if (op[1].memo && op[1].memo.indexOf("упомянул") && op[1].to === user.login) {
-			console.log(op[1].memo.indexOf("упомянул"));
-			var get_time = Date.parse(item[1].timestamp);
-	var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
-			var from = op[1].from;
-	var memo = prepareContent(op[1].memo);
+const notifyPageRepliesData = {
+	limit: 30,
+	start_author: null,
+	start_permlink: null,
+	buttonId: 'notify-page-replies-button',
+};
 
-	$('#answers_list').append('<li>' + transfer_datetime + ' ' + memo + '</li>');
-   }
-});
-$('#answers_list').append('</ul>');
-}
-  });
-} // end mentions.
-else if (!param) {
-	$('#answers_list').append('<h1>Все уведомления</h1>\
-<div id="replies_list">\
-	<h2>Ответы</h2>');
-	viz.api.getRepliesByLastUpdate(user.login, '', 100, 0, function(err, result) {
-		if (!err) {
-	result.forEach(function (operation){
-var post = '<div align="center">Пост или комментарий: <a href="show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '" target="_blank">show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '</a></div>';
-var div = addReplyX(operation);
-$('#replies_list').append(post);
-$('#replies_list').append(div);
-	});
-}
-	  }); // End getRepliesByLastUpdate
+const notifyPageMentionsData = {
+  limit: 500,
+  limit_max: 1000,
+  from: -1,
+  get isFirstRequest() {
+    return this.from === -1;
+  },
+  buttonId: 'notify-page-mentions-button',
+};
 
-	  $('#answers_list').append('</div>\
-<div id="mentions_list">\
-	  <h2>Упоминания</h2>');
-	  viz.api.getAccountHistory(user.login, -1, 10000, function(err, result) {
-  if (!err) {
-	  $('#mentions_list').append('<ul>');
-	  result.sort(accountHistoryCompareDate);
-	  result.forEach(function(item) {
-		  var op = item[1].op;
-		  if (op[1].memo && op[1].memo.indexOf("упомянул") && op[1].to === user.login) {
-			  var get_time = Date.parse(item[1].timestamp);
-	  var transfer_datetime = date_str(get_time-(new Date().getTimezoneOffset()*60000),true,false,true);
-			  var from = op[1].from;
-	  var memo = prepareContent(op[1].memo);
-  
-	  $('#mentions_list').append('<li>' + transfer_datetime + ' ' + memo + '</li>');
-	 }
-  });
-  $('#mentions_list').append('</ul>');
+async function notifyPage(types) {
+  if (types.includes('replies')) {
+  	const {limit, start_permlink, buttonId} = notifyPageRepliesData;
+  	let {start_author} = notifyPageRepliesData;
+  	if (start_author === null) {
+  		start_author = user.login;
+		}
+
+  	const result = await viz.api.getRepliesByLastUpdate(start_author, start_permlink, limit + 1, 0);
+
+    if (result.length < limit + 1) {
+      document.getElementById(buttonId).style.display = 'none';
+    } else {
+      const lastElement = result.pop();
+
+      notifyPageRepliesData.start_author = lastElement.author;
+      notifyPageRepliesData.start_permlink = lastElement.permlink;
+    }
+
+    result.forEach(function (operation) {
+      var post = '<div align="center">Пост или комментарий: <a href="show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '" target="_blank">show.html?author=' + operation.parent_author + '&permlink=' + operation.parent_permlink + '</a></div>';
+      var div = addReplyX(operation);
+      $('#replies_list').append(post);
+      $('#replies_list').append(div);
+    });
+
   }
-	});
-	$('#mentions_list').append('</div>');
-} // end no param
+  if (types.includes('mentions')) {
+  	const timezoneOffset = (new Date()).getTimezoneOffset() * 60000;
+
+    const result = [];
+    let isCompleted = false;
+    let isEnd = false;
+    let isValidElement;
+
+    const {limit, limit_max, buttonId} = notifyPageMentionsData;
+
+    while (! isCompleted && ! isEnd) {
+      const {from, isFirstRequest} = notifyPageMentionsData;
+
+      const limitReal = (isFirstRequest || limit_max <= from) ? limit_max : from;
+
+      const data = await viz.api.getAccountHistory(user.login, from, limitReal);
+
+      data.sort(accountHistoryCompareDate);
+
+      for (const operation of data) {
+        const op = operation[1].op;
+        isValidElement = op[1].memo && op[1].memo.indexOf("упомянул") && op[1].to === user.login;
+
+        if (isValidElement) {
+          result.push(operation);
+
+          if (result.length === limit + 1) {
+            isCompleted = true;
+            break;
+          }
+        }
+      }
+
+      if (! isCompleted) {
+        if (data.length < limitReal + 1) {
+          isEnd = true;
+        } else {
+          const lastElement = data[data.length - 1];
+
+          notifyPageMentionsData.from = lastElement[0];
+
+          if (isValidElement) {
+            result.pop();
+          }
+        }
+      }
+    }
+
+    if (isEnd) {
+      const button = document.getElementById(buttonId);
+      if (button) {
+        button.remove();
+      }
+    } else {
+      const lastElement = result.pop();
+
+      walletDataSettings.from = lastElement[0];
+    }
+
+    console.dir(result);
+
+    result.forEach(function (item) {
+      var op = item[1].op;
+      var get_time = Date.parse(item[1].timestamp);
+      var transfer_datetime = date_str(get_time - timezoneOffset, true, false, true);
+      var memo = prepareContent(op[1].memo);
+
+      $('#mentions_ul').append('<li>' + transfer_datetime + ' ' + memo + '</li>');
+    });
+  }
 }
 
 function loadOptions()

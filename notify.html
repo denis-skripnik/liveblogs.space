@@ -113,11 +113,30 @@
 										<meta itemprop="position" content="1">
 									</li>
 								</ol>
-								<div id="j_component">									
-<div id="tabs_links"><a align="left" href="notify.html">Все</a><a align="center" href="notify.html?type=replies">Ответы</a><a align="right" href="notify.html?type=mentions">Упоминания</a></div>
-<div id="answers_list">
-</div>		
-<div id="answer"></div>
+								<div id="j_component">
+									<div id="tabs_links">
+                    <a align="left" href="notify.html">Все</a>
+                    <a align="center" href="notify.html?type=replies">Ответы</a>
+                    <a align="right" href="notify.html?type=mentions">Упоминания</a>
+									</div>
+									<div id="answers_list" style="display: none">
+                    <div id="replies">
+                      <h2 id="replies_header">Ответы</h2>
+                      <div id="replies_list"></div>
+                      <button id="notify-page-replies-button" onclick="notifyPage(['replies'])">Ещё</button>
+                    </div>
+
+
+                    <div id="mentions" style="display: none">
+                      <h2 id="mentions_header">Упоминания</h2>
+                      <div id="mentions_list">
+                        <ul id="mentions_ul"></ul>
+                      </div>
+                      <button id="notify-page-mentions-button" onclick="notifyPage(['mentions'])">Ещё</button>
+                    </div>
+
+									</div>
+									<div id="answer"></div>
 								</div>
 							</div>										
 						</div>
@@ -140,7 +159,16 @@
 			Init();
 			mainMenu();
 			var type = getUrlVars()['type'];
-			notifyPage(type);
+			const types = type ? [type] : ['replies', 'mentions'];
+
+			if (types.includes('replies')) {
+			  document.getElementById('replies_header').style.display = 'block';
+			}
+      if (types.includes('mentions')) {
+        document.getElementById('mentions_header').style.display = 'block';
+      }
+
+			notifyPage(types);
 		</script>
 	</body>
 </html>
