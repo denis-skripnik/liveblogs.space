@@ -1,8 +1,7 @@
 function checkWorkingNode() {
     const NODES = [
-        "wss://ws.golos.ropox.app",
-        "wss://solox.world/ws",
-        "wss://golos.lexai.host"
+        "wss://ws.golos.io",
+        "wss://api.golos.cf"
     ];
     let node = localStorage.getItem("node") || NODES[0];
     const idx = Math.max(NODES.indexOf(node), 0);
