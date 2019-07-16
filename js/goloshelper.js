@@ -94,7 +94,7 @@ function showQuery(operation)
 	main_div.appendChild(a_div);
 	
 	var replies = 0;
-	viz.api.getContentReplies(operation.author, operation.permlink, function(err, result) {
+	golos.api.getContentReplies(operation.author, operation.permlink, function(err, result) {
 		console.log(err, result);
 		replies = result.length;		
 	});

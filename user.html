@@ -4,9 +4,9 @@
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="keywords" content="VIZ, блог, блокчейн, блоггеры, социальная сеть, апвот, поощрение, лайки, контент, децентрализация" />
+		<meta name="keywords" content="golos, блог, блокчейн, блоггеры, социальная сеть, апвот, поощрение, лайки, контент, децентрализация" />
 		<meta name="rights" content="(с) Joopiter.ru и denis-skripnik.name" />
-		<meta name="description" content="Live blogs space - web-клиент для блокчейна VIZ, платформы для блоггеров. Его главным преимуществом является то, что он локальный, а также имеет свою экономику распределения вознаграждений (СМ. about.html)" />
+		<meta name="description" content="Live blogs space - web-клиент для блокчейна golos, платформы для блоггеров. Его главным преимуществом является то, что он локальный, а также имеет свою экономику распределения вознаграждений (СМ. about.html)" />
 		
 		<title>Live blogs space</title>
 		
@@ -28,10 +28,10 @@
 		<script src="js/lib/fileinput.min.js" type="text/javascript"></script>
 		<script src="js/1vtemplate.js" type="text/javascript"></script>
 
-		<script src="https://cdn.jsdelivr.net/npm/viz-world-js@0.9.9/dist/viz.min.js" type="text/javascript"></script>
+		<script src="https://cdn.jsdelivr.net/npm/golos-world-js@0.9.9/dist/golos.min.js" type="text/javascript"></script>
 		<script src="js/marked.js" type="text/javascript"></script>
 		<script src="js/moment.js" type="text/javascript"></script>
-		<script src="js/vizhelper.js" type="text/javascript"></script>
+		<script src="js/goloshelper.js" type="text/javascript"></script>
 		
 		<script src="js/xss.min.js" type="text/javascript"></script>
 		<script src="js/view.js" type="text/javascript"></script>
@@ -62,7 +62,7 @@
 					<div id="login_div" class="row" style="margin-top: 5px; margin-bottom: 10px;">
 						<form action="index.html" method="post" name="adminForm" id="adminForm" class="form-validate col-sm-10 col-sm-offset-1">
 								<div class="form-group1">
-									<label for="login" style="color: white;">Логин VIZ<span style="color: red;">*</span> </label>
+									<label for="login" style="color: white;">Логин golos<span style="color: red;">*</span> </label>
 									<div class="input-group">
 										<div class="input-group-addon">@</div>
 										<input type="text" class="form-control required" id="login" name="login" onblur="checkLogin(this.value);" required="required"> 
@@ -126,7 +126,7 @@
 												<h1 id="account_name"></h1>
 <h2>Баланс: <span id="account_balance"></span> и <span id="account_vesting_shares"></span></h2>
 <div id="account_about"></div>
-<p align="center"><a id="transfer_to_this_user" target="_blank">Перевести VIZ пользователю</a></p>
+<p align="center"><a id="transfer_to_this_user" target="_blank">Перевести golos пользователю</a></p>
 <ul>
 <li>Делегировано другим аккаунтам: <span id="account_delegated_vesting_shares"></span>;
 <div id="modal_delegated_vesting_shares" class="modal fade">
@@ -163,7 +163,7 @@
   </div>
 </div></li>
 <li>Общий баланс SHARES (С учётом делегированного другим аккаунтам и полученного): <span id="account_full_vesting"></span>;</li>
-<li>Вывод из Shares в VIZ: <span id="account_full_vesting_withdraw"></span>;<span id="active_vesting_withdraw"></span></li>
+<li>Вывод из Shares в golos: <span id="account_full_vesting_withdraw"></span>;<span id="active_vesting_withdraw"></span></li>
 <li>Количество опубликованных постов: <span id="account_post_count"></span>, а комментариев: <span id="account_content_count"></span>;</li>
 <li>Улыбнулся <span id="account_vote_count"></span>.</li>
 <li>Подписчиков: <span id="followers"></span>, подписок: <span id="following"></span>
@@ -287,7 +287,7 @@
 										$('title').html('Пользователь ' + author + ' | Live blogs space');
 										getDiscussionsByBlog(author);
 										jQuery('#username').html(author);
-										viz.api.getAccounts([author], function(err, result) {
+										golos.api.getAccounts([author], function(err, result) {
 //  console.log(err, result);
 if (result.length === 0) {
 console.log('ok');
@@ -445,7 +445,7 @@ jQuery('#item_content_wrapper').html('<p align="center"><strong>Ошибка. В
  });
 
 var type = 'delegated';
-viz.api.getVestingDelegations(author, '', 100, type, function(err, res) {
+golos.api.getVestingDelegations(author, '', 100, type, function(err, res) {
   //console.log(err, res);
   if ( ! err) {
 var vesting_shares_amount = '';
@@ -461,7 +461,7 @@ vesting_shares_amount = item.vesting_shares;
 });
 
 var type = 'received';
-viz.api.getVestingDelegations(author, '', 100, type, function(err, res) {
+golos.api.getVestingDelegations(author, '', 100, type, function(err, res) {
   //console.log(err, res);
   if ( ! err) {
 var vs_amount = '';
@@ -476,7 +476,7 @@ vs_amount = item.vesting_shares;
   else console.error(err);
 });
 
-viz.api.getFollowCount(author, function(err, result) {
+golos.api.getFollowCount(author, function(err, result) {
   if (!err) {
   jQuery("#followers").html('<a href="#followers-link" class="btn btn-primary" data-toggle="modal">' + result.follower_count + '</a>');
 jQuery("#following").html('<a href="#following-link" class="btn btn-primary" data-toggle="modal">' + result.following_count + '</a>');
@@ -484,7 +484,7 @@ jQuery("#following").html('<a href="#following-link" class="btn btn-primary" dat
   else console.error(err);
 });
 
-viz.api.getFollowing(author, '', 'blog', 100, function(err, result) {
+golos.api.getFollowing(author, '', 'blog', 100, function(err, result) {
   //console.log(err, result);
   if ( ! err) {
 result.sort(function(a, b) {
@@ -503,7 +503,7 @@ jQuery("#following_body").html(following_element);
   else console.error(err);
 });
 
-viz.api.getFollowers(author, '', 'blog', 100, function(err, result) {
+golos.api.getFollowers(author, '', 'blog', 100, function(err, result) {
   //console.log(err, result);
   if ( ! err) {
 result.sort(function(a, b) {

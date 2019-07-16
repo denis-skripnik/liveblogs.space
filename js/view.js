@@ -1,8 +1,8 @@
 function checkWorkingNode() {
     const NODES = [
-        "wss://ws.viz.ropox.app",
+        "wss://ws.golos.ropox.app",
         "wss://solox.world/ws",
-        "wss://viz.lexai.host"
+        "wss://golos.lexai.host"
     ];
     let node = localStorage.getItem("node") || NODES[0];
     const idx = Math.max(NODES.indexOf(node), 0);
@@ -17,9 +17,9 @@ function checkWorkingNode() {
         }
         node = NODES[idx];
         console.log("check", idx, node);
-        viz.config.set("websocket", node);
+        golos.config.set("websocket", node);
         try {
-            viz.api.stop();
+            golos.api.stop();
         } catch(e) {
         }
         
@@ -29,7 +29,7 @@ function checkWorkingNode() {
             timeout = true;
             find(idx + 1);
         }, 3000);
-        viz.api.getDynamicGlobalPropertiesAsync()
+        golos.api.getDynamicGlobalPropertiesAsync()
             .then(props => {
                 if(!timeout) {
                     check = props.head_block_number;
@@ -127,14 +127,14 @@ var wordForm = function(num,word){
 function getFollowersCount()
 {
 	var login = localStorage.getItem('login');
-	viz.api.getFollowCount(login, function(err, data){
+	golos.api.getFollowCount(login, function(err, data){
 		console.log(err, data);
 	});
 }
 
 function getFollowers(login, start, me)
 {
-	viz.api.getFollowers(login, start, 'blog', 100, function(err, data){
+	golos.api.getFollowers(login, start, 'blog', 100, function(err, data){
 		//console.log(err, data);
 		if(data && data.length > 1 && me == true){
 			var i = user.followers.length - 1;
@@ -171,7 +171,7 @@ window.onFollowersLoaded = function(followers) {
 function getFollowersMe()
 {
 	var login = localStorage.getItem('login');
-	viz.api.getFollowers(login, '', 'blog', 100, function(err, data){
+	golos.api.getFollowers(login, '', 'blog', 100, function(err, data){
 		//console.log(err, data);
 		if(data && data.length > 0)
 		{
@@ -197,7 +197,7 @@ function getFollowersMe()
 
 function getFollowing(login)
 {
-	viz.api.getFollowing(login, '', 'blog', 100, function(err, data){
+	golos.api.getFollowing(login, '', 'blog', 100, function(err, data){
 		//console.log(err, data);
 	});
 }
@@ -205,7 +205,7 @@ function getFollowing(login)
 function getFollowingMe()
 {
 	var login = localStorage.getItem('login');
-	viz.api.getFollowing(login, '', 'blog', 100, function(err, data){
+	golos.api.getFollowing(login, '', 'blog', 100, function(err, data){
 		if(data)
 		{
 			var i = 0;
@@ -237,7 +237,7 @@ if (percent == 100) {
 		}]
 	)
 
-	viz.broadcast.custom(pk, [],
+	golos.broadcast.custom(pk, [],
             [voter], "follow", json, (err, result) => {
 				console.log(err, result); 
                     if (err) return
@@ -258,7 +258,7 @@ var full_weight = power * 100;
 	}
 	var pk = sjcl.decrypt(voter, key);
 	document.getElementById('vote_form').style = 'display: none';
-	viz.broadcast.vote(pk, voter, author, permlink, weight, 
+	golos.broadcast.vote(pk, voter, author, permlink, weight, 
 		function(err, result) {
 			 //console.log(err, result);
 			 if(result)
@@ -473,7 +473,7 @@ function getDiscussionsByAuthor(author)
 		 'select_authors': [author],
 'select_tags': ['liveblogs']
 	 }
-	 viz.api.getDiscussionsByCreated(params, function(err, data){
+	 golos.api.getDiscussionsByCreated(params, function(err, data){
 		if(data.length > 0)
 		{	
 			data.sort(compareDate);	
@@ -526,7 +526,7 @@ async function getDiscussionsByBlog(author)
       getDiscussionsByBlogData.isFirstRequest = false;
 		}
 
-    const data = await viz.api.getDiscussionsByBlog(params);
+    const data = await golos.api.getDiscussionsByBlog(params);
 
     data.sort(compareDate);
 
@@ -586,7 +586,7 @@ async function getDiscussionsByBlog(author)
 function getDiscussionsTrending() 
 {
 	document.getElementById('loader').style = 'display:block';
-	viz.api.getDiscussionsByTrending({"limit": 100, 'truncate_body': 40, 'select_tags': ['liveblogs']}, function(err, data){
+	golos.api.getDiscussionsByTrending({"limit": 100, 'truncate_body': 40, 'select_tags': ['liveblogs']}, function(err, data){
 		//console.log(err,data);
 		
 		if(data.length > 0)
@@ -604,7 +604,7 @@ function getDiscussionsTrending()
 function getDiscussionsPopular(date)
 {
 	document.getElementById('loader').style = 'display:block';
-	viz.api.getDiscussionsByHot({"limit": 100, 'truncate_body': 40, 'select_tags': ['liveblogs']}, function(err, data){
+	golos.api.getDiscussionsByHot({"limit": 100, 'truncate_body': 40, 'select_tags': ['liveblogs']}, function(err, data){
 		//console.log(err,data);
 		
 		if(data.length > 0)
@@ -666,7 +666,7 @@ async function getDiscussionsByTags(tags)
       getDiscussionsByTagsData.isFirstRequest = false;
     }
 
-    const data = await viz.api.getDiscussionsByCreated(params);
+    const data = await golos.api.getDiscussionsByCreated(params);
 
     data.sort(compareDate);
 
@@ -747,7 +747,7 @@ function getDiscussions(start_author, start_permlink)
          }
      }
      
-     viz.api.getDiscussionsByCreated(params, function(err, data){
+     golos.api.getDiscussionsByCreated(params, function(err, data){
         if(data.length > 0)
         {			
             //data.forEach(function (operation)
@@ -799,7 +799,7 @@ async function getDiscussionsByFeed(login)
       getDiscussionsByFeedData.isFirstRequest = false;
     }
 
-    const data = await viz.api.getDiscussionsByFeed(params);
+    const data = await golos.api.getDiscussionsByFeed(params);
 
     data.sort(compareDate);
 
@@ -885,7 +885,7 @@ async function getDiscussionsByFeed(login)
 'select_tags': ['liveblogs']
          }
      }
-	viz.api.getDiscussionsByFeed(params, function(err, data){
+	golos.api.getDiscussionsByFeed(params, function(err, data){
 		//console.log(err,data);
  		let index = {};
 		let key = (p) => p.author + ":" + p.permlink;
@@ -953,7 +953,7 @@ function getContentX(permlink, author)
 		document.getElementById('answers_loader').style = 'display:block';
 	}
 	
-	viz.api.getContent(author, permlink, -1, function(err, data){
+	golos.api.getContent(author, permlink, -1, function(err, data){
 		//console.log( data );
 		var metadata = JSON.parse(data.json_metadata);
 		console.log(metadata);
@@ -1131,7 +1131,7 @@ $('title').html(result.title + ' | Live blogs space');
 			vote_form.style = 'display:block'; 
 		}
 		  
-		viz.api.getAccounts([author], function(err, response){
+		golos.api.getAccounts([author], function(err, response){
 			if(err)
 			{
 				console.log(err);
@@ -1168,7 +1168,7 @@ $('title').html(result.title + ' | Live blogs space');
 	});
 	
 
-	viz.api.getContentReplies(author, permlink, 0, function(err, data){
+	golos.api.getContentReplies(author, permlink, 0, function(err, data){
 		if(data.length > 0)
 		{
 			data.forEach(function(operation){
@@ -1187,7 +1187,7 @@ $('title').html(result.title + ' | Live blogs space');
 	var voter = localStorage.getItem('login');
 	isVoted(permlink, author, voter);
 	
-	viz.api.getActiveVotes(author, permlink, -1, function(err, data){
+	golos.api.getActiveVotes(author, permlink, -1, function(err, data){
 	if(data)
 		if(data.length > 0)
 		{
@@ -1216,7 +1216,7 @@ $(".smile_count").html(data_upvotes);
 function updateVotes(permlink, author)
 {
 	removeChildrenRecursively(document.getElementById('voters'));
-	viz.api.getActiveVotes(author, permlink, -1, function(err, data){
+	golos.api.getActiveVotes(author, permlink, -1, function(err, data){
 		if(data)
 			if(data.length > 0)
 			{
@@ -1246,7 +1246,7 @@ function follow(author, what)
 	var login = localStorage.getItem('login');
 	var pk = getPostingKeyByLogin(login);
 	var json=JSON.stringify(['follow',{follower:login,following:author,what:[what]}]);
-	viz.broadcast.custom(pk,[],[login],'follow',json,function(err, result){
+	golos.broadcast.custom(pk,[],[login],'follow',json,function(err, result){
 		console.log(err);
 		if(!err){
 			/*$('.user-card[data-user-login="'+user_card_action.login+'"]').attr('data-subscribed','1');
@@ -1266,7 +1266,7 @@ function ignore(author)
 	var login = localStorage.getItem('login');
 	var pk = getPostingKeyByLogin(login);
 	var json=JSON.stringify(['follow',{follower:login,following:author,what:['ignore']}]);
-	viz.broadcast.custom(pk,[],[login],'follow',json,function(err, result){
+	golos.broadcast.custom(pk,[],[login],'follow',json,function(err, result){
 		if(!err){
 			/*$('.user-card[data-user-login="'+user_card_action.login+'"]').attr('data-subscribed','1');
 			$('.user-card[data-user-login="'+user_card_action.login+'"]').attr('data-ignored','0');
@@ -1285,7 +1285,7 @@ function isVoted(permlink, author, voter)
 	if(document.getElementById('my_vote'))
 	{
 		document.getElementById('my_vote').innerHTML = '';
-		viz.api.getActiveVotes(author, permlink, -1, function(err, data){
+		golos.api.getActiveVotes(author, permlink, -1, function(err, data){
 			if(data)
 				if(data.length > 0)
 				{
@@ -1410,7 +1410,7 @@ if (user.login === operation.author) {
 		document.getElementById('answer').style = 'display: block';
 	}
 	
-	viz.api.getAccounts([operation.author], function(err, response){
+	golos.api.getAccounts([operation.author], function(err, response){
 		//console.log(err, response);
 		if(response)
 		{
@@ -1444,7 +1444,7 @@ if (user.login === operation.author) {
 
 function getRepliesX(author, permlink, parent)
 {
-	viz.api.getContentReplies(author, permlink, 0, function(err, data){
+	golos.api.getContentReplies(author, permlink, 0, function(err, data){
 		//console.log(err, data);
 		if(data.length > 0)
 		{
@@ -1510,7 +1510,7 @@ function sendComment(permlink, author, txt_id, button, hide, showReplies)
 		if (comment_users) {
 		json_metadata.users = comment_users;
 		}
-			viz.broadcast.content(key,
+			golos.broadcast.content(key,
 			author,
 			permlink,
 			login,
@@ -1532,7 +1532,7 @@ JSON.stringify(json_metadata),
 						button.style = 'display:none';
 					}					
 if (showReplies === 1) {
-					viz.api.getContentReplies(article.author, article.permlink, 0, function(err, data){
+					golos.api.getContentReplies(article.author, article.permlink, 0, function(err, data){
 						if(data.length > 0)
 						{
 							document.getElementById('answers_list').innerHTML = '';
@@ -1592,7 +1592,7 @@ function editComment(parent_author, parent_permlink, permlink, author, txt_id, b
 		if (comment_users) {
 		json_metadata.users = comment_users;
 	}
-			viz.broadcast.content(key,
+			golos.broadcast.content(key,
 				parent_author,
 				parent_permlink,
 				author,
@@ -1635,7 +1635,7 @@ function editComment(parent_author, parent_permlink, permlink, author, txt_id, b
 
 function loadUserCard(login)
 {
-	viz.api.getAccounts([login], function(err, response){
+	golos.api.getAccounts([login], function(err, response){
 		//console.log(err, response);
 		if(response)
 		{
@@ -1672,16 +1672,16 @@ function loadUserCard(login)
 }
 
 function mention(users, author, post_url) {
-var q = window.confirm('Вы действительно хотите выполнить отправку уведомлений? Это переведёт по 0.001 VIZ каждому упомянутому в посте пользователю.');
+var q = window.confirm('Вы действительно хотите выполнить отправку уведомлений? Это переведёт по 0.001 golos каждому упомянутому в посте пользователю.');
 if (q === true) {
 	var active = sjcl.decrypt(user.login + '_activeKey', localStorage.getItem('ActiveKey'));
 	var memo= "Пользователь @" + author + " упомянул вас в посте " + post_url;
 if (active) {
 	let transfers_array = users.map(user => 
-		['transfer', {from:author, to: user.replace("@",""), amount: "0.001 VIZ", memo}])
+		['transfer', {from:author, to: user.replace("@",""), amount: "0.001 golos", memo}])
 
 		try {
-viz.broadcast.send({
+golos.broadcast.send({
 extensions: [],
 operations: transfers_array}, 
 [active], function (err, result) {
@@ -1742,7 +1742,7 @@ function Init()
 
 function checkLogin(login)
 {
-	viz.api.getAccounts([login], function(err, response){
+	golos.api.getAccounts([login], function(err, response){
 		if(response == '')
 		{
 			document.getElementById('login').value = '';
@@ -1773,7 +1773,7 @@ function getUserPower(login)
 {
 	var timerId = setInterval(function() {
 	
-    viz.api.getAccounts([login],function(err,response){
+    golos.api.getAccounts([login],function(err,response){
 	if(typeof response[0] !== 'undefined'){
         let last_vote_time=Date.parse(response[0].last_vote_time);
         let delta_time=parseInt((new Date().getTime() - last_vote_time+(new Date().getTimezoneOffset()*60000))/1000);
@@ -1909,7 +1909,7 @@ function postBlog(title, tags)
 	new_permlink = new_permlink.replace(/[^a-z0-9 -]/g, "").trim();
 	console.log(new_permlink, tags, user.login, title, editor.getMarkdown().trim());
 
-viz.api.getContentAsync(user.login, new_permlink, -1).then(content => {
+golos.api.getContentAsync(user.login, new_permlink, -1).then(content => {
     if(content.permlink == new_permlink) {
 window.alert("пост с таким url уже есть. Пожалуйста, измените заголовок.");
     } else {
@@ -1922,7 +1922,7 @@ json_metadata.format = 'markdown';
 if (post_users) {
 json_metadata.users = post_users;
 }
-viz.broadcast.content(key,
+golos.broadcast.content(key,
 			'',
 			'',
 			user.login,
@@ -2005,7 +2005,7 @@ json_metadata.format = 'markdown';
 if (post_users) {
 json_metadata.users = post_users;
 }
-	viz.broadcast.content(key,
+	golos.broadcast.content(key,
 			'',
 			'',
 			author,
@@ -2037,12 +2037,12 @@ function pass_gen(){
 	for (var i=0,n=charset.length;i<length;++i){
 		ret+=charset.charAt(Math.floor(Math.random()*n));
 	}
-	let wif=viz.auth.toWif('',ret,'')
+	let wif=golos.auth.toWif('',ret,'')
 	return wif;
 }
 
 function inviteRegPage(new_account_name, invite_secret, new_account_key, private_key) {
-	viz.broadcast.inviteRegistration('5KcfoRuDfkhrLCxVcE9x51J6KN9aM9fpb78tLrvvFckxVV6FyFW', 'invite', new_account_name, invite_secret, new_account_key, function(err, result) {
+	golos.broadcast.inviteRegistration('5KcfoRuDfkhrLCxVcE9x51J6KN9aM9fpb78tLrvvFckxVV6FyFW', 'invite', new_account_name, invite_secret, new_account_key, function(err, result) {
 		if (!err) {
 		console.log('inviteRegistration', result);
 window.alert('Регистрация прошла успешно.\nВаш логин: '+ new_account_name + ',\nВаш ключ: ' + private_key + '\n\nДобро пожаловать! И не забудьте сохранить ваш ключ, так как его нельзя восстановить.')
@@ -2107,16 +2107,16 @@ function date_str(timestamp,add_time,add_seconds,remove_today=false){
 }
 
 function load_balance(account, active_key) {
-viz.api.getAccounts([account], function(err, result){
+golos.api.getAccounts([account], function(err, result){
  if (!err) {
  result.forEach(function(acc) {
 
- $(".viz_balance").html(new Number(parseFloat(acc.balance)).toFixed(3));
-$(".viz_vesting_shares").html(acc.vesting_shares);
+ $(".golos_balance").html(new Number(parseFloat(acc.balance)).toFixed(3));
+$(".golos_vesting_shares").html(acc.vesting_shares);
 $(".received_vesting_shares_result").html(acc.received_vesting_shares);
 $(".delegated_vesting_shares_result").html(acc.delegated_vesting_shares);
 var type = 'received';
-viz.api.getVestingDelegations(account, '', 100, type, function(err, res) {
+golos.api.getVestingDelegations(account, '', 100, type, function(err, res) {
   if ( ! err) {
 var vs_amount = '';
   var body_received_vesting_shares = '';
@@ -2130,7 +2130,7 @@ vs_amount = item.vesting_shares;
 });
 
 var type = 'delegated';
-viz.api.getVestingDelegations(account, '', 100, type, function(err, res) {
+golos.api.getVestingDelegations(account, '', 100, type, function(err, res) {
   //console.log(err, res);
   if ( ! err) {
 var vesting_shares_amount = '';
@@ -2140,7 +2140,7 @@ vesting_shares_amount = item.vesting_shares;
 	  body_delegated_vesting_shares = '<tr id="delegated_vesting_shares_' + item.delegatee + '"><td><a href="user.html?author=' + item.delegatee + '" target="_blank">@' + item.delegatee + '</a></td><td>' + vesting_shares_amount + '</td><td><input type="button" id="cancel_delegated_vesting_shares_' + item.delegatee + '" value="Отменить делегирование"></td></tr>';
 		jQuery("#body_delegated_vesting_shares").append(body_delegated_vesting_shares);
  $('#cancel_delegated_vesting_shares_' + item.delegatee).click(function(){
-viz.broadcast.delegateVestingShares(active_key, account, item.delegatee, '0.000000 SHARES', function(err, result) {
+golos.broadcast.delegateVestingShares(active_key, account, item.delegatee, '0.000000 SHARES', function(err, result) {
 if (!err) {
 window.alert('Делегирование пользователю ' + item.delegatee + ' отменено.');
 $('#delegated_vesting_shares_' + item.delegatee).css("display", "none");
@@ -2158,7 +2158,7 @@ var full_vesting = (parseFloat(acc.vesting_shares) - parseFloat(acc.delegated_ve
 $("#full_vesting").html(full_vesting);
 
  $("#cancel_vesting_withdraw").click(function(){
-viz.broadcast.withdrawVesting(active_key, account, '0.000000 SHARES', function(err, result) {
+golos.broadcast.withdrawVesting(active_key, account, '0.000000 SHARES', function(err, result) {
   if (!err) {
 window.alert('Вывод отменён.');
 $('#info_vesting_withdraw').css('display', 'none');
@@ -2181,7 +2181,7 @@ jQuery("#info_vesting_withdraw").css("display", "block");
 }
  $("#action_vesting_diposit_start").click(function(){
 var invite_secret = $('#invite_secret').val();
-viz.broadcast.claimInviteBalance(active_key, account, account, invite_secret, function(err, result) {
+golos.broadcast.claimInviteBalance(active_key, account, account, invite_secret, function(err, result) {
 if (!err) {
 window.alert('Пополнение прошло успешно.');
 location.reload();
@@ -2200,7 +2200,7 @@ $("#max_vesting_withdraw_result").html(new Number(parseFloat(max_vesting_withdra
   });
  $("#action_vesting_withdraw_start").click(function(){
 var action_vesting_withdraw_amount = $('#action_vesting_withdraw_amount').val() + ' SHARES';
-viz.broadcast.withdrawVesting(active_key, account, action_vesting_withdraw_amount, function(err, result) {
+golos.broadcast.withdrawVesting(active_key, account, action_vesting_withdraw_amount, function(err, result) {
 if (!err) {
 window.alert('Вывод на ' + action_vesting_withdraw_amount + ' начат.');
 location.reload();
@@ -2212,27 +2212,27 @@ window.alert('Ошибка: ' + err);
 }); // end subform
 
   $("#max_vesting_transfer").click(function(){
- $('#action_viz_transfer_amount').val(new Number(parseFloat(acc.balance)).toFixed(3));
+ $('#action_golos_transfer_amount').val(new Number(parseFloat(acc.balance)).toFixed(3));
   });
- $("#action_viz_transfer_start").click(function(){
- var action_viz_transfer_to = $('#action_viz_transfer_to').val();
- var action_viz_transfer_amount = $('#action_viz_transfer_amount').val() + ' VIZ';
-var action_viz_transfer_memo = $('#action_viz_transfer_memo').val();
+ $("#action_golos_transfer_start").click(function(){
+ var action_golos_transfer_to = $('#action_golos_transfer_to').val();
+ var action_golos_transfer_amount = $('#action_golos_transfer_amount').val() + ' golos';
+var action_golos_transfer_memo = $('#action_golos_transfer_memo').val();
 var transfer_to_vesting = document.getElementById('transfer_to_vesting');
 
 if (transfer_to_vesting.checked) {
-viz.broadcast.transferToVesting(active_key, account, action_viz_transfer_to, action_viz_transfer_amount, function(err, result) {
+golos.broadcast.transferToVesting(active_key, account, action_golos_transfer_to, action_golos_transfer_amount, function(err, result) {
 if (!err) {
-window.alert('Вы перевели ' + action_viz_transfer_amount + ' пользователю ' + action_viz_transfer_to + ' в SHARES.');
+window.alert('Вы перевели ' + action_golos_transfer_amount + ' пользователю ' + action_golos_transfer_to + ' в SHARES.');
 location.reload();
 } else {
 window.alert('Ошибка: ' + err);
 }
   });
 } else {
-viz.broadcast.transfer(active_key, account, action_viz_transfer_to, action_viz_transfer_amount, action_viz_transfer_memo, function(err, result) {
+golos.broadcast.transfer(active_key, account, action_golos_transfer_to, action_golos_transfer_amount, action_golos_transfer_memo, function(err, result) {
 if (!err) {
-window.alert('Вы перевели ' + action_viz_transfer_amount + ' пользователю ' + action_viz_transfer_to + '.');
+window.alert('Вы перевели ' + action_golos_transfer_amount + ' пользователю ' + action_golos_transfer_to + '.');
 location.reload();
 } else {
 window.alert('Ошибка: ' + err);
@@ -2245,10 +2245,10 @@ window.alert('Ошибка: ' + err);
  $('#action_to_shares_transfer_amount').val(new Number(parseFloat(acc.balance)).toFixed(3));
   });
  $("#action_to_shares_transfer_start").click(function(){
- var action_to_shares_transfer_amount = $('#action_to_shares_transfer_amount').val() + ' VIZ';
-viz.broadcast.transferToVesting(active_key, account, account, action_to_shares_transfer_amount, function(err, result) {
+ var action_to_shares_transfer_amount = $('#action_to_shares_transfer_amount').val() + ' golos';
+golos.broadcast.transferToVesting(active_key, account, account, action_to_shares_transfer_amount, function(err, result) {
 if (!err) {
-window.alert('Вы успешно перевели ' + action_to_shares_transfer_amount + ' VIZ в SHARES своего аккаунта.');
+window.alert('Вы успешно перевели ' + action_to_shares_transfer_amount + ' golos в SHARES своего аккаунта.');
 location.reload();
 } else {
 window.alert('Ошибка: ' + err);
@@ -2265,7 +2265,7 @@ $("#max_vesting_deligate").html(max_vesting_deligate);
  $("#action_vesting_delegate_start").click(function(){
  var action_vesting_delegate_to = $('#action_vesting_delegate_to').val();
  var action_vesting_delegate_amount = $('#action_vesting_delegate_amount').val() + ' SHARES';
-viz.broadcast.delegateVestingShares(active_key, account, action_vesting_delegate_to, action_vesting_delegate_amount, function(err, result) {
+golos.broadcast.delegateVestingShares(active_key, account, action_vesting_delegate_to, action_vesting_delegate_amount, function(err, result) {
 if (!err) {
 window.alert('Вы делегировали ' + action_vesting_delegate_amount + '.');
 location.reload();
@@ -2301,13 +2301,13 @@ button.addEventListener('click', function () {
  $('#create_invite_amount').val(new Number(parseFloat(acc.balance)).toFixed(3));
   });
  $("#create_invite_start").click(function(){
- var create_invite_amount = $('#create_invite_amount').val() + ' VIZ';
+ var create_invite_amount = $('#create_invite_amount').val() + ' golos';
 var create_private_invite_key = $('#create_invite_key').val();
 $("#create_private_invite_key_result").html(create_private_invite_key);
 $("#invite_reg_link").html('https://liveblogs.space/reg.html?invite=' + create_private_invite_key);
 $("#create_invite_result_amount").html(create_invite_amount);
-		var create_invite_key = viz.auth.wifToPublic(create_private_invite_key);
-viz.broadcast.createInvite(active_key, account, create_invite_amount, create_invite_key, function(err, result) {
+		var create_invite_key = golos.auth.wifToPublic(create_private_invite_key);
+golos.broadcast.createInvite(active_key, account, create_invite_amount, create_invite_key, function(err, result) {
 if (!err) {
     $("#invite_modal").modal('show');
 
@@ -2347,7 +2347,7 @@ $("#witnesses_vote_button").css("display", "inline");
 	});
 
   $("#witnesses_vote_button").click(function(){
-viz.broadcast.accountWitnessVote(active_key, account, 'denis-skripnik', true, function(err, result) {
+golos.broadcast.accountWitnessVote(active_key, account, 'denis-skripnik', true, function(err, result) {
 if (!err) {
 window.alert('Благодарю вас за голос!');
 } else {
@@ -2363,43 +2363,43 @@ var memo = getUrlVars()['memo'];
 
 if (to && amount && memo) {
 $(document).ready(function(){
-$("#viz_transfer_modal").modal('show');
-$('#action_viz_transfer_to').val(to).prop('readonly', true);
-$('#action_viz_transfer_amount').val(amount).prop('readonly', true);
-$('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
+$("#golos_transfer_modal").modal('show');
+$('#action_golos_transfer_to').val(to).prop('readonly', true);
+$('#action_golos_transfer_amount').val(amount).prop('readonly', true);
+$('#action_golos_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
 });
 } else if (to && memo) {
 $(document).ready(function(){
-$("#viz_transfer_modal").modal('show');
-$('#action_viz_transfer_to').val(to).prop('readonly', true);
-$('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
+$("#golos_transfer_modal").modal('show');
+$('#action_golos_transfer_to').val(to).prop('readonly', true);
+$('#action_golos_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
 }); 
 } else if (amount && memo) {
 $(document).ready(function(){
-$("#viz_transfer_modal").modal('show');
-$('#action_viz_transfer_amount').val(amount).prop('readonly', true);
-$('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
+$("#golos_transfer_modal").modal('show');
+$('#action_golos_transfer_amount').val(amount).prop('readonly', true);
+$('#action_golos_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
 });
 } else if (to && amount) {
 $(document).ready(function(){
-$("#viz_transfer_modal").modal('show');
-$('#action_viz_transfer_to').val(to).prop('readonly', true);
-$('#action_viz_transfer_amount').val(amount).prop('readonly', true);
+$("#golos_transfer_modal").modal('show');
+$('#action_golos_transfer_to').val(to).prop('readonly', true);
+$('#action_golos_transfer_amount').val(amount).prop('readonly', true);
 });
 } else if (to) {
 $(document).ready(function(){
-$("#viz_transfer_modal").modal('show');
-$('#action_viz_transfer_to').val(to).prop('readonly', true);
+$("#golos_transfer_modal").modal('show');
+$('#action_golos_transfer_to').val(to).prop('readonly', true);
 });
 } else if (amount) {
 $(document).ready(function(){
-$("#viz_transfer_modal").modal('show');
-$('#action_viz_transfer_amount').val(amount).prop('readonly', true);
+$("#golos_transfer_modal").modal('show');
+$('#action_golos_transfer_amount').val(amount).prop('readonly', true);
 });
 } else if (memo) {
 $(document).ready(function(){
-$("#viz_transfer_modal").modal('show');
-$('#action_viz_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
+$("#golos_transfer_modal").modal('show');
+$('#action_golos_transfer_memo').val(decodeURIComponent(memo)).prop('readonly', true);
 });
 }
 
@@ -2441,7 +2441,7 @@ async function walletData() {
 
     const limitReal = (isFirstRequest || limit_max <= from) ? limit_max : from;
 
-    const data = await viz.api.getAccountHistory(user.login, from, limitReal);
+    const data = await golos.api.getAccountHistory(user.login, from, limitReal);
 
     data.sort(accountHistoryCompareDate);
 
@@ -2534,7 +2534,7 @@ function appendWalletData(items) {
 <td>' + memo + '</td>\
   </tr>');
     } else if (op[0] === 'author_reward') {
-      var from = 'пул Viz';
+      var from = 'пул golos';
       var content_author = op[1].author;
       var content_permlink = op[1].permlink;
       var token_payout = op[1].token_payout;
@@ -2559,7 +2559,7 @@ function appendWalletData(items) {
   <td>' + memo + '</td>\
 	</tr>');
     } else if (op[0] === 'witness_reward') {
-      var from = 'пул Viz';
+      var from = 'пул golos';
       var witness = op[1].witness;
       var shares = op[1].shares;
       var memo = 'Награда делегата.';
@@ -2587,7 +2587,7 @@ jQuery("#wallet_page").append('<p align="center"><a onclick="localStorage.remove
 var isActiveKey = active;
 }
 
-			var resultIsActiveWif = viz.auth.isWif(isActiveKey);
+			var resultIsActiveWif = golos.auth.isWif(isActiveKey);
 console.log(resultIsActiveWif);
 			if (resultIsActiveWif === true) {
 			active_key = isActiveKey;
@@ -2713,7 +2713,7 @@ walletData();
 					document.getElementById('answer').style = 'display: block';
 				}
 				
-				viz.api.getAccounts([operation.author], function(err, response){
+				golos.api.getAccounts([operation.author], function(err, response){
 					//console.log(err, response);
 					if(response)
 					{
@@ -2770,7 +2770,7 @@ async function notifyPage(types) {
   		start_author = user.login;
 		}
 
-  	const result = await viz.api.getRepliesByLastUpdate(start_author, start_permlink, limit + 1, 0);
+  	const result = await golos.api.getRepliesByLastUpdate(start_author, start_permlink, limit + 1, 0);
 
     if (result.length < limit + 1) {
       document.getElementById(buttonId).style.display = 'none';
@@ -2804,7 +2804,7 @@ async function notifyPage(types) {
 
       const limitReal = (isFirstRequest || limit_max <= from) ? limit_max : from;
 
-      const data = await viz.api.getAccountHistory(user.login, from, limitReal);
+      const data = await golos.api.getAccountHistory(user.login, from, limitReal);
 
       data.sort(accountHistoryCompareDate);
 

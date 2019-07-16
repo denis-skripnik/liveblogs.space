@@ -4,9 +4,9 @@
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="keywords" content="VIZ, блог, блокчейн, блоггеры, социальная сеть, апвот, поощрение, лайки, контент, децентрализация" />
+		<meta name="keywords" content="golos, блог, блокчейн, блоггеры, социальная сеть, апвот, поощрение, лайки, контент, децентрализация" />
 		<meta name="rights" content="(с) Joopiter.ru и denis-skripnik.name" />
-		<meta name="description" content="Live blogs space - web-клиент для блокчейна VIZ, платформы для блоггеров. Его главным преимуществом является то, что он локальный, а также имеет свою экономику распределения вознаграждений (СМ. about.html)" />
+		<meta name="description" content="Live blogs space - web-клиент для блокчейна golos, платформы для блоггеров. Его главным преимуществом является то, что он локальный, а также имеет свою экономику распределения вознаграждений (СМ. about.html)" />
 		
 		<title>Кошелёк | Live blogs space</title>
 		
@@ -28,10 +28,10 @@
 		<script src="js/lib/fileinput.min.js" type="text/javascript"></script>
 		<script src="js/1vtemplate.js" type="text/javascript"></script>
 
-		<script src="https://cdn.jsdelivr.net/npm/viz-world-js@0.9.9/dist/viz.min.js" type="text/javascript"></script>
+		<script src="https://cdn.jsdelivr.net/npm/golos-world-js@0.9.9/dist/golos.min.js" type="text/javascript"></script>
 		<script src="js/marked.js" type="text/javascript"></script>
 		<script src="js/moment.js" type="text/javascript"></script>
-		<script src="js/vizhelper.js" type="text/javascript"></script>
+		<script src="js/goloshelper.js" type="text/javascript"></script>
 		
 		<script src="js/view.js" type="text/javascript"></script>
 	</head>
@@ -61,7 +61,7 @@
 					<div id="login_div" class="row" style="margin-top: 5px; margin-bottom: 10px;">
 						<form action="index.html" method="post" name="adminForm" id="adminForm" class="form-validate col-sm-10 col-sm-offset-1">
 								<div class="form-group1">
-									<label for="login" style="color: white;">Логин VIZ<span style="color: red;">*</span> </label>
+									<label for="login" style="color: white;">Логин golos<span style="color: red;">*</span> </label>
 									<div class="input-group">
 										<div class="input-group-addon">@</div>
 										<input type="text" class="form-control required" id="login" name="login" onblur="checkLogin(this.value);" required="required"> 
@@ -128,23 +128,23 @@
 </form>
 <div id="delete_active_key"></div>
 <div id="main_wallet_info" style="display: none;">
-	<p>Баланс: <span class="viz_balance"></span> VIZ и <span class="viz_vesting_shares"></span></p>
+	<p>Баланс: <span class="golos_balance"></span> golos и <span class="golos_vesting_shares"></span></p>
 <a class="tt" onclick="spoiler('wallet_actions'); return false">(Действия)</a>
-<ul id="wallet_actions" class="terms" style="display: none;"><li><a href="#viz_diposit_modal" class="btn btn-primary" data-toggle="modal">Пополнить счёт</a></li>
-<li><a href="#vesting_withdraw_modal" class="btn btn-primary" data-toggle="modal">Вывод SHARES в VIZ</a></li>
-<li><a href="#viz_transfer_modal" class="btn btn-primary" data-toggle="modal">Перевести VIZ</a></li>
-<li><a href="#to_shares_transfer_modal" class="btn btn-primary" data-toggle="modal">VIZ в SHARES этого аккаунта</a></li>
+<ul id="wallet_actions" class="terms" style="display: none;"><li><a href="#golos_diposit_modal" class="btn btn-primary" data-toggle="modal">Пополнить счёт</a></li>
+<li><a href="#vesting_withdraw_modal" class="btn btn-primary" data-toggle="modal">Вывод SHARES в golos</a></li>
+<li><a href="#golos_transfer_modal" class="btn btn-primary" data-toggle="modal">Перевести golos</a></li>
+<li><a href="#to_shares_transfer_modal" class="btn btn-primary" data-toggle="modal">golos в SHARES этого аккаунта</a></li>
 <li><a href="#vesting_delegate_modal" class="btn btn-primary" data-toggle="modal">Делегировать SHARES</a></li>
 <li><a href="#create_invite_form_modal" class="btn btn-primary" data-toggle="modal">Создать инвайт-код</a></li></ul>
-<div id="viz_diposit_modal" class="modal fade">
+<div id="golos_diposit_modal" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Пополнение счёта вашего аккаунта в VIZ</h4>
+        <h4 class="modal-title">Пополнение счёта вашего аккаунта в golos</h4>
       </div>
       <div class="modal-body">
-<p><strong>Пополнение производится с использованием инвайт-кодов. Получить за фиат или криптовалюту их вы сможете, обратившись к пользователям VIZ, например, к создателю liveblogs.</strong></p>
+<p><strong>Пополнение производится с использованием инвайт-кодов. Получить за фиат или криптовалюту их вы сможете, обратившись к пользователям golos, например, к создателю liveblogs.</strong></p>
 	  <div id="action_vesting_diposit">
 <form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">
 <p><label for="invite_secret">Инвайт-код (Начинается с 5):</label></p>
@@ -164,7 +164,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Вывод SHARES в VIZ</h4>
+        <h4 class="modal-title">Вывод SHARES в golos</h4>
       </div>
       <div class="modal-body">
 <div id="action_vesting_withdraw">
@@ -182,24 +182,24 @@
     </div>
   </div>
 </div>
-<div id="viz_transfer_modal" class="modal fade">
+<div id="golos_transfer_modal" class="modal fade">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Перевод VIZ на другой аккаунт</h4>
+        <h4 class="modal-title">Перевод golos на другой аккаунт</h4>
       </div>
       <div class="modal-body">
-	  <div id="action_viz_transfer">
+	  <div id="action_golos_transfer">
 <form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">
-<p><label for="viz_transfer_to">Кому:</label></p>
-<p><input type="text" name="viz_transfer_to" id="action_viz_transfer_to" placeholder="Введите получателя"></p>
- <p><label for="viz_transfer_amount">Сумма перевода (<span id="max_vesting_transfer">Перевести все доступные <span class="viz_balance"></span> VIZ</span>):</label></p>
-<p><input type="text" name="viz_transfer_amount" id="action_viz_transfer_amount" placeholder="1.000"></p>
-<p><label for="viz_transfer_memo">Заметка (описание) к платежу:</label></p>
-<p><input type="text" name="viz_transfer_memo" id="action_viz_transfer_memo" placeholder="Введите memo"></p>
+<p><label for="golos_transfer_to">Кому:</label></p>
+<p><input type="text" name="golos_transfer_to" id="action_golos_transfer_to" placeholder="Введите получателя"></p>
+ <p><label for="golos_transfer_amount">Сумма перевода (<span id="max_vesting_transfer">Перевести все доступные <span class="golos_balance"></span> golos</span>):</label></p>
+<p><input type="text" name="golos_transfer_amount" id="action_golos_transfer_amount" placeholder="1.000"></p>
+<p><label for="golos_transfer_memo">Заметка (описание) к платежу:</label></p>
+<p><input type="text" name="golos_transfer_memo" id="action_golos_transfer_memo" placeholder="Введите memo"></p>
 <p><input type="checkbox" id="transfer_to_vesting"> Перевести в SHARES</p>
- <p><input type="button" id="action_viz_transfer_start" value="Перевести"></p>
+ <p><input type="button" id="action_golos_transfer_start" value="Перевести"></p>
 </form>
 	  </div>
       </div>
@@ -214,11 +214,11 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Перевод VIZ в SHARES этого аккаунта</h4>
+        <h4 class="modal-title">Перевод golos в SHARES этого аккаунта</h4>
       </div>
       <div class="modal-body">
 	  <div id="action_to_shares_transfer"><form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">
- <p><label for="to_shares_transfer_amount">Количество VIZ (<span id="max_to_shares_transfer">Все доступные <span class="viz_balance"></span> VIZ</span>):</label></p>
+ <p><label for="to_shares_transfer_amount">Количество golos (<span id="max_to_shares_transfer">Все доступные <span class="golos_balance"></span> golos</span>):</label></p>
 <p><input type="text" name="to_shares_transfer_amount" id="action_to_shares_transfer_amount" placeholder="1.000"></p>
  <p><input type="button" id="action_to_shares_transfer_start" value="Начать перевод"></p>
 </form></div>
@@ -261,7 +261,7 @@
       <div class="modal-body">
 <p>Инвайты могут использоваться при регистрации и для перевода в баланс</p>
 	  <div id="create_invite"><form name="postForm" class="form-validate col-sm-10 col-sm-offset-1">
- <p><label for="create_invite_balance">Баланс инвайта (<span id="max_invite_balance">В баланс инвайта все доступные <span class="viz_balance"></span> VIZ</span>):</label></p>
+ <p><label for="create_invite_balance">Баланс инвайта (<span id="max_invite_balance">В баланс инвайта все доступные <span class="golos_balance"></span> golos</span>):</label></p>
 <p><input type="text" name="create_invite_balance" id="create_invite_amount" placeholder="1.000"></p>
 <p><label for="create_invite_key">Инвайт-код:</label></p>
 <p><input type="button" value="Генерировать" id="new_private_gen"><br>

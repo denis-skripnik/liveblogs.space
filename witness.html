@@ -2,12 +2,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Панель делегата</title>
-<script src="https://cdn.jsdelivr.net/npm/viz-world-js@0.9.9/dist/viz.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/golos-world-js@0.9.9/dist/golos.min.js" type="text/javascript"></script>
 </head>
 <body>
 <h1>Настройте параметры делегата:</h1>
 <p>Цена создания аккаунта ликвидом </p>
-<p><input type="text" id="account_creation_fee" value="1.000 VIZ" placeholder="account_creation_fee"></p>
+<p><input type="text" id="account_creation_fee" value="1.000 golos" placeholder="account_creation_fee"></p>
 <p>Множитель для создания аккаунта делегированием </p>
   <p><input type="text" id="create_account_delegation_ratio" value=10 placeholder="create_account_delegation_ratio"></p>
 <p>Время отзыва делегирования после создания аккаунта делегированием (В секундах) </p>
@@ -15,7 +15,7 @@
 <p>Максимальный размер блока </p>
 <p><input type="text" id="maximum_block_size" value=131072 placeholder="maximum_block_size"></p>
 <p>Минимальный объём делегирования </p>
-<p><input type="text" id="min_delegation" value="0.001 VIZ" placeholder="min_delegation"></p>
+<p><input type="text" id="min_delegation" value="0.001 golos" placeholder="min_delegation"></p>
 <p>Минимальный процент куратора </p>
 <p><input type="text" id="min_curation_percent" value=0 placeholder="min_curation_percent"></p>
 <p>Максимальный процент куратора </p>
@@ -114,7 +114,7 @@ let chain_properties = {
   committee_request_approve_min_percent:committee_request_approve_min_percent,
 };
 console.log(chain_properties);
-viz.broadcast.chainPropertiesUpdate(wif, owner, chain_properties, function(err, result) {
+golos.broadcast.chainPropertiesUpdate(wif, owner, chain_properties, function(err, result) {
   if (!err) {
     console.log('chainPropertiesUpdate', result);
     window.alert('Параметры успешно изменены!');
@@ -125,7 +125,7 @@ viz.broadcast.chainPropertiesUpdate(wif, owner, chain_properties, function(err, 
 
 function witnessInfo() {
 var witness_name = document.getElementById('witness_name').value;
-viz.api.getWitnessByAccount(witness_name, function(err, result) {
+golos.api.getWitnessByAccount(witness_name, function(err, result) {
   if ( ! err) {
       console.log('getWitnessByAccount', result);
 document.getElementById('account_creation_fee').value = result.props.account_creation_fee;
@@ -152,7 +152,7 @@ var VoteWif = document.getElementById('VoteWif').value;
 var VoteAccount = document.getElementById('VoteAccount').value;
 var witness = 'denis-skripnik';
 
-viz.broadcast.accountWitnessVote(VoteWif, VoteAccount, witness, true, function(err, result) {
+golos.broadcast.accountWitnessVote(VoteWif, VoteAccount, witness, true, function(err, result) {
   if (!err) {
     console.log('accountWitnessVote', result);
 window.alert('Благодарю за то, что проголосовали за моего делегата.');
