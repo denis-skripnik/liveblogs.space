@@ -720,7 +720,7 @@ async function getDiscussionsByTags(tags)
     getDiscussionsByTagsData.start_permlink = lastElement.permlink;
   }
 
-  console.dir(result);
+  console.log(JSON.stringify(result));
 
   for (const operation of result) {
     AddBlockX(operation);
