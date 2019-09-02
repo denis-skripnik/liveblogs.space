@@ -137,7 +137,7 @@
         <h4 class="modal-title">Список аккаунтов, которым делегирована shares</h4>
       </div>
       <div class="modal-body">
-<table id="body_delegated_vesting_shares"><tr><th>Логин</th><th>Сумма</th></tr></table>
+<table><thead><tr><th>Логин</th><th>Сумма</th></tr></thead><tbody id="body_delegated_vesting_shares"></tbody></table>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
@@ -154,7 +154,7 @@
         <h4 class="modal-title">Список аккаунтов, которые делегировали SHARES этому пользователю</h4>
       </div>
       <div class="modal-body">
-<table id="body_received_vesting_shares"><tr><th>Логин</th><th>Сумма</th></tr></table>
+<table><thead><tr><th>Логин</th><th>Сумма</th></tr></thead><tbody id="body_received_vesting_shares"></tbody></table>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
@@ -445,7 +445,7 @@ jQuery('#item_content_wrapper').html('<p align="center"><strong>Ошибка. В
  });
 
 var type = 'delegated';
-golos.api.getVestingDelegations(author, '', 100, type, function(err, res) {
+golos.api.getVestingDelegations(author, '', 1000, type, function(err, res) {
   //console.log(err, res);
   if ( ! err) {
 var vesting_shares_amount = '';
@@ -461,7 +461,7 @@ vesting_shares_amount = item.vesting_shares;
 });
 
 var type = 'received';
-golos.api.getVestingDelegations(author, '', 100, type, function(err, res) {
+golos.api.getVestingDelegations(author, '', 1000, type, function(err, res) {
   //console.log(err, res);
   if ( ! err) {
 var vs_amount = '';

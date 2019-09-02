@@ -1,7 +1,7 @@
 function checkWorkingNode() {
     const NODES = [
-        "wss://ws.golos.io",
-        "wss://api.golos.cf"
+        "wss://golos.lexa.host/ws",
+        "wss://api.golos.blckchnd.com/ws"
     ];
     let node = localStorage.getItem("node") || NODES[0];
     const idx = Math.max(NODES.indexOf(node), 0);
@@ -45,6 +45,14 @@ function checkWorkingNode() {
     find(idx);
 }
 checkWorkingNode();
+
+var globalVars = new Object();
+var article = new Object();
+var user = new Object();
+var startAuthor;
+var startPermlink;
+user.following = [];
+user.followers = [];
 
 function spoiler(elem)
 {
