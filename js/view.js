@@ -285,7 +285,6 @@ window.alert('Сегодня вы можете улыбнуться максим
 	}
 	var pk = sjcl.decrypt(voter, key);
 	document.getElementById('vote_form').style = 'display: none';
-	console.log(`Ключ: ${pk}, Процент: ${weight}.`);
 	golos.broadcast.vote(pk, voter, author, permlink, weight, function(err, result) {
 			 //console.log(err, result);
 			 if(result)
