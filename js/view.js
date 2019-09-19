@@ -2401,7 +2401,7 @@ const walletDataSettings = {
 async function walletData() {
 	const activeKey = localStorage.getItem('ActiveKey');
 	const active_key = activeKey ? sjcl.decrypt(user.login + '_activeKey', activeKey) : $('#this_active').val();
-
+console.log(active_key);
   $('#unblock_form').css("display", "none");
   jQuery("#main_wallet_info").css("display", "block");
   load_balance(user.login, active_key);
