@@ -517,8 +517,7 @@ async function getDiscussionsByBlog(author)
     const params = {
         'limit': limit_max,
         "select_authors": [author],
-        'truncate_body': 40,
-        'select_tags': ['liveblogs']
+        'truncate_body': 40
       };
 
     if (! getDiscussionsByBlogData.isFirstRequest) {
@@ -587,7 +586,7 @@ async function getDiscussionsByBlog(author)
 function getDiscussionsTrending() 
 {
 	document.getElementById('loader').style = 'display:block';
-	golos.api.getDiscussionsByTrending({"limit": 100, 'truncate_body': 40, 'select_tags': ['liveblogs']}, function(err, data){
+	golos.api.getDiscussionsByTrending({"limit": 100, 'truncate_body': 40}, function(err, data){
 		//console.log(err,data);
 		
 		if(data.length > 0)
@@ -603,7 +602,7 @@ function getDiscussionsTrending()
 function getDiscussionsPopular(date)
 {
 	document.getElementById('loader').style = 'display:block';
-	golos.api.getDiscussionsByHot({"limit": 100, 'truncate_body': 40, 'select_tags': ['liveblogs']}, function(err, data){
+	golos.api.getDiscussionsByHot({"limit": 100, 'truncate_body': 40}, function(err, data){
 		//console.log(err,data);
 		
 		if(data.length > 0)
@@ -775,8 +774,7 @@ async function getDiscussionsByFeed(login)
     const params = {
       "select_authors": [login],
       'limit': limit_max,
-      'truncate_body': 240,
-      'select_tags': ['liveblogs']
+      'truncate_body': 240
     };
 
     if (! getDiscussionsByFeedData.isFirstRequest) {
@@ -867,8 +865,7 @@ async function getDiscussionsByFeed(login)
 			 "tag": "",
 			 "select_authors": [login],
              'limit': 100,
-             'truncate_body': 240,
-'select_tags': ['liveblogs']
+             'truncate_body': 240
          }
      }
 	golos.api.getDiscussionsByFeed(params, function(err, data){
