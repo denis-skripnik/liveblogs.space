@@ -2196,7 +2196,7 @@ window.alert('Ошибка: ' + err);
   });
  $("#action_golos_transfer_start").click(function(){
  var action_golos_transfer_to = $('#action_golos_transfer_to').val();
- var action_golos_transfer_amount = $('#action_golos_transfer_amount').val() + ' golos';
+ var action_golos_transfer_amount = $('#action_golos_transfer_amount').val() + ' GOLOS';
 var action_golos_transfer_memo = $('#action_golos_transfer_memo').val();
 var transfer_to_vesting = document.getElementById('transfer_to_vesting');
 
@@ -2210,7 +2210,6 @@ window.alert('Ошибка: ' + err);
 }
   });
 } else {
-console.log(active_key);
 	golos.broadcast.transfer(active_key, account, action_golos_transfer_to, action_golos_transfer_amount, action_golos_transfer_memo, function(err, result) {
 if (!err) {
 window.alert('Вы перевели ' + action_golos_transfer_amount + ' пользователю ' + action_golos_transfer_to + '.');
