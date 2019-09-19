@@ -293,7 +293,7 @@ window.alert('Сегодня вы можете улыбнуться максим
 				isVoted(permlink, author, voter);
 			 }
 			 else{
-				  console.log(err);
+				  console.log(JSON.stringify(err));
 			 }
 		});
 	}
