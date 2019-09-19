@@ -2196,7 +2196,7 @@ window.alert('Ошибка: ' + err);
   });
  $("#action_golos_transfer_start").click(function(){
  var action_golos_transfer_to = $('#action_golos_transfer_to').val();
- var action_golos_transfer_amount = $('#action_golos_transfer_amount').val() + ' GOLOS';
+ var action_golos_transfer_amount = $('#action_golos_transfer_amount').val().toFixed(3) + ' GOLOS';
 var action_golos_transfer_memo = $('#action_golos_transfer_memo').val();
 var transfer_to_vesting = document.getElementById('transfer_to_vesting');
 
