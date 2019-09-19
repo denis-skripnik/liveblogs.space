@@ -54,6 +54,21 @@ var startPermlink;
 user.following = [];
 user.followers = [];
 
+function htmlspecialchars(html){
+	var div =  document.createElement('div');
+	div.innerText = html;
+	return div.innerHTML;
+  }
+  
+  function removeChildrenRecursively(node)
+  {
+	  if (!node) return;
+	  while (node.hasChildNodes()) {
+		  removeChildrenRecursively(node.firstChild);
+		  node.removeChild(node.firstChild);
+	  }
+  }
+  
 function spoiler(elem)
 {
     style = document.getElementById(elem).style;
