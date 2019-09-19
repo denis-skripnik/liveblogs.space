@@ -53,7 +53,6 @@ var startAuthor;
 var startPermlink;
 user.following = [];
 user.followers = [];
-var active_key = '';
 
 function spoiler(elem)
 {

@@ -385,7 +385,7 @@
 										{
 											document.getElementById('avatar').style = 'display:none';
 										}
-
+var active_key = '';
 			if (!localStorage.getItem('ActiveKey') && active_key === '') {
 $('#unblock_form').css("display", "block");
 $('#unblock_form').html('<p><label for="active">Введите приватный активный ключ (Если регистрировались по инвайту, он совпадает с постинг ключом, при помощи которого авторизовались в liveblogs.space). Внимание: он никуда не передаётся, все операции выполняются у вас на компьютере, в вашем браузере.</label></p>\
