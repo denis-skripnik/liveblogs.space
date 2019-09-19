@@ -1763,27 +1763,20 @@ function storeKeyLocally()
 
 function getUserPower(login)
 {
-	var timerId = setInterval(function() {
-	
     golos.api.getAccounts([login],function(err,response){
 	if(typeof response[0] !== 'undefined'){
         let last_vote_time=Date.parse(response[0].last_vote_time);
         let delta_time=parseInt((new Date().getTime() - last_vote_time+(new Date().getTimezoneOffset()*60000))/1000);
-        let energy=response[0].energy;
-		let effective_shares= parseFloat(response[0].vesting_shares) - parseFloat(response[0].delegated_vesting_shares) + parseFloat(response[0].received_vesting_shares);
-		let energy_shares = effective_shares*1000000/5;
-		let awarded_rshares=response[0].awarded_rshares / energy_shares;
-let bonus_energy = parseInt(awarded_rshares*2000);
+        let energy=response[0].voting_power;
 		let new_energy=parseInt(energy+(delta_time*10000/432000));//CHAIN_ENERGY_REGENERATION_SECONDS 5 days
         if(new_energy>10000){
-          new_energy=10000 + bonus_energy;
+          new_energy=10000;
         } else {
-			new_energy=new_energy + bonus_energy;
+			new_energy=new_energy;
 		}
 	jQuery('#battery').html( 'Ты можешь подарить <span id="ulybki">' + new_energy + '</span>' + wordForm(new_energy, [' улыбка', ' улыбки', ' улыбок']));
       }
     });
-}, 3000);
 	  jQuery('#avatar').append('<nav class="navbar navbar-default">\
 					<div class="container-fluid">\
 						<div class="navbar-header">\
