@@ -275,8 +275,7 @@ var full_weight = power * 100;
 	var ulybki = $('#ulybki').html();
 	ulybki = parseFloat(ulybki);
 	if (power > ulybki) {
-var max_ulybok = power - ulybki;
-window.alert('Сегодня вы можете улыбнуться максимум ' + max_ulybok + ' раз.');
+window.alert('Сегодня вы можете улыбнуться максимум ' + ulybki + ' раз.');
 } else {
 	var key = localStorage.getItem(voter);
 	if(key == '')
@@ -1782,6 +1781,7 @@ function getUserPower(login)
 			new_energy=new_energy;
 		}
 		new_energy /= 5;
+new_energy = parseInt(new_energy);
 		jQuery('#battery').html( 'Ты можешь подарить <span id="ulybki">' + new_energy + '</span>' + wordForm(new_energy, [' улыбка', ' улыбки', ' улыбок']));
       }
     });
