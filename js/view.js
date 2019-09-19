@@ -285,8 +285,7 @@ window.alert('Сегодня вы можете улыбнуться максим
 	}
 	var pk = sjcl.decrypt(voter, key);
 	document.getElementById('vote_form').style = 'display: none';
-	golos.broadcast.vote(pk, voter, author, permlink, weight, 
-		function(err, result) {
+	golos.broadcast.vote(pk, voter, author, permlink, weight, function(err, result) {
 			 //console.log(err, result);
 			 if(result)
 			 {				
@@ -294,7 +293,7 @@ window.alert('Сегодня вы можете улыбнуться максим
 				isVoted(permlink, author, voter);
 			 }
 			 else{
-				  console.log(err);
+				  console.log(JSON.stringify(err));
 			 }
 		});
 	}
