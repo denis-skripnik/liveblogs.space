@@ -477,8 +477,7 @@ function getDiscussionsByAuthor(author)
 	 {
 		 'limit': 100,
 		 'truncate_body': 40,
-		 'select_authors': [author],
-'select_tags': ['liveblogs']
+		 'select_authors': [author]
 	 }
 	 golos.api.getDiscussionsByCreated(params, function(err, data){
 		if(data.length > 0)
@@ -736,7 +735,6 @@ function getDiscussions(start_author, start_permlink)
          {
              'limit': 100,
              'truncate_body': 240,
-		 'select_tags': ['liveblogs']
          }
      }
      
