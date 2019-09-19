@@ -338,7 +338,7 @@ function AddBlockX(operation)
 	var total_payout_value = operation.total_payout_value;
 	var pending_payout_value = operation.pending_payout_value;
 	var total_pending_payout_value = operation.total_pending_payout_value;
-var curation_percent = operation.curation_percent/100;
+var curation_percent = operation.curation_rewards_percent/100;
 var upvote_percents = 0;
 operation.active_votes.forEach(function(item) {
 	if (item.percent / 5 < 0) {
@@ -1028,7 +1028,7 @@ if (metadata.tags[i] !== 'liveblogs') {
 		
 	var dt = date.toLocaleDateString("ru-RU") + ' ' + date.toLocaleTimeString("ru-RU");
 	  
-var curation_percent = result.curation_percent/100;
+var curation_percent = result.curation_rewards_percent/100;
 if (result.active_votes.length !== 0) {
 var smile_count = $(".smile_count").html();
 	var votes = wordForm(smile_count, [' Улыбнулся', ' Улыбнулось', ' Улыбнулось']) + ' <strong><span class="smile_count"></span>'+wordForm(smile_count, [' человек', ' человека', ' человек'])+'</strong> ';
