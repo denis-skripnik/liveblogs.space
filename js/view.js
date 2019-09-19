@@ -2196,8 +2196,10 @@ window.alert('Ошибка: ' + err);
   });
  $("#action_golos_transfer_start").click(function(){
  var action_golos_transfer_to = $('#action_golos_transfer_to').val();
- var action_golos_transfer_amount = $('#action_golos_transfer_amount').val().toFixed(3) + ' GOLOS';
-var action_golos_transfer_memo = $('#action_golos_transfer_memo').val();
+ var action_golos_transfer_amount = $('#action_golos_transfer_amount').val();
+ action_golos_transfer_amount = parseFloat(action_golos_transfer_amount);
+ action_golos_transfer_amount = action_golos_transfer_amount.toFixed(3) + ' GOLOS';
+ var action_golos_transfer_memo = $('#action_golos_transfer_memo').val();
 var transfer_to_vesting = document.getElementById('transfer_to_vesting');
 
 if (transfer_to_vesting.checked) {
