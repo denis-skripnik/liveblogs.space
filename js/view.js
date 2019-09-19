@@ -271,7 +271,7 @@ function votePost(power, permlink, author)
 {
 voter = user.login;
 var full_weight = power * 100;
-	var weight = full_weight/20;
+	var weight = parseInt(full_weight/20);
 	var ulybki = $('#ulybki').html();
 	ulybki = parseFloat(ulybki);
 	if (power > ulybki) {
