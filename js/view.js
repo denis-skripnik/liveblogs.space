@@ -283,17 +283,17 @@ window.alert('Сегодня вы можете улыбнуться максим
 		alert('Кажется вам нужно еще раз ввести постинг ключ.');
 		return;
 	}
-	var wif = sjcl.decrypt(voter, key);
+	var pk = sjcl.decrypt(voter, key);
 	document.getElementById('vote_form').style = 'display: none';
-	golos.broadcast.vote(wif, voter, author, permlink, weight, function(err, result) {
-			 //console.log(err, result);
+	golos.broadcast.vote(pk, voter, author, permlink, weight, 
+		function(err, result) {
 			 if(result)
 			 {				
 				updateVotes(permlink, author);
 				isVoted(permlink, author, voter);
 			 }
 			 else{
-				  console.log(JSON.stringify(err));
+				  console.log(err);
 			 }
 		});
 	}
