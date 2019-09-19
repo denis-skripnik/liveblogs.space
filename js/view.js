@@ -2087,7 +2087,6 @@ function date_str(timestamp,add_time,add_seconds,remove_today=false){
 }
 
 function load_balance(account, active_key) {
-console.log('Ключ: ' + active_key);
 	golos.api.getAccounts([account], function(err, result){
  if (!err) {
  result.forEach(function(acc) {
@@ -2211,7 +2210,8 @@ window.alert('Ошибка: ' + err);
 }
   });
 } else {
-golos.broadcast.transfer(active_key, account, action_golos_transfer_to, action_golos_transfer_amount, action_golos_transfer_memo, function(err, result) {
+console.log(active_key);
+	golos.broadcast.transfer(active_key, account, action_golos_transfer_to, action_golos_transfer_amount, action_golos_transfer_memo, function(err, result) {
 if (!err) {
 window.alert('Вы перевели ' + action_golos_transfer_amount + ' пользователю ' + action_golos_transfer_to + '.');
 location.reload();
