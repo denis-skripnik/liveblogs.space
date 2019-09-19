@@ -487,9 +487,7 @@ function getDiscussionsByAuthor(author)
 			for(operation of data)
 			{
 				//console.log(operation);
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 				AddBlockX(operation);
-}
 				}//);
 		}
 		document.getElementById('loader').style = 'display:none';
@@ -538,10 +536,7 @@ async function getDiscussionsByBlog(author)
     data.sort(compareDate);
 
     for (const operation of data) {
-    	isValidElement = operation.author === author &&
-        operation.curation_percent === 5000 &&
-        Array.isArray(operation.beneficiaries) &&
-        operation.beneficiaries.some(b => b.account === operation.author);
+    	isValidElement = operation.author === author;
     	if (isValidElement) {
     		result.push(operation);
 
@@ -599,9 +594,7 @@ function getDiscussionsTrending()
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 			AddBlockX(operation);
-}
 			});
 		}
 		document.getElementById('loader').style = 'display:none'; 
@@ -617,9 +610,7 @@ function getDiscussionsPopular(date)
 		if(data.length > 0)
 		{			
 			data.forEach(function (operation){
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 			AddBlockX(operation);
-}
 			});
 		}
 		document.getElementById('loader').style = 'display:none'; 
@@ -678,18 +669,13 @@ async function getDiscussionsByTags(tags)
     data.sort(compareDate);
 
     for (const operation of data) {
-      isValidElement = operation.curation_percent === 5000 &&
-        Array.isArray(operation.beneficiaries) &&
-        operation.beneficiaries.some(b => b.account === operation.author);
-      if (isValidElement) {
         result.push(operation);
 
         if (result.length === limit + 1) {
           isCompleted = true;
           break;
         }
-      }
-    }
+          }
 
     if (! isCompleted) {
       if (data.length < limit_max) {
@@ -760,9 +746,7 @@ function getDiscussions(start_author, start_permlink)
             //data.forEach(function (operation)
 			for(operation of data)
 			{
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 		AddBlockX(operation);
-}
 		}//);
         }
 		document.getElementById('loader').style = 'display:none'; 
@@ -811,10 +795,7 @@ async function getDiscussionsByFeed(login)
     data.sort(compareDate);
 
     for (const operation of data) {
-      isValidElement = user.following.includes(operation.author) &&
-        operation.curation_percent === 5000 &&
-        Array.isArray(operation.beneficiaries) &&
-        operation.beneficiaries.some(b => b.account === operation.author);
+      isValidElement = user.following.includes(operation.author);
       if (isValidElement) {
         result.push(operation);
 
@@ -907,9 +888,7 @@ async function getDiscussionsByFeed(login)
 		{			
 			data.forEach(function (operation){
 if (!user.following.includes(operation.author)) {
-				if (operation.curation_percent === 5000 && Array.isArray(operation.beneficiaries) && operation.beneficiaries.some(b => b.account === operation.author)) {
 	AddBlockX(operation);
-}
 }
 			});
 		}
@@ -971,7 +950,6 @@ function getContentX(permlink, author)
 		}
 
 		var result = data;
-				if (result.curation_percent === 5000 && Array.isArray(result.beneficiaries) && result.beneficiaries.some(b => b.account === result.author)) {
 		marked.setOptions({
 		  renderer: new marked.Renderer(),
 		  gfm: true,
@@ -1046,7 +1024,6 @@ if (metadata.tags[i] !== 'liveblogs') {
 				tags = tags + " <span class='label label-warning'><a href='tag.html?tag=" + metadata.tags[i] + "'>"+detransliterate(metadata.tags[i], 0)+'</a></span>';
 }
 				}
-		}
 	}	
 	if (user.login === result.author) {
 		$('#notify_users').css("display", "block");
@@ -1524,7 +1501,6 @@ function sendComment(permlink, author, txt_id, button, hide, showReplies)
 			new_permlink,
 			'',
 			text,
-5000,
 JSON.stringify(json_metadata),
 [[ 0, {"beneficiaries":benecs} ]],
 			function(err, result) {
@@ -1606,7 +1582,6 @@ function editComment(parent_author, parent_permlink, permlink, author, txt_id, b
 				permlink,
 				'',
 				text,
-	5000,
 	JSON.stringify(json_metadata),
 [],
 				function(err, result) {
@@ -1936,7 +1911,6 @@ golos.broadcast.content(key,
 			new_permlink,
 			title.trim(),
 			body,
-			5000,
 			JSON.stringify(json_metadata),
 			[[ 0, {"beneficiaries":benecs} ]],
 			function(err, result) {
@@ -2019,7 +1993,6 @@ json_metadata.users = post_users;
 			permlink,
 			title.trim(),
 			body,
-			5000,
 			JSON.stringify(json_metadata),
 [],
 			function(err, result) {
