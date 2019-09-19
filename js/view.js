@@ -2087,7 +2087,8 @@ function date_str(timestamp,add_time,add_seconds,remove_today=false){
 }
 
 function load_balance(account, active_key) {
-golos.api.getAccounts([account], function(err, result){
+console.log('Ключ: ' + active_key);
+	golos.api.getAccounts([account], function(err, result){
  if (!err) {
  result.forEach(function(acc) {
 
@@ -2401,7 +2402,6 @@ const walletDataSettings = {
 async function walletData() {
 	const activeKey = localStorage.getItem('ActiveKey');
 	const active_key = activeKey ? sjcl.decrypt(user.login + '_activeKey', activeKey) : $('#this_active').val();
-console.log(active_key);
   $('#unblock_form').css("display", "none");
   jQuery("#main_wallet_info").css("display", "block");
   load_balance(user.login, active_key);
