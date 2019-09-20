@@ -267,39 +267,34 @@ if (percent == 100) {
 }
 			}
 
-function votePost(power, permlink, author)
-{
-var voter = user.login;
-var full_weight = power * 100;
-	var weight = 1000;
-	var ulybki = $('#ulybki').html();
-	ulybki = parseFloat(ulybki);
-	if (power > ulybki) {
-window.alert('Сегодня вы можете улыбнуться максимум ' + ulybki + ' раз.');
-} else {
-	var key = localStorage.getItem(voter);
-	if(key == '')
-	{
-		alert('Кажется вам нужно еще раз ввести постинг ключ.');
-		return;
-	}
-	var pk = sjcl.decrypt(voter, key);
-	document.getElementById('vote_form').style = 'display: none';
-	golos.broadcast.vote(pk, voter, author, permlink, weight, 
-		function(err, result) {
-			 if(result)
-			 {				
-				updateVotes(permlink, author);
-				isVoted(permlink, author, voter);
-			 }
-			 else{
-				  console.log(JSON.stringify(err));
-			 }
-		});
-	}
-	}
+			function votePost(power, permlink, author)
+			{
+				voter = user.login;
+				var weight = 1000;
+				var key = localStorage.getItem(voter);
+				if(key == '' || key == null)
+				{
+					alert('РљР°Р¶РµС‚СЃСЏ РІР°Рј РЅСѓР¶РЅРѕ РµС‰Рµ СЂР°Р· РІРІРµСЃС‚Рё РїРѕСЃС‚РёРЅРі РєР»СЋС‡.');
+					return;
+				}
+				var pk = sjcl.decrypt(voter, key);
+				document.getElementById('vote_form').style = 'display: none';
+				golos.broadcast.vote(pk, voter, author, permlink, weight, 
+					function(err, result) {
+						 //console.log(err, result);
+						 if(result)
+						 {				
+							updateVotes(permlink, author);
+							isVoted(permlink, author, voter);
+						 }
+						 else{
+							  console.log(err);
+						 }
+					});
+			}
+			
 
-function maximumVote(permlink, author) {
+			function maximumVote(permlink, author) {
 var q = window.confirm('Воспользовавшись этой кнопкой, вы подарите 2000 улыбок. Просим обратить внимание на то, что они восстанавливаются сутки (Если вы нажмёте эту кнопку 2 раза в одни сутки, придётся ждать 2 дня для полного восстановления их количества. Также вы порекомендуете пост своим подписчикам. Вы действительно хотите подарить 2000 улыбок?')
 if (q === true) {
 if (author === user.login) {
