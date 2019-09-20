@@ -269,9 +269,9 @@ if (percent == 100) {
 
 function votePost(power, permlink, author)
 {
-voter = user.login;
+var voter = user.login;
 var full_weight = power * 100;
-	var weight = parseInt(full_weight/20);
+	var weight = 1000;
 	var ulybki = $('#ulybki').html();
 	ulybki = parseFloat(ulybki);
 	if (power > ulybki) {
