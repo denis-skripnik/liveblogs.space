@@ -1779,7 +1779,6 @@ function getUserPower(login)
         } else {
 			new_energy=new_energy;
 		}
-		new_energy /= 5;
 new_energy = parseInt(new_energy);
 		jQuery('#battery').html( 'Ты можешь подарить <span id="ulybki">' + new_energy + '</span>' + wordForm(new_energy, [' улыбка', ' улыбки', ' улыбок']));
       }
