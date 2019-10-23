@@ -1509,7 +1509,7 @@ function sendComment(permlink, author, txt_id, button, hide, showReplies)
 		if (comment_users) {
 		json_metadata.users = comment_users;
 		}
-			golos.broadcast.content(key,
+			golos.broadcast.comment(key,
 			author,
 			permlink,
 			login,
@@ -1590,7 +1590,7 @@ function editComment(parent_author, parent_permlink, permlink, author, txt_id, b
 		if (comment_users) {
 		json_metadata.users = comment_users;
 	}
-			golos.broadcast.content(key,
+			golos.broadcast.comment(key,
 				parent_author,
 				parent_permlink,
 				author,
@@ -1914,7 +1914,7 @@ json_metadata.format = 'markdown';
 if (post_users) {
 json_metadata.users = post_users;
 }
-golos.broadcast.content(key,
+golos.broadcast.comment(key,
 			'',
 			'',
 			user.login,
@@ -1996,7 +1996,7 @@ json_metadata.format = 'markdown';
 if (post_users) {
 json_metadata.users = post_users;
 }
-	golos.broadcast.content(key,
+	golos.broadcast.comment(key,
 			'',
 			'',
 			author,
