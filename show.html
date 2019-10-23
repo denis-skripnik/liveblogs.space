@@ -120,7 +120,7 @@
 
 												<form action="" id="vote_form" style="display: none;">
 													<div style="float:left;">
-														<input type="range" name="power" min="1" max="100" step="1" value="100" style="width: 240px; margin-top: 10px; margin-right: 10px;" onchange="document.getElementById('vpower').innerHTML = this.value"> 
+														<input type="range" name="power" min="1" max="50" step="1" value="100" style="width: 240px; margin-top: 10px; margin-right: 10px;" onchange="document.getElementById('vpower').innerHTML = this.value"> 
 													</div>			
 													<div style="float:left;">
 														<button type="button" onClick="votePost(document.getElementById('vpower').innerHTML, this.form.permlink.value, this.form.author.value); return false;">Подарить <span id="vpower">100</span> улыбок</button>
@@ -128,10 +128,10 @@
 													<input type="hidden" name="permlink" value="">
 													<input type="hidden" name="author" value="">
 													<div style="float:center;">
-														<input type="button" value="←_x 1" onclick="var t = this.value.split (' '); ++t[1]; if (t[1] <=20) { this.value = t.join (' '); document.getElementById('vpower').innerHTML = this.form.power.value*t[1]; }">
+														<input type="button" value="Прокачать пост" onclick="boostingPost(this.form.permlink.value, this.form.author.value); return false;">
 													</div>
 													<div style="float:right;">
-														<button type="button" onClick="maximumVote(this.form.permlink.value, this.form.author.value); return false;"><strong>подарить 2000 улыбок</strong></button>
+														<button type="button" onClick="maximumVote(this.form.permlink.value, this.form.author.value); return false;"><strong>подарить 50 улыбок</strong></button>
 													</div>			
 												</form>
 												<br>

@@ -271,11 +271,16 @@ function votePost(power, permlink, author)
 {
 var voter = user.login;
 var full_weight = power * 100;
-	var weight = parseInt(full_weight/20);
+	var weight = parseInt(full_weight/
+		200);
 	var ulybki = $('#ulybki').html();
 	ulybki = parseFloat(ulybki);
-	if (power > ulybki) {
-window.alert('Сегодня вы можете улыбнуться максимум ' + ulybki + ' раз.');
+	if (ulybki <= 8000) {
+let smiles_count = ulybki-80000;
+if (smiles_count < 0) {
+smiles_count = 0;
+}
+		window.alert('Сегодня вы можете улыбнуться максимум ' + smiles_count + ' раз.');
 } else {
 	var key = localStorage.getItem(voter);
 	if(key == '')
@@ -305,9 +310,13 @@ if (q === true) {
 if (author === user.login) {
 alert('Улыбаться самому себе при помощи данной кнопки недопустимо.')
 } else {
-	votePost(2000, permlink, author); ReblogUpvote(100, permlink, author);
+	votePost(50, permlink, author); ReblogUpvote(100, permlink, author);
 }
 }
+}
+
+function boostingPost(permlink, author) {
+
 }
 
 function AddBlockX(operation)
