@@ -270,13 +270,12 @@ if (percent == 100) {
 function votePost(power, permlink, author)
 {
 var voter = user.login;
-var full_weight = power * 100;
-	var weight = parseInt(full_weight/
-		200);
+var full_weight = power * 200;
+	var weight = parseInt(full_weight);
 	var ulybki = $('#ulybki').html();
 	ulybki = parseFloat(ulybki);
 	if (ulybki <= 8000) {
-let smiles_count = ulybki-80000;
+let smiles_count = ulybki-8000;
 if (smiles_count < 0) {
 smiles_count = 0;
 }
