@@ -1299,7 +1299,7 @@ function isVoted(permlink, author, voter)
 					data.forEach(function(operation){
 						if(operation.voter == voter && operation.percent > 0)
 						{
-							document.getElementById('my_vote').innerHTML = '<hr><div>Ты подарил этому посту <strong>'+operation.percent / 5+wordForm(operation.percent / 5, [' улыбка', ' улыбки', ' улыбок'])+' </strong><hr><input type="button" id="show_vote_form" value="Подарить другое количество улыбок"></div>';
+							document.getElementById('my_vote').innerHTML = '<hr><div>Ты подарил этому посту <strong>'+operation.percent / 200+wordForm(operation.percent / 200, [' улыбка', ' улыбки', ' улыбок'])+' </strong><hr><input type="button" id="show_vote_form" value="Подарить другое количество улыбок"></div>';
 							document.getElementById('vote_form').style = 'display: none';
 													$("#show_vote_form").click(function(){
 $('#show_vote_form').css("display", "none");
